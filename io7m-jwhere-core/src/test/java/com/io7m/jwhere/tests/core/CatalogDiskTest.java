@@ -37,7 +37,9 @@ import org.valid4j.exceptions.RequireViolation;
 import java.math.BigInteger;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public final class CatalogDiskTest
@@ -75,9 +77,6 @@ public final class CatalogDiskTest
 
   @Test public void testBuilderReuse()
   {
-    this.expected.expect(RequireViolation.class);
-    this.expected.expectMessage("Builders cannot be reused");
-
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
     final CatalogDirectoryNode root = this.getRoot(c);
@@ -86,14 +85,15 @@ public final class CatalogDiskTest
       root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
 
     db.build();
+
+    this.expected.expect(RequireViolation.class);
+    this.expected.expectMessage("Builders cannot be reused");
     db.build();
   }
 
   @Test public void testDuplicateDirectoryEntry()
     throws Exception
   {
-    this.expected.expect(CatalogNodeDuplicateDirectoryEntryException.class);
-
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
     final CatalogDirectoryNode root = this.getRoot(c);
@@ -124,14 +124,14 @@ public final class CatalogDiskTest
       root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
 
     db.addNode(root, "file0.txt", file0);
+
+    this.expected.expect(CatalogNodeDuplicateDirectoryEntryException.class);
     db.addNode(root, "file0.txt", file1);
   }
 
   @Test public void testDuplicate()
     throws Exception
   {
-    this.expected.expect(CatalogNodeDuplicateException.class);
-
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
     final CatalogDirectoryNode root = this.getRoot(c);
@@ -149,7 +149,70 @@ public final class CatalogDiskTest
       root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
 
     db.addNode(root, "d0", d0);
+
+    this.expected.expect(CatalogNodeDuplicateException.class);
     db.addNode(root, "d1", d0);
+  }
+
+  @Test public void testPathForNodeMissing()
+    throws Exception
+  {
+    final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
+
+    final CatalogDirectoryNode root = this.getRoot(c);
+
+    final CatalogDirectoryNode d0 = new CatalogDirectoryNode(
+      new HashSet<>(1),
+      "root",
+      "root",
+      BigInteger.valueOf(1L),
+      c.instant(),
+      c.instant(),
+      c.instant());
+
+    final CatalogDirectoryNode d1 = new CatalogDirectoryNode(
+      new HashSet<>(1),
+      "root",
+      "root",
+      BigInteger.valueOf(2L),
+      c.instant(),
+      c.instant(),
+      c.instant());
+
+    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+
+    db.addNode(root, "d0", d0);
+
+    final CatalogDisk d = db.build();
+
+    this.expected.expect(NoSuchElementException.class);
+    d.getPathForNode(d1);
+  }
+
+  @Test public void testNodeForPathMissing()
+    throws Exception
+  {
+    final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
+
+    final CatalogDirectoryNode root = this.getRoot(c);
+
+    final CatalogDirectoryNode d0 = new CatalogDirectoryNode(
+      new HashSet<>(1),
+      "root",
+      "root",
+      BigInteger.valueOf(1L),
+      c.instant(),
+      c.instant(),
+      c.instant());
+
+    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+    final CatalogDisk d = db.build();
+
+    final Optional<CatalogNodeType> r_opt =
+      d.getNodeForPath(Collections.singletonList("nonexistent"));
+    Assert.assertFalse(r_opt.isPresent());
   }
 
   @Test public void testEqualsCases()

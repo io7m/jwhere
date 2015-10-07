@@ -24,10 +24,13 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.jgrapht.graph.UnmodifiableGraph;
 
+import java.math.BigInteger;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
 
 /**
  * The default implementation of the {@link CatalogJSONSerializerType}
@@ -60,7 +63,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     jout.put("access-time", atime.toString());
     jout.put("modification-time", mtime.toString());
     jout.put("creation-time", ctime.toString());
-    jout.set("inode", new BigIntegerNode(node.getINode()));
+    jout.set("inode", new BigIntegerNode(node.getID()));
     jout.put(
       "permissions", PosixFilePermissions.toString(node.getPermissions()));
 
@@ -124,7 +127,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     jout.put("access-time", atime.toString());
     jout.put("modification-time", mtime.toString());
     jout.put("creation-time", ctime.toString());
-    jout.set("inode", new BigIntegerNode(node.getINode()));
+    jout.set("inode", new BigIntegerNode(node.getID()));
     jout.put(
       "permissions", PosixFilePermissions.toString(node.getPermissions()));
 
@@ -147,6 +150,27 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   public static CatalogJSONSerializerType newSerializer()
   {
     return new CatalogJSONSerializer();
+  }
+
+  @Override public ObjectNode serializeCatalog(final Catalog c)
+  {
+    NullCheck.notNull(c);
+
+    final ObjectMapper jom = new ObjectMapper();
+    final ObjectNode jd = jom.createObjectNode();
+
+    jd.put("type", "catalog");
+
+    final ArrayNode jda = jom.createArrayNode();
+    final SortedMap<BigInteger, CatalogDisk> disks = c.getDisks();
+    final Iterator<BigInteger> iter = disks.keySet().iterator();
+    while (iter.hasNext()) {
+      final CatalogDisk disk = disks.get(iter.next());
+      jda.add(this.serializeDisk(disk));
+    }
+
+    jd.set("catalog-disks", jda);
+    return jd;
   }
 
   @Override public ObjectNode serializeDisk(final CatalogDisk d)

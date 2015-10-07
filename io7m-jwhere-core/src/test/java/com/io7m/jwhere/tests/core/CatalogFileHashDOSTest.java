@@ -14,33 +14,14 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.core;
+package com.io7m.jwhere.tests.core;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.nio.file.FileSystem;
 
-/**
- * The type of JSON serializers.
- */
-
-public interface CatalogJSONSerializerType
+public final class CatalogFileHashDOSTest extends CatalogFileHashContract
 {
-  /**
-   * Serialize the given catalog to JSON.
-   *
-   * @param c The catalog
-   *
-   * @return A JSON object
-   */
-
-  ObjectNode serializeCatalog(Catalog c);
-
-  /**
-   * Serialize the given disk to JSON.
-   *
-   * @param d The disk
-   *
-   * @return A JSON object
-   */
-
-  ObjectNode serializeDisk(CatalogDisk d);
+  @Override protected FileSystem getFileSystem()
+  {
+    return CatalogTestFilesystems.makeEmptyDOSFilesystem();
+  }
 }

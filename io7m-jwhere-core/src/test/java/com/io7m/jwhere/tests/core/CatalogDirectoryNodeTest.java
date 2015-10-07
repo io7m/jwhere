@@ -84,7 +84,7 @@ public final class CatalogDirectoryNodeTest
             cd.getPermissions(),
             cd.getOwner(),
             cd.getGroup(),
-            cd.getINode(),
+            cd.getID(),
             cd.getAccessTime(),
             cd.getCreationTime(),
             cd.getModificationTime());
@@ -92,7 +92,7 @@ public final class CatalogDirectoryNodeTest
             cd.getPermissions(),
             cd.getOwner(),
             cd.getGroup(),
-            cd.getINode(),
+            cd.getID(),
             cd.getAccessTime(),
             cd.getCreationTime(),
             cd.getModificationTime());

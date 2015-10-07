@@ -125,6 +125,11 @@
       </dependency>
 
       <dependency>
+        <groupId>com.github.marschall</groupId>
+        <artifactId>memoryfilesystem</artifactId>
+        <version>0.7.2</version>
+      </dependency>
+      <dependency>
         <groupId>net.java.quickcheck</groupId>
         <artifactId>quickcheck</artifactId>
         <version>0.6</version>

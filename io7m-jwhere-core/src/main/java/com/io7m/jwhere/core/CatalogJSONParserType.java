@@ -25,6 +25,25 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public interface CatalogJSONParserType
 {
   /**
+   * Parse a catalog from the given JSON node.
+   *
+   * @param c A JSON object
+   *
+   * @return A catalog
+   *
+   * @throws CatalogJSONParseException          On parsing or validation errors
+   * @throws CatalogNodeException               On malformed disk errors
+   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   *                                            same archive number
+   */
+
+  Catalog parseCatalog(ObjectNode c)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException;
+
+  /**
    * Parse a disk from the given JSON node.
    *
    * @param c A JSON object

@@ -18,6 +18,7 @@ package com.io7m.jwhere.core;
 
 import com.io7m.jnull.NullCheck;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.UnmodifiableGraph;
 import org.slf4j.Logger;
@@ -25,7 +26,14 @@ import org.slf4j.LoggerFactory;
 import org.valid4j.Assertive;
 
 import java.math.BigInteger;
+import java.nio.file.NotDirectoryException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A catalogued disk.
@@ -90,7 +98,7 @@ public final class CatalogDisk
       d_root.getPermissions(),
       d_root.getOwner(),
       d_root.getGroup(),
-      d_root.getINode(),
+      d_root.getID(),
       d_root.getAccessTime(),
       d_root.getCreationTime(),
       d_root.getModificationTime());
@@ -125,6 +133,70 @@ public final class CatalogDisk
   {
     return new Builder(
       in_root, in_disk_name, in_filesystem_type, in_index, in_size);
+  }
+
+  private static Optional<CatalogNodeType> getNodeForPathIterator(
+    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
+    final CatalogDirectoryNode node,
+    final Iterator<String> iter)
+    throws NotDirectoryException
+  {
+    final String name = iter.next();
+    final Set<CatalogDirectoryEntry> edges = g.outgoingEdgesOf(node);
+    for (final CatalogDirectoryEntry e : edges) {
+      if (e.getName().equals(name)) {
+        return e.getTarget().matchNode(
+          new CatalogNodeMatcherType<Optional<CatalogNodeType>,
+            NotDirectoryException>()
+          {
+            @Override
+            public Optional<CatalogNodeType> onFile(final CatalogFileNode f)
+              throws NotDirectoryException
+            {
+              if (iter.hasNext()) {
+                throw new NotDirectoryException(name);
+              }
+              return Optional.of(f);
+            }
+
+            @Override public Optional<CatalogNodeType> onDirectory(
+              final CatalogDirectoryNode d)
+              throws NotDirectoryException
+            {
+              return CatalogDisk.getNodeForPathIterator(g, d, iter);
+            }
+          });
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  /**
+   * Construct the path from the root of the disk to the given node.
+   *
+   * @param node The node
+   *
+   * @return A path to the node
+   *
+   * @throws NoSuchElementException If the node is not in the filesystem
+   */
+
+  public List<String> getPathForNode(final CatalogNodeType node)
+  {
+    NullCheck.notNull(node);
+
+    if (this.graph.containsVertex(node)) {
+      final DijkstraShortestPath<CatalogNodeType, CatalogDirectoryEntry> dsp =
+        new DijkstraShortestPath<>(this.graph, this.root, node);
+
+      final Stream<CatalogDirectoryEntry> edge_stream =
+        dsp.getPathEdgeList().stream();
+      return edge_stream.map(CatalogDirectoryEntry::getName)
+        .collect(Collectors.toList());
+    } else {
+      throw new NoSuchElementException();
+    }
   }
 
   @Override public String toString()
@@ -193,6 +265,25 @@ public final class CatalogDisk
   public CatalogDirectoryNode getFilesystemRoot()
   {
     return this.root;
+  }
+
+  /**
+   * Look up a node in the filesystem graph.
+   *
+   * @param p The path to the node
+   *
+   * @return A node, if one exists
+   *
+   * @throws NotDirectoryException If an element of the path other than the
+   *                               final one does not refer to a directory
+   */
+
+  public Optional<CatalogNodeType> getNodeForPath(final List<String> p)
+    throws NotDirectoryException
+  {
+    NullCheck.notNull(p);
+    final Iterator<String> iter = p.iterator();
+    return CatalogDisk.getNodeForPathIterator(this.graph, this.root, iter);
   }
 
   @Override public boolean equals(final Object o)

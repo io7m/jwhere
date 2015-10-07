@@ -26,6 +26,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * The default implementation of the {@link CatalogJSONParserType} interface.
@@ -145,6 +147,38 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   public static CatalogJSONParserType newParser()
   {
     return new CatalogJSONParser();
+  }
+
+  @Override public Catalog parseCatalog(final ObjectNode c)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException
+  {
+    CatalogJSONParserUtilities.getStringWithValue(c, "type", "catalog");
+
+    final SortedMap<BigInteger, CatalogDisk> disks = new TreeMap<>();
+
+    final ArrayNode jdisks =
+      CatalogJSONParserUtilities.getArray(c, "catalog-disks");
+
+    for (int index = 0; index < jdisks.size(); ++index) {
+      final ObjectNode jd =
+        CatalogJSONParserUtilities.checkObject(null, jdisks.get(index));
+      final CatalogDisk disk = this.parseDisk(jd);
+      final BigInteger disk_index = disk.getArchiveIndex();
+      if (disks.containsKey(disk_index)) {
+        final StringBuilder sb = new StringBuilder(128);
+        sb.append("Multiple disks with the same archive number.");
+        sb.append(System.lineSeparator());
+        sb.append("  Duplicate number: ");
+        sb.append(disk_index);
+        throw new CatalogDiskDuplicateIndexException(sb.toString());
+      }
+      disks.put(disk_index, disk);
+    }
+
+    return new Catalog(disks);
   }
 
   @Override public CatalogDisk parseDisk(final ObjectNode c)

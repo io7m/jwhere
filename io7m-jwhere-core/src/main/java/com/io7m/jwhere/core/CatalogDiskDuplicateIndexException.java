@@ -16,31 +16,23 @@
 
 package com.io7m.jwhere.core;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 /**
- * The type of JSON serializers.
+ * An exception indicating an attempt to load a catalog that has two disks with
+ * the same archive number.
  */
 
-public interface CatalogJSONSerializerType
+public final class CatalogDiskDuplicateIndexException extends CatalogException
 {
-  /**
-   * Serialize the given catalog to JSON.
-   *
-   * @param c The catalog
-   *
-   * @return A JSON object
-   */
-
-  ObjectNode serializeCatalog(Catalog c);
+  private static final long serialVersionUID = 1L;
 
   /**
-   * Serialize the given disk to JSON.
+   * Construct an exception.
    *
-   * @param d The disk
-   *
-   * @return A JSON object
+   * @param m The exception message
    */
 
-  ObjectNode serializeDisk(CatalogDisk d);
+  public CatalogDiskDuplicateIndexException(final String m)
+  {
+    super(m);
+  }
 }

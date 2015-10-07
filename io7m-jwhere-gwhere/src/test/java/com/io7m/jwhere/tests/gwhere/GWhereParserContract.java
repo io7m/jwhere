@@ -171,7 +171,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());
     Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getINode());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -205,7 +205,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());
     Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getINode());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -251,7 +251,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());
     Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getINode());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -290,7 +290,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         Assert.assertEquals("root", ffile.getOwner());
         Assert.assertEquals("root", ffile.getGroup());
         Assert.assertEquals(BigInteger.valueOf(417761L), ffile.getSize());
-        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.getINode());
+        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.getID());
       }
 
       if ("arch".equals(e.getName())) {
@@ -298,7 +298,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
         Assert.assertEquals("root", file.getOwner());
         Assert.assertEquals("root", file.getGroup());
-        Assert.assertEquals(BigInteger.valueOf(1728L), file.getINode());
+        Assert.assertEquals(BigInteger.valueOf(1728L), file.getID());
       }
 
       if ("vls".equals(e.getName())) {
@@ -306,7 +306,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
         Assert.assertEquals("root", file.getOwner());
         Assert.assertEquals("root", file.getGroup());
-        Assert.assertEquals(BigInteger.valueOf(1536L), file.getINode());
+        Assert.assertEquals(BigInteger.valueOf(1536L), file.getID());
       }
     }
 
@@ -332,7 +332,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());
     Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getINode());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -371,7 +371,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         Assert.assertEquals("root", ffile.getOwner());
         Assert.assertEquals("root", ffile.getGroup());
         Assert.assertEquals(BigInteger.valueOf(417761L), ffile.getSize());
-        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.getINode());
+        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.getID());
       }
 
       if ("empty".equals(e.getName())) {
@@ -379,7 +379,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
         Assert.assertEquals("root", file.getOwner());
         Assert.assertEquals("root", file.getGroup());
-        Assert.assertEquals(BigInteger.valueOf(1728L), file.getINode());
+        Assert.assertEquals(BigInteger.valueOf(1728L), file.getID());
       }
     }
 

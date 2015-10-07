@@ -20,12 +20,68 @@ import com.io7m.jwhere.core.CatalogFileHash;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
+import org.hamcrest.core.StringContains;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-public final class CatalogFileHashTest
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
+public abstract class CatalogFileHashContract
 {
-  @Test public void testEqualsCases()
+  @Rule public ExpectedException expected = ExpectedException.none();
+
+  protected abstract FileSystem getFileSystem();
+
+  @Test public final void testFromFileDirectory()
+    throws Exception
+  {
+    try (FileSystem fs = this.getFileSystem()) {
+      final Path p = fs.getPath("xyz");
+      Files.createDirectory(p);
+
+      this.expected.expect(FileSystemException.class);
+      this.expected.expectMessage(new StringContains("is a directory"));
+      CatalogFileHash.fromFile(p);
+    }
+  }
+
+  @Test public final void testFromFileNonexistent()
+    throws Exception
+  {
+    try (FileSystem fs = this.getFileSystem()) {
+      final Path p = fs.getPath("nonexistent");
+      this.expected.expect(NoSuchFileException.class);
+      this.expected.expectMessage(new StringContains("nonexistent"));
+      CatalogFileHash.fromFile(p);
+    }
+  }
+
+  @Test public final void testFromFileHashCorrect()
+    throws Exception
+  {
+    try (FileSystem fs = this.getFileSystem()) {
+      final Path p = fs.getPath("hello.txt");
+      Files.write(
+        p, "Hello".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+
+      final CatalogFileHash h = CatalogFileHash.fromFile(p);
+      Assert.assertEquals(
+        "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"
+          .toUpperCase(),
+        h.getValue());
+      Assert.assertEquals("SHA-256", h.getAlgorithm());
+    }
+  }
+
+  @Test public final void testEqualsCases()
   {
     final Generator<CatalogFileHash> gen =
       CatalogFileHashGenerator.getDefault();

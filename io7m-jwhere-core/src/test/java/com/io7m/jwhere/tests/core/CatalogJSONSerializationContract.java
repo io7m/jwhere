@@ -17,6 +17,7 @@
 package com.io7m.jwhere.tests.core;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
@@ -41,7 +42,7 @@ public abstract class CatalogJSONSerializationContract<S extends
 
   protected abstract S getSerializer();
 
-  @Test public final void testSerializationRoundTrip()
+  @Test public final void testSerializationDiskRoundTrip()
   {
     final S s = this.getSerializer();
     final P p = this.getParser();
@@ -59,6 +60,29 @@ public abstract class CatalogJSONSerializationContract<S extends
           final ObjectNode s1 = s.serializeDisk(d1);
           final CatalogDisk d2 = p.parseDisk(s1);
           Assert.assertEquals(d0, d2);
+        }
+      });
+  }
+
+  @Test public final void testSerializationCatalogRoundTrip()
+    throws Exception
+  {
+    final S s = this.getSerializer();
+    final P p = this.getParser();
+    final Generator<Catalog> g = CatalogGenerator.getDefault();
+
+    QuickCheck.forAll(
+      3, g, new AbstractCharacteristic<Catalog>()
+      {
+        @Override protected void doSpecify(final Catalog c0)
+          throws Throwable
+        {
+          final ObjectNode s0 = s.serializeCatalog(c0);
+          final Catalog c1 = p.parseCatalog(s0);
+          final ObjectNode s1 = s.serializeCatalog(c1);
+          final Catalog c2 = p.parseCatalog(s1);
+          Assert.assertEquals(c0, c1);
+          Assert.assertEquals(c0, c2);
         }
       });
   }

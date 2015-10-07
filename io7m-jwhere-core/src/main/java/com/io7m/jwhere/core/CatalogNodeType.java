@@ -64,7 +64,7 @@ public interface CatalogNodeType
    * @return The node's filesystem inode value
    */
 
-  BigInteger getINode();
+  BigInteger getID();
 
   /**
    * @return The node's time of creation
