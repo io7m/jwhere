@@ -14,20 +14,40 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.tests.core;
+package com.io7m.jwhere.core;
 
-import java.nio.file.FileSystem;
+import com.io7m.jnull.NullCheck;
 
-public final class CatalogFilesystemReaderDOSTest
-  extends CatalogFilesystemReaderContract
+import java.nio.file.Path;
+
+/**
+ * An error that indicates that a file or directory has been created more
+ * recently than the catalog was created.
+ */
+
+public final class CatalogVerificationUncataloguedItem
+  implements CatalogVerificationReportItemErrorType
 {
-  @Override protected FileSystem getFileSystem()
+  private final Path path;
+
+  /**
+   * Construct an error.
+   *
+   * @param in_path The path
+   */
+
+  public CatalogVerificationUncataloguedItem(final Path in_path)
   {
-    return CatalogTestFilesystems.makeEmptyDOSFilesystem();
+    this.path = NullCheck.notNull(in_path);
   }
 
-  @Override protected CatalogFilesystemProfile getFilesystemProfile()
+  @Override public Path getPath()
   {
-    return CatalogFilesystemProfile.PROFILE_WINDOWS;
+    return this.path;
+  }
+
+  @Override public String show()
+  {
+    return "New item; did not exist when the catalog was created";
   }
 }

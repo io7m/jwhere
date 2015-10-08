@@ -26,4 +26,9 @@ public final class CatalogFilesystemReaderUnixTest
     return CatalogTestFilesystems.makeEmptyUnixFilesystem();
   }
 
+  @Override protected CatalogFilesystemProfile getFilesystemProfile()
+  {
+    return CatalogFilesystemProfile.PROFILE_UNIX;
+  }
+
 }

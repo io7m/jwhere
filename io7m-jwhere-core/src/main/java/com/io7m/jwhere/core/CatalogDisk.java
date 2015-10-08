@@ -17,6 +17,7 @@
 package com.io7m.jwhere.core;
 
 import com.io7m.jnull.NullCheck;
+import net.jcip.annotations.Immutable;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
@@ -39,7 +40,7 @@ import java.util.stream.Stream;
  * A catalogued disk.
  */
 
-public final class CatalogDisk
+@Immutable public final class CatalogDisk
 {
   private static final Logger LOG;
 
@@ -163,7 +164,10 @@ public final class CatalogDisk
               final CatalogDirectoryNode d)
               throws NotDirectoryException
             {
-              return CatalogDisk.getNodeForPathIterator(g, d, iter);
+              if (iter.hasNext()) {
+                return CatalogDisk.getNodeForPathIterator(g, d, iter);
+              }
+              return Optional.of(d);
             }
           });
       }
@@ -350,6 +354,8 @@ public final class CatalogDisk
       final CatalogNodeType node)
       throws CatalogNodeException
     {
+      Assertive.require(!this.finished, "Builders cannot be reused");
+
       CatalogDisk.LOG.debug("adding {}: {} → {}", name, parent, node);
 
       if (this.graph.containsVertex(parent)) {

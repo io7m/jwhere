@@ -43,7 +43,7 @@ public final class CatalogGenerator implements Generator<Catalog>
   public static CatalogGenerator getDefault()
   {
     return new CatalogGenerator(
-      new IntegerGenerator(0, 8), CatalogDiskGenerator.getDefault());
+      new IntegerGenerator(1, 8), CatalogDiskGenerator.getDefault());
   }
 
   @Override public Catalog next()

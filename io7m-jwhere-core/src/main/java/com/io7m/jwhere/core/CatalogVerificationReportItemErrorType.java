@@ -14,20 +14,26 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.tests.core;
+package com.io7m.jwhere.core;
 
-import java.nio.file.FileSystem;
+import java.nio.file.Path;
 
-public final class CatalogFilesystemReaderDOSTest
-  extends CatalogFilesystemReaderContract
+/**
+ * The type of items that can appear in verification reports that signify
+ * errors.
+ */
+
+public interface CatalogVerificationReportItemErrorType
 {
-  @Override protected FileSystem getFileSystem()
-  {
-    return CatalogTestFilesystems.makeEmptyDOSFilesystem();
-  }
+  /**
+   * @return The path of the file in question
+   */
 
-  @Override protected CatalogFilesystemProfile getFilesystemProfile()
-  {
-    return CatalogFilesystemProfile.PROFILE_WINDOWS;
-  }
+  Path getPath();
+
+  /**
+   * @return A humanly-readable description of the problem
+   */
+
+  String show();
 }

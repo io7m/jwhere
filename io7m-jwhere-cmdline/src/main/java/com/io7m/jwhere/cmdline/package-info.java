@@ -14,20 +14,8 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.tests.core;
+/**
+ * Commane line frontend.
+ */
 
-import java.nio.file.FileSystem;
-
-public final class CatalogFilesystemReaderDOSTest
-  extends CatalogFilesystemReaderContract
-{
-  @Override protected FileSystem getFileSystem()
-  {
-    return CatalogTestFilesystems.makeEmptyDOSFilesystem();
-  }
-
-  @Override protected CatalogFilesystemProfile getFilesystemProfile()
-  {
-    return CatalogFilesystemProfile.PROFILE_WINDOWS;
-  }
-}
+@com.io7m.jnull.NonNullByDefault package com.io7m.jwhere.cmdline;

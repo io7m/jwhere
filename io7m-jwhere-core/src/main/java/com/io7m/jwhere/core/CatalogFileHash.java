@@ -18,15 +18,13 @@ package com.io7m.jwhere.core;
 
 import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
+import net.jcip.annotations.Immutable;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -34,7 +32,7 @@ import java.security.NoSuchAlgorithmException;
  * A hash value.
  */
 
-public final class CatalogFileHash
+@Immutable public final class CatalogFileHash
 {
   private final String algorithm;
   private final String value;
@@ -61,43 +59,56 @@ public final class CatalogFileHash
    *
    * @return A hash value
    *
-   * @throws IOException     On I/O errors
-   * @throws DigestException On message digest errors
+   * @throws IOException On I/O errors
    */
 
   public static CatalogFileHash fromFile(final Path file)
-    throws IOException, DigestException
+    throws IOException
   {
     try {
-      final MessageDigest md = MessageDigest.getInstance("SHA-256");
-      final byte[] data = new byte[8192];
-      final ByteBuffer buffer = ByteBuffer.wrap(data);
-      try (final SeekableByteChannel bc = Files.newByteChannel(
-        file,
-        StandardOpenOption.READ)) {
-        while (true) {
-          final int r = bc.read(buffer);
-          if (r == -1) {
-            break;
-          }
-          md.update(data, 0, r);
-        }
-      }
-
-      final String hex = DatatypeConverter.printHexBinary(md.digest());
-      return new CatalogFileHash("SHA-256", hex);
+      return CatalogFileHash.fromFileWithDigest(
+        MessageDigest.getInstance(
+          "SHA-256"), file);
     } catch (final NoSuchAlgorithmException e) {
       throw new UnreachableCodeException(e);
     }
   }
 
+  /**
+   * Produce a hash from the given file.
+   *
+   * @param file The file
+   * @param md   The message digest
+   *
+   * @return A hash value
+   *
+   * @throws IOException On I/O errors
+   */
+
+  public static CatalogFileHash fromFileWithDigest(
+    final MessageDigest md,
+    final Path file)
+    throws IOException
+  {
+    final byte[] data = new byte[8192];
+
+    try (final InputStream is = Files.newInputStream(file)) {
+      while (true) {
+        final int r = is.read(data);
+        if (r == -1) {
+          break;
+        }
+        md.update(data, 0, r);
+      }
+    }
+
+    final String hex = DatatypeConverter.printHexBinary(md.digest());
+    return new CatalogFileHash(md.getAlgorithm(), hex);
+  }
+
   @Override public String toString()
   {
-    final StringBuilder sb = new StringBuilder("CatalogFileHash{");
-    sb.append("algorithm='").append(this.algorithm).append('\'');
-    sb.append(", value='").append(this.value).append('\'');
-    sb.append('}');
-    return sb.toString();
+    return String.format("%s:%s", this.algorithm, this.value);
   }
 
   @Override public boolean equals(final Object o)

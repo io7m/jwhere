@@ -16,18 +16,8 @@
 
 package com.io7m.jwhere.tests.core;
 
-import java.nio.file.FileSystem;
-
-public final class CatalogFilesystemReaderDOSTest
-  extends CatalogFilesystemReaderContract
+public enum CatalogFilesystemProfile
 {
-  @Override protected FileSystem getFileSystem()
-  {
-    return CatalogTestFilesystems.makeEmptyDOSFilesystem();
-  }
-
-  @Override protected CatalogFilesystemProfile getFilesystemProfile()
-  {
-    return CatalogFilesystemProfile.PROFILE_WINDOWS;
-  }
+  PROFILE_UNIX,
+  PROFILE_WINDOWS
 }
