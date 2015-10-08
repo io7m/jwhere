@@ -13,7 +13,7 @@
   <artifactId>io7m-jwhere-cmdline</artifactId>
 
   <packaging>jar</packaging>
-  <name>io7m-jwhere-core</name>
+  <name>io7m-jwhere-cmdline</name>
   <description>Disk catalog (Command line utility)</description>
   <url>http://io7m.github.io/jwhere/</url>
 
