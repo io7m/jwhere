@@ -48,6 +48,10 @@ final class TasksTab extends JPanel
     super();
     this.controller = NullCheck.notNull(in_controller);
 
+    /**
+     * Task list.
+     */
+
     final JList<CatalogTask> tasks =
       new JList<>(in_controller.catalogGetTasksListModel());
     final JButton cancel = new JButton("Cancel");
@@ -98,7 +102,7 @@ final class TasksTab extends JPanel
 
     final DesignGridLayout dg = new DesignGridLayout(this);
     dg.row().left().add(new JLabel("Running Tasks"));
-    dg.row().center().add(tasks_pane).fill();
+    dg.row().grid().add(tasks_pane);
     dg.row().right().add(cancel);
   }
 }
