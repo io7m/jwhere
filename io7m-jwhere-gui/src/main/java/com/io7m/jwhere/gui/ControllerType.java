@@ -23,6 +23,7 @@ import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.gui.view.UnsavedChangesChoice;
 
+import javax.swing.ListModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 import java.nio.file.Path;
@@ -174,4 +175,9 @@ public interface ControllerType
 
   void catalogSelectRoot();
 
+  /**
+   * @return The task list model
+   */
+
+  ListModel<CatalogTask> catalogGetTasksListModel();
 }

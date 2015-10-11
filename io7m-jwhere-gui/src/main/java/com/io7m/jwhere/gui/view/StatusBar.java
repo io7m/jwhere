@@ -16,6 +16,9 @@
 
 package com.io7m.jwhere.gui.view;
 
+import com.io7m.jnull.NullCheck;
+import com.io7m.jwhere.gui.ControllerType;
+
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,12 +31,15 @@ import java.awt.FlowLayout;
 
 final class StatusBar extends JPanel
 {
-  private final JLabel    text;
-  private final JLabel    error_icon;
-  private final Component padding;
+  private final JLabel         text;
+  private final JLabel         error_icon;
+  private final Component      padding;
+  private final ControllerType controller;
 
-  StatusBar()
+  StatusBar(final ControllerType in_controller)
   {
+    this.controller = NullCheck.notNull(in_controller);
+
     this.setBorder(new LineBorder(this.getBackground(), 1));
     this.setPreferredSize(new Dimension(this.getWidth(), 24));
 
@@ -66,8 +72,11 @@ final class StatusBar extends JPanel
   {
     this.remove(this.error_icon);
     this.remove(this.padding);
+    this.remove(this.text);
 
     this.text.setText(message);
+    this.add(this.text);
+    this.validate();
   }
 
   private void onError(final String message)

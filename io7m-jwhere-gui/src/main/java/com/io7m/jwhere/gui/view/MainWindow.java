@@ -59,6 +59,7 @@ public final class MainWindow extends JFrame
   private final StatusBar      status;
   private final CatalogTab     tab_catalog;
   private final SearchTab      tab_search;
+  private final TasksTab       tab_tasks;
 
   /**
    * Construct the main window.
@@ -76,7 +77,7 @@ public final class MainWindow extends JFrame
      * Create status bar.
      */
 
-    this.status = new StatusBar();
+    this.status = new StatusBar(in_controller);
     final Container pane = this.getContentPane();
     pane.setLayout(new BorderLayout());
     pane.add(this.status, BorderLayout.SOUTH);
@@ -88,8 +89,10 @@ public final class MainWindow extends JFrame
     final JTabbedPane tabs = new JTabbedPane();
     this.tab_catalog = new CatalogTab(this.controller);
     this.tab_search = new SearchTab(this.controller);
+    this.tab_tasks = new TasksTab(this.controller);
     tabs.add("Catalog", this.tab_catalog);
     tabs.add("Search", this.tab_search);
+    tabs.add("Tasks", this.tab_tasks);
     pane.add(tabs, BorderLayout.CENTER);
 
     this.setTitle(this.makeTitle());

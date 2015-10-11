@@ -29,16 +29,21 @@ import com.io7m.jwhere.gui.view.UnsavedChangesChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 import java.io.IOError;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 final class Controller implements ControllerType
 {
@@ -48,13 +53,25 @@ final class Controller implements ControllerType
     LOG = LoggerFactory.getLogger(Controller.class);
   }
 
-  private final Model           model;
-  private final ExecutorService exec;
+  private final Model                         model;
+  private final ExecutorService               exec;
+  private final Map<Long, CatalogTask>        tasks;
+  private final AtomicLong                    task_ids;
+  private final DefaultListModel<CatalogTask> tasks_list_model;
 
   private Controller(final Model in_model)
   {
     this.model = NullCheck.notNull(in_model);
-    this.exec = Executors.newSingleThreadExecutor();
+    this.exec = Executors.newSingleThreadExecutor(
+      r -> {
+        final Thread thread = new Thread(r);
+        thread.setName("controller-task");
+        thread.setPriority(Thread.MIN_PRIORITY);
+        return thread;
+      });
+    this.tasks = new LinkedHashMap<>(8);
+    this.task_ids = new AtomicLong(0L);
+    this.tasks_list_model = new DefaultListModel<>();
   }
 
   public static ControllerType newController(final Model model)
@@ -99,20 +116,21 @@ final class Controller implements ControllerType
     if (!cancel) {
       final Optional<Path> open_file = on_open_file.call(Unit.unit());
       if (open_file.isPresent()) {
-        CompletableFuture.supplyAsync(
-          () -> {
-            try {
-              on_start_io.run();
-              if (save_file_last.isPresent()) {
-                this.model.catalogSave(save_file_last.get());
+        this.taskSubmit(
+          "Open catalog", CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                on_start_io.run();
+                if (save_file_last.isPresent()) {
+                  this.model.catalogSave(save_file_last.get());
+                }
+                this.model.catalogOpen(open_file.get());
+                return Unit.unit();
+              } catch (IOException | CatalogException e) {
+                throw new IOError(e);
               }
-              this.model.catalogOpen(open_file.get());
-              return Unit.unit();
-            } catch (IOException | CatalogException e) {
-              throw new IOError(e);
-            }
-          }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex)));
+            }, this.exec).whenComplete(
+            (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
       } else {
         Controller.LOG.debug("cancelled open explicitly");
       }
@@ -204,20 +222,21 @@ final class Controller implements ControllerType
 
     final Optional<Path> save_file_opt = save_file;
     if (!cancel) {
-      CompletableFuture.supplyAsync(
-        () -> {
-          try {
-            on_start_io.run();
-            if (save_file_opt.isPresent()) {
-              this.model.catalogSave(save_file_opt.get());
+      this.taskSubmit(
+        "Close catalog", CompletableFuture.supplyAsync(
+          () -> {
+            try {
+              on_start_io.run();
+              if (save_file_opt.isPresent()) {
+                this.model.catalogSave(save_file_opt.get());
+              }
+              this.model.catalogClose();
+              return Unit.unit();
+            } catch (IOException e) {
+              throw new IOError(e);
             }
-            this.model.catalogClose();
-            return Unit.unit();
-          } catch (IOException e) {
-            throw new IOError(e);
-          }
-        }, this.exec).whenComplete(
-        (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex)));
+          }, this.exec).whenComplete(
+          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
     } else {
       Controller.LOG.debug("aborting close");
     }
@@ -236,19 +255,20 @@ final class Controller implements ControllerType
   {
     try {
       final Optional<Path> save_file = this.getSaveFile(on_want_save_file);
-      CompletableFuture.supplyAsync(
-        () -> {
-          try {
-            on_start_io.run();
-            if (save_file.isPresent()) {
-              this.model.catalogSave(save_file.get());
+      this.taskSubmit(
+        "Save catalog", CompletableFuture.supplyAsync(
+          () -> {
+            try {
+              on_start_io.run();
+              if (save_file.isPresent()) {
+                this.model.catalogSave(save_file.get());
+              }
+              return Unit.unit();
+            } catch (IOException e) {
+              throw new IOError(e);
             }
-            return Unit.unit();
-          } catch (IOException e) {
-            throw new IOError(e);
-          }
-        }, this.exec).whenComplete(
-        (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex)));
+          }, this.exec).whenComplete(
+          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
     } catch (final CancellationException ex) {
       Controller.LOG.debug("aborting save");
     }
@@ -262,17 +282,18 @@ final class Controller implements ControllerType
     try {
       final Optional<Path> save_file = on_want_save_file.call(Unit.unit());
       if (save_file.isPresent()) {
-        CompletableFuture.supplyAsync(
-          () -> {
-            try {
-              on_start_io.run();
-              this.model.catalogSave(save_file.get());
-              return Unit.unit();
-            } catch (IOException e) {
-              throw new IOError(e);
-            }
-          }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex)));
+        this.taskSubmit(
+          "Save catalog", CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                on_start_io.run();
+                this.model.catalogSave(save_file.get());
+                return Unit.unit();
+              } catch (IOException e) {
+                throw new IOError(e);
+              }
+            }, this.exec).whenComplete(
+            (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
       }
     } catch (final CancellationException ex) {
       Controller.LOG.debug("aborting save");
@@ -299,5 +320,39 @@ final class Controller implements ControllerType
   @Override public void catalogSelectRoot()
   {
     this.model.selectRoot();
+  }
+
+  @Override public ListModel<CatalogTask> catalogGetTasksListModel()
+  {
+    return this.tasks_list_model;
+  }
+
+  private Long taskSubmit(
+    final String name,
+    final CompletableFuture<?> f)
+  {
+    synchronized (this.tasks) {
+      final long id = this.task_ids.incrementAndGet();
+      final CatalogTask task = new CatalogTask(f, Long.valueOf(id), name);
+      final Long xid = Long.valueOf(id);
+      Controller.LOG.debug("submitted task {}: {}", xid, name);
+      this.tasks.put(xid, task);
+      this.tasks_list_model.addElement(task);
+      f.whenComplete((x, ex) -> this.taskFinish(xid));
+      return xid;
+    }
+  }
+
+  private void taskFinish(final Long xid)
+  {
+    synchronized (this.tasks) {
+      final CatalogTask r = this.tasks.remove(xid);
+      if (r != null) {
+        Controller.LOG.debug("removed task: {}", r);
+        this.tasks_list_model.removeElement(r);
+      } else {
+        Controller.LOG.debug("failed to remove nonexistent task: {}", xid);
+      }
+    }
   }
 }
