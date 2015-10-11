@@ -20,6 +20,10 @@ import com.io7m.jnull.NullCheck;
 
 import java.util.concurrent.Future;
 
+/**
+ * The type of cancellable catalog tasks.
+ */
+
 public final class CatalogTask
 {
   private final Long      id;
@@ -36,15 +40,27 @@ public final class CatalogTask
     this.name = NullCheck.notNull(in_name);
   }
 
+  /**
+   * @return The future representing the task in progress
+   */
+
   public Future<?> getFuture()
   {
     return this.future;
   }
 
+  /**
+   * @return The ID of the task
+   */
+
   public Long getID()
   {
     return this.id;
   }
+
+  /**
+   * @return The name of the task
+   */
 
   public String getName()
   {
