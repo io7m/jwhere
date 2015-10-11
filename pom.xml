@@ -19,6 +19,7 @@
     <module>io7m-jwhere-cmdline</module>
     <module>io7m-jwhere-core</module>
     <module>io7m-jwhere-documentation</module>
+    <module>io7m-jwhere-gui</module>
     <module>io7m-jwhere-gwhere</module>
   </modules>
 
@@ -128,6 +129,11 @@
         <groupId>io.airlift</groupId>
         <artifactId>airline</artifactId>
         <version>0.7</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.designgridlayout</groupId>
+        <artifactId>designgridlayout</artifactId>
+        <version>1.11</version>
       </dependency>
 
       <dependency>

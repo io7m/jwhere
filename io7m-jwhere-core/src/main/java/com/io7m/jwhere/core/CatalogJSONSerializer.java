@@ -17,6 +17,7 @@
 package com.io7m.jwhere.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,7 +25,8 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.jgrapht.graph.UnmodifiableGraph;
 
-import java.math.BigInteger;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.Iterator;
@@ -152,6 +154,19 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     return new CatalogJSONSerializer();
   }
 
+  @Override public void serializeCatalogToStream(
+    final Catalog c,
+    final OutputStream os)
+    throws IOException
+  {
+    NullCheck.notNull(c);
+    NullCheck.notNull(os);
+
+    final ObjectMapper jom = new ObjectMapper();
+    final ObjectWriter jw = jom.writerWithDefaultPrettyPrinter();
+    jw.writeValue(os, this.serializeCatalog(c));
+  }
+
   @Override public ObjectNode serializeCatalog(final Catalog c)
   {
     NullCheck.notNull(c);
@@ -162,8 +177,8 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     jd.put("type", "catalog");
 
     final ArrayNode jda = jom.createArrayNode();
-    final SortedMap<BigInteger, CatalogDisk> disks = c.getDisks();
-    final Iterator<BigInteger> iter = disks.keySet().iterator();
+    final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+    final Iterator<CatalogDiskID> iter = disks.keySet().iterator();
     while (iter.hasNext()) {
       final CatalogDisk disk = disks.get(iter.next());
       jda.add(this.serializeDisk(disk));
@@ -184,10 +199,13 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
       jom, d.getFilesystemGraph(), d.getFilesystemRoot(), "/");
 
     jd.put("type", "disk");
-    jd.put("disk-name", d.getDiskName());
-    jd.set("disk-size", new BigIntegerNode(d.getDiskSize()));
-    jd.set("disk-archive-number", new BigIntegerNode(d.getArchiveIndex()));
-    jd.put("disk-filesystem-type", d.getFilesystemType());
+
+    final CatalogDiskMetadata meta = d.getMeta();
+
+    jd.put("disk-name", meta.getDiskName().getValue());
+    jd.set("disk-size", new BigIntegerNode(meta.getSize()));
+    jd.set("disk-id", new BigIntegerNode(meta.getDiskID().getValue()));
+    jd.put("disk-filesystem-type", meta.getFilesystemType());
     jd.set("disk-filesystem-root", jfs);
 
     return jd;

@@ -18,7 +18,6 @@ package com.io7m.jwhere.core;
 
 import com.io7m.jnull.NullCheck;
 
-import java.math.BigInteger;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -28,7 +27,7 @@ import java.util.TreeMap;
 
 public final class Catalog
 {
-  private final SortedMap<BigInteger, CatalogDisk> disks;
+  private final SortedMap<CatalogDiskID, CatalogDisk> disks;
 
   /**
    * Construct a catalog.
@@ -36,7 +35,7 @@ public final class Catalog
    * @param in_disks The disks, by archive index
    */
 
-  public Catalog(final SortedMap<BigInteger, CatalogDisk> in_disks)
+  public Catalog(final SortedMap<CatalogDiskID, CatalogDisk> in_disks)
   {
     this.disks = NullCheck.notNull(in_disks);
   }
@@ -85,7 +84,7 @@ public final class Catalog
    * @return The set of disks in the catalog
    */
 
-  public SortedMap<BigInteger, CatalogDisk> getDisks()
+  public SortedMap<CatalogDiskID, CatalogDisk> getDisks()
   {
     return this.disks;
   }

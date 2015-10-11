@@ -20,6 +20,8 @@ import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskBuilderType;
+import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogNodeDuplicateDirectoryEntryException;
 import com.io7m.jwhere.core.CatalogNodeDuplicateException;
@@ -53,7 +55,11 @@ public final class CatalogDiskTest
     final CatalogDirectoryNode root = this.getRoot(c);
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
-      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+      root,
+      new CatalogDiskName("example"),
+      "iso9660",
+      new CatalogDiskID(BigInteger.ZERO),
+      BigInteger.ONE);
 
     final CatalogDisk cd = db.build();
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
@@ -82,7 +88,11 @@ public final class CatalogDiskTest
     final CatalogDirectoryNode root = this.getRoot(c);
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
-      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+      root,
+      new CatalogDiskName("example"),
+      "iso9660",
+      new CatalogDiskID(BigInteger.ZERO),
+      BigInteger.ONE);
 
     db.build();
 
@@ -121,7 +131,11 @@ public final class CatalogDiskTest
       Optional.empty());
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
-      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+      root,
+      new CatalogDiskName("example"),
+      "iso9660",
+      new CatalogDiskID(BigInteger.ZERO),
+      BigInteger.ONE);
 
     db.addNode(root, "file0.txt", file0);
 
@@ -146,7 +160,11 @@ public final class CatalogDiskTest
       c.instant());
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
-      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+      root,
+      new CatalogDiskName("example"),
+      "iso9660",
+      new CatalogDiskID(BigInteger.ZERO),
+      BigInteger.ONE);
 
     db.addNode(root, "d0", d0);
 
@@ -180,7 +198,11 @@ public final class CatalogDiskTest
       c.instant());
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
-      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+      root,
+      new CatalogDiskName("example"),
+      "iso9660",
+      new CatalogDiskID(BigInteger.ZERO),
+      BigInteger.ONE);
 
     db.addNode(root, "d0", d0);
 
@@ -207,7 +229,11 @@ public final class CatalogDiskTest
       c.instant());
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
-      root, "example", "iso9660", BigInteger.ZERO, BigInteger.ONE);
+      root,
+      new CatalogDiskName("example"),
+      "iso9660",
+      new CatalogDiskID(BigInteger.ZERO),
+      BigInteger.ONE);
     final CatalogDisk d = db.build();
 
     final Optional<CatalogNodeType> r_opt =

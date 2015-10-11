@@ -19,11 +19,12 @@ package com.io7m.jwhere.tests.core;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
+import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.generator.support.IntegerGenerator;
 import org.valid4j.Assertive;
 
-import java.math.BigInteger;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -48,12 +49,13 @@ public final class CatalogGenerator implements Generator<Catalog>
 
   @Override public Catalog next()
   {
-    final SortedMap<BigInteger, CatalogDisk> disks = new TreeMap<>();
+    final SortedMap<CatalogDiskID, CatalogDisk> disks = new TreeMap<>();
 
     final int count = this.count_gen.next().intValue();
     for (int index = 0; index < count; ++index) {
       final CatalogDisk d = this.disk_gen.next();
-      final BigInteger disk_index = d.getArchiveIndex();
+      final CatalogDiskMetadata meta = d.getMeta();
+      final CatalogDiskID disk_index = meta.getDiskID();
       Assertive.require(disks.containsKey(disk_index) == false);
       disks.put(disk_index, d);
     }

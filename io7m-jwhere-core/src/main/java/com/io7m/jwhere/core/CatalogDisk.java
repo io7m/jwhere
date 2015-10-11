@@ -50,27 +50,16 @@ import java.util.stream.Stream;
 
   private final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph;
   private final CatalogDirectoryNode                                      root;
-  private final String
-                                                                          disk_name;
-  private final String
-                                                                          fs_type;
-  private final BigInteger                                                index;
-  private final BigInteger                                                size;
+  private final CatalogDiskMetadata                                       meta;
 
   private CatalogDisk(
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> in_g,
     final CatalogDirectoryNode in_root,
-    final String in_disk_name,
-    final String in_filesystem_type,
-    final BigInteger in_index,
-    final BigInteger in_size)
+    final CatalogDiskMetadata in_meta)
   {
     this.graph = NullCheck.notNull(in_g);
     this.root = NullCheck.notNull(in_root);
-    this.disk_name = NullCheck.notNull(in_disk_name);
-    this.fs_type = NullCheck.notNull(in_filesystem_type);
-    this.index = NullCheck.notNull(in_index);
-    this.size = NullCheck.notNull(in_size);
+    this.meta = NullCheck.notNull(in_meta);
 
     Assertive.require(
       this.graph.containsVertex(this.root),
@@ -105,12 +94,7 @@ import java.util.stream.Stream;
       d_root.getModificationTime());
 
     return new CatalogDisk(
-      d.getFilesystemGraph(),
-      in_root,
-      d.getDiskName(),
-      d.getFilesystemType(),
-      d.getArchiveIndex(),
-      d.getDiskSize());
+      d.getFilesystemGraph(), in_root, d.getMeta());
   }
 
   /**
@@ -119,7 +103,7 @@ import java.util.stream.Stream;
    * @param in_root            The root directory
    * @param in_disk_name       The name of the disk
    * @param in_filesystem_type The name of the filesystem type
-   * @param in_index           The disk archive number
+   * @param in_index           The disk ID
    * @param in_size            The size of the disk in bytes
    *
    * @return A new mutable disk builder
@@ -127,9 +111,9 @@ import java.util.stream.Stream;
 
   public static CatalogDiskBuilderType newDiskBuilder(
     final CatalogDirectoryNode in_root,
-    final String in_disk_name,
+    final CatalogDiskName in_disk_name,
     final String in_filesystem_type,
-    final BigInteger in_index,
+    final CatalogDiskID in_index,
     final BigInteger in_size)
   {
     return new Builder(
@@ -176,6 +160,49 @@ import java.util.stream.Stream;
     return Optional.empty();
   }
 
+  @Override public String toString()
+  {
+    final StringBuilder sb = new StringBuilder("CatalogDisk{");
+    sb.append("graph=").append(this.graph);
+    sb.append(", root=").append(this.root);
+    sb.append(", meta=").append(this.meta);
+    sb.append('}');
+    return sb.toString();
+  }
+
+  @Override public boolean equals(final Object o)
+  {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || this.getClass() != o.getClass()) {
+      return false;
+    }
+
+    final CatalogDisk that = (CatalogDisk) o;
+
+    return this.graph.equals(that.graph)
+           && this.root.equals(that.root)
+           && this.getMeta().equals(that.getMeta());
+  }
+
+  @Override public int hashCode()
+  {
+    int result = this.graph.hashCode();
+    result = 31 * result + this.root.hashCode();
+    result = 31 * result + this.getMeta().hashCode();
+    return result;
+  }
+
+  /**
+   * @return The disk metadata
+   */
+
+  public CatalogDiskMetadata getMeta()
+  {
+    return this.meta;
+  }
+
   /**
    * Construct the path from the root of the disk to the given node.
    *
@@ -201,55 +228,6 @@ import java.util.stream.Stream;
     } else {
       throw new NoSuchElementException();
     }
-  }
-
-  @Override public String toString()
-  {
-    final StringBuilder sb = new StringBuilder("CatalogDisk{");
-    sb.append("disk_name='").append(this.disk_name).append('\'');
-    sb.append(", graph=").append(this.graph);
-    sb.append(", root=").append(this.root);
-    sb.append(", fs_type='").append(this.fs_type).append('\'');
-    sb.append(", index=").append(this.index);
-    sb.append(", size=").append(this.size);
-    sb.append('}');
-    return sb.toString();
-  }
-
-  /**
-   * @return The name of the disk
-   */
-
-  public String getDiskName()
-  {
-    return this.disk_name;
-  }
-
-  /**
-   * @return The name of the filesystem type
-   */
-
-  public String getFilesystemType()
-  {
-    return this.fs_type;
-  }
-
-  /**
-   * @return The archive number of the disk
-   */
-
-  public BigInteger getArchiveIndex()
-  {
-    return this.index;
-  }
-
-  /**
-   * @return The size of the disk
-   */
-
-  public BigInteger getDiskSize()
-  {
-    return this.size;
   }
 
   /**
@@ -290,52 +268,23 @@ import java.util.stream.Stream;
     return CatalogDisk.getNodeForPathIterator(this.graph, this.root, iter);
   }
 
-  @Override public boolean equals(final Object o)
-  {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || this.getClass() != o.getClass()) {
-      return false;
-    }
-
-    final CatalogDisk that = (CatalogDisk) o;
-    return this.graph.equals(that.graph)
-           && this.root.equals(that.root)
-           && this.disk_name.equals(that.disk_name)
-           && this.fs_type.equals(that.fs_type)
-           && this.index.equals(that.index)
-           && this.size.equals(that.size);
-  }
-
-  @Override public int hashCode()
-  {
-    int result = this.graph.hashCode();
-    result = 31 * result + this.root.hashCode();
-    result = 31 * result + this.disk_name.hashCode();
-    result = 31 * result + this.fs_type.hashCode();
-    result = 31 * result + this.index.hashCode();
-    result = 31 * result + this.size.hashCode();
-    return result;
-  }
-
   private static final class Builder implements CatalogDiskBuilderType
   {
     private final DirectedGraph<CatalogNodeType, CatalogDirectoryEntry> graph;
     private final CatalogDirectoryNode                                  root;
     private final String                                                type;
-    private final BigInteger                                            index;
+    private final CatalogDiskID                                         index;
     private final BigInteger                                            size;
-    private final String
+    private final CatalogDiskName
                                                                         disk_name;
     private       boolean
                                                                         finished;
 
     private Builder(
       final CatalogDirectoryNode in_root,
-      final String in_name,
+      final CatalogDiskName in_name,
       final String in_filesystem_type,
-      final BigInteger in_index,
+      final CatalogDiskID in_index,
       final BigInteger in_size)
     {
       this.disk_name = NullCheck.notNull(in_name);
@@ -416,10 +365,8 @@ import java.util.stream.Stream;
         return new CatalogDisk(
           new UnmodifiableGraph<>(this.graph),
           this.root,
-          this.disk_name,
-          this.type,
-          this.index,
-          this.size);
+          new CatalogDiskMetadata(
+            this.disk_name, this.type, this.index, this.size));
       } finally {
         this.finished = true;
       }

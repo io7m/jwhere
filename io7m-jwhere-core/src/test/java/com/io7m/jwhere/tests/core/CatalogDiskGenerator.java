@@ -21,6 +21,8 @@ import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskBuilderType;
+import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogNodeException;
 import com.io7m.jwhere.core.CatalogNodeType;
 import net.java.quickcheck.Generator;
@@ -68,9 +70,10 @@ public final class CatalogDiskGenerator implements Generator<CatalogDisk>
 
   @Override public CatalogDisk next()
   {
-    final BigInteger index = this.long_gen.next();
+    final CatalogDiskID index = new CatalogDiskID(this.long_gen.next());
     final BigInteger size = this.long_gen.next();
-    final String disk_name = this.string_gen.next();
+    final CatalogDiskName disk_name =
+      new CatalogDiskName(this.string_gen.next());
     final String fs_type = this.string_gen.next();
     final CatalogDirectoryNode root = this.dir_gen.next();
 

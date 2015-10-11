@@ -19,6 +19,7 @@ package com.io7m.jwhere.cmdline;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
 import com.io7m.jwhere.core.CatalogJSONParseException;
@@ -71,12 +72,12 @@ public final class CommandVerifyDisk extends CommandBase
           required = true) private String root;
 
   /**
-   * The archive number of the disk to be verified.
+   * The ID of the disk to be verified.
    */
 
-  @Option(name = "--disk-index",
+  @Option(name = "--disk-id",
           arity = 1,
-          description = "The archive number of the disk",
+          description = "The ID of the disk",
           required = true) private BigInteger disk_index;
 
   /**
@@ -110,12 +111,13 @@ public final class CommandVerifyDisk extends CommandBase
 
       CommandVerifyDisk.LOG.debug("Opening {}", catalog_in_path);
       final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final SortedMap<BigInteger, CatalogDisk> disks = c.getDisks();
-      if (!disks.containsKey(this.disk_index)) {
+      final CatalogDiskID id = new CatalogDiskID(this.disk_index);
+      final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+      if (!disks.containsKey(id)) {
         throw new NoSuchElementException(this.disk_index.toString());
       }
 
-      final CatalogDisk disk = disks.get(this.disk_index);
+      final CatalogDisk disk = disks.get(id);
       final CatalogVerificationReport.Settings settings =
         new CatalogVerificationReport.Settings(
           CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);

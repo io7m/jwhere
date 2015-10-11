@@ -18,12 +18,29 @@ package com.io7m.jwhere.core;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * The type of JSON serializers.
  */
 
 public interface CatalogJSONSerializerType
 {
+  /**
+   * Serialize the catalog to the given stream.
+   *
+   * @param c  The catalog
+   * @param os The output stream
+   *
+   * @throws IOException On I/O errors
+   */
+
+  void serializeCatalogToStream(
+    Catalog c,
+    OutputStream os)
+    throws IOException;
+
   /**
    * Serialize the given catalog to JSON.
    *

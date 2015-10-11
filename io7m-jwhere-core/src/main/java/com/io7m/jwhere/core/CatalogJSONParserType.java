@@ -18,12 +18,36 @@ package com.io7m.jwhere.core;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * The type of JSON parsers.
  */
 
 public interface CatalogJSONParserType
 {
+  /**
+   * Parse a catalog from the given JSON node.
+   *
+   * @param is An input stream
+   *
+   * @return A catalog
+   *
+   * @throws CatalogJSONParseException          On parsing or validation errors
+   * @throws CatalogNodeException               On malformed disk errors
+   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   *                                            same ID
+   * @throws IOException                        On I/O errors
+   */
+
+  Catalog parseCatalogFromStream(InputStream is)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException,
+    IOException;
+
   /**
    * Parse a catalog from the given JSON node.
    *
@@ -34,7 +58,7 @@ public interface CatalogJSONParserType
    * @throws CatalogJSONParseException          On parsing or validation errors
    * @throws CatalogNodeException               On malformed disk errors
    * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
-   *                                            same archive number
+   *                                            same ID
    */
 
   Catalog parseCatalog(ObjectNode c)

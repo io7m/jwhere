@@ -24,6 +24,8 @@ import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskBuilderType;
+import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogNodeException;
 import com.io7m.jwhere.core.CatalogNodeType;
@@ -92,8 +94,8 @@ public final class GWhereParser implements GWhereParserType
     final String[] header_segments = header_line.split(":");
 
     final String disk_name = NullCheck.notNull(header_segments[0]);
-    final BigInteger disk_index = new BigInteger(
-      NullCheck.notNull(header_segments[1]));
+    final CatalogDiskID disk_index =
+      new CatalogDiskID(new BigInteger(NullCheck.notNull(header_segments[1])));
     final String disk_type = NullCheck.notNull(header_segments[4]);
     final BigInteger disk_size =
       new BigInteger(NullCheck.notNull(header_segments[6]));
@@ -116,7 +118,11 @@ public final class GWhereParser implements GWhereParserType
     }
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
-      root_node, disk_name, disk_type, disk_index, disk_size);
+      root_node,
+      new CatalogDiskName(disk_name),
+      disk_type,
+      disk_index,
+      disk_size);
 
     this.parseDirectory(db, root_node);
     return db.build();

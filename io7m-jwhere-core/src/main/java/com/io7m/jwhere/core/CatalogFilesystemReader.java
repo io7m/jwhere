@@ -73,7 +73,7 @@ public final class CatalogFilesystemReader
    * represent a single mounted filesystem.
    *
    * @param disk_name The disk name
-   * @param index     The disk archive number
+   * @param index     The disk ID
    * @param root      The root directory
    *
    * @return A new disk
@@ -83,8 +83,8 @@ public final class CatalogFilesystemReader
    */
 
   public static CatalogDisk newDisk(
-    final String disk_name,
-    final BigInteger index,
+    final CatalogDiskName disk_name,
+    final CatalogDiskID index,
     final Path root)
     throws IOException, CatalogException
   {
@@ -222,10 +222,11 @@ public final class CatalogFilesystemReader
     NullCheck.notNull(settings);
     NullCheck.notNull(root);
 
+    final CatalogDiskMetadata meta = d.getMeta();
     CatalogFilesystemReader.LOG.debug(
       "verifying disk \"{}\" index {} for root {}",
-      d.getDiskName(),
-      d.getArchiveIndex(),
+      meta.getDiskName(),
+      meta.getDiskID(),
       root);
 
     final CatalogVerificationReportBuilderType rb =

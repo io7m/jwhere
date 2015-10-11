@@ -17,9 +17,13 @@
 package com.io7m.jwhere.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.io7m.jnull.NullCheck;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -149,15 +153,32 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     return new CatalogJSONParser();
   }
 
+  @Override public Catalog parseCatalogFromStream(final InputStream is)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException,
+    IOException
+  {
+    NullCheck.notNull(is);
+
+    final ObjectMapper jom = new ObjectMapper();
+    final JsonNode node = jom.readTree(is);
+    return this.parseCatalog(
+      CatalogJSONParserUtilities.checkObject(null, node));
+  }
+
   @Override public Catalog parseCatalog(final ObjectNode c)
     throws
     CatalogJSONParseException,
     CatalogNodeException,
     CatalogDiskDuplicateIndexException
   {
+    NullCheck.notNull(c);
+
     CatalogJSONParserUtilities.getStringWithValue(c, "type", "catalog");
 
-    final SortedMap<BigInteger, CatalogDisk> disks = new TreeMap<>();
+    final SortedMap<CatalogDiskID, CatalogDisk> disks = new TreeMap<>();
 
     final ArrayNode jdisks =
       CatalogJSONParserUtilities.getArray(c, "catalog-disks");
@@ -166,10 +187,11 @@ public final class CatalogJSONParser implements CatalogJSONParserType
       final ObjectNode jd =
         CatalogJSONParserUtilities.checkObject(null, jdisks.get(index));
       final CatalogDisk disk = this.parseDisk(jd);
-      final BigInteger disk_index = disk.getArchiveIndex();
+      final CatalogDiskMetadata meta = disk.getMeta();
+      final CatalogDiskID disk_index = meta.getDiskID();
       if (disks.containsKey(disk_index)) {
         final StringBuilder sb = new StringBuilder(128);
-        sb.append("Multiple disks with the same archive number.");
+        sb.append("Multiple disks with the same ID.");
         sb.append(System.lineSeparator());
         sb.append("  Duplicate number: ");
         sb.append(disk_index);
@@ -184,13 +206,16 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public CatalogDisk parseDisk(final ObjectNode c)
     throws CatalogJSONParseException, CatalogNodeException
   {
+    NullCheck.notNull(c);
+
     CatalogJSONParserUtilities.getStringWithValue(c, "type", "disk");
 
-    final String name = CatalogJSONParserUtilities.getString(c, "disk-name");
+    final CatalogDiskName name =
+      new CatalogDiskName(CatalogJSONParserUtilities.getString(c, "disk-name"));
     final BigInteger size =
       CatalogJSONParserUtilities.getBigInteger(c, "disk-size");
-    final BigInteger index =
-      CatalogJSONParserUtilities.getBigInteger(c, "disk-archive-number");
+    final CatalogDiskID index = new CatalogDiskID(
+      CatalogJSONParserUtilities.getBigInteger(c, "disk-id"));
     final String fs_type =
       CatalogJSONParserUtilities.getString(c, "disk-filesystem-type");
 

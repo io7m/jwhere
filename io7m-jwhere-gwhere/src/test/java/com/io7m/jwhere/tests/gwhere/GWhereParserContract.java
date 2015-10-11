@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
+import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
+import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
@@ -163,10 +166,12 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final P p = this.getParser("one.ctg");
     final CatalogDisk d = p.parseDisk();
 
-    Assert.assertEquals("soma", d.getDiskName());
-    Assert.assertEquals("iso9660", d.getFilesystemType());
-    Assert.assertEquals(BigInteger.valueOf(25L), d.getArchiveIndex());
-    Assert.assertEquals(BigInteger.valueOf(4386893824L), d.getDiskSize());
+    final CatalogDiskMetadata meta = d.getMeta();
+    Assert.assertEquals(new CatalogDiskName("soma"), meta.getDiskName());
+    Assert.assertEquals("iso9660", meta.getFilesystemType());
+    Assert.assertEquals(
+      new CatalogDiskID(BigInteger.valueOf(25L)), meta.getDiskID());
+    Assert.assertEquals(BigInteger.valueOf(4386893824L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());
@@ -197,10 +202,12 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final P p = this.getParser("real-0.ctg");
     final CatalogDisk d = p.parseDisk();
 
-    Assert.assertEquals("data2", d.getDiskName());
-    Assert.assertEquals("iso9660", d.getFilesystemType());
-    Assert.assertEquals(BigInteger.valueOf(179L), d.getArchiveIndex());
-    Assert.assertEquals(BigInteger.valueOf(4411650048L), d.getDiskSize());
+    final CatalogDiskMetadata meta = d.getMeta();
+    Assert.assertEquals(new CatalogDiskName("data2"), meta.getDiskName());
+    Assert.assertEquals("iso9660", meta.getFilesystemType());
+    Assert.assertEquals(
+      new CatalogDiskID(BigInteger.valueOf(179L)), meta.getDiskID());
+    Assert.assertEquals(BigInteger.valueOf(4411650048L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());
@@ -243,10 +250,12 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final P p = this.getParser("real-1.ctg");
     final CatalogDisk d = p.parseDisk();
 
-    Assert.assertEquals("archite_2", d.getDiskName());
-    Assert.assertEquals("iso9660", d.getFilesystemType());
-    Assert.assertEquals(BigInteger.valueOf(174L), d.getArchiveIndex());
-    Assert.assertEquals(BigInteger.valueOf(4681787392L), d.getDiskSize());
+    final CatalogDiskMetadata meta = d.getMeta();
+    Assert.assertEquals(new CatalogDiskName("archite_2"), meta.getDiskName());
+    Assert.assertEquals("iso9660", meta.getFilesystemType());
+    Assert.assertEquals(
+      new CatalogDiskID(BigInteger.valueOf(174L)), meta.getDiskID());
+    Assert.assertEquals(BigInteger.valueOf(4681787392L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());
@@ -324,10 +333,12 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final P p = this.getParser("real-2.ctg");
     final CatalogDisk d = p.parseDisk();
 
-    Assert.assertEquals("dk", d.getDiskName());
-    Assert.assertEquals("iso9660", d.getFilesystemType());
-    Assert.assertEquals(BigInteger.valueOf(10L), d.getArchiveIndex());
-    Assert.assertEquals(BigInteger.valueOf(10000L), d.getDiskSize());
+    final CatalogDiskMetadata meta = d.getMeta();
+    Assert.assertEquals(new CatalogDiskName("dk"), meta.getDiskName());
+    Assert.assertEquals("iso9660", meta.getFilesystemType());
+    Assert.assertEquals(
+      new CatalogDiskID(BigInteger.valueOf(10L)), meta.getDiskID());
+    Assert.assertEquals(BigInteger.valueOf(10000L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.getOwner());

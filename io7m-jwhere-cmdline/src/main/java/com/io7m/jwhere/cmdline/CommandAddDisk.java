@@ -19,6 +19,9 @@ package com.io7m.jwhere.cmdline;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
+import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
 import com.io7m.jwhere.core.CatalogJSONParseException;
@@ -87,12 +90,12 @@ public final class CommandAddDisk extends CommandBase
           required = true) private String disk_name;
 
   /**
-   * The archive number of the disk to be created.
+   * The ID of the disk to be created.
    */
 
-  @Option(name = "--disk-index",
+  @Option(name = "--disk-id",
           arity = 1,
-          description = "The archive number of the disk",
+          description = "The ID of the disk",
           required = true) private BigInteger disk_index;
 
   /**
@@ -122,16 +125,19 @@ public final class CommandAddDisk extends CommandBase
 
       CommandAddDisk.LOG.debug("Opening {}", catalog_in_path);
       final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final SortedMap<BigInteger, CatalogDisk> disks = c.getDisks();
-      if (disks.containsKey(this.disk_index)) {
+      final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+      final CatalogDiskID id = new CatalogDiskID(this.disk_index);
+      if (disks.containsKey(id)) {
         throw new CatalogDiskDuplicateIndexException(
           String.format(
-            "Catalog already contains a disk with index %s", this.disk_index));
+            "Catalog already contains a disk with index %s", id));
       }
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        this.disk_name, this.disk_index, root_path);
-      disks.put(disk.getArchiveIndex(), disk);
+        new CatalogDiskName(this.disk_name), id, root_path);
+      final CatalogDiskMetadata meta = disk.getMeta();
+
+      disks.put(meta.getDiskID(), disk);
       CommandBase.writeCatalogToDisk(c, catalog_out_path);
 
     } catch (final CatalogNodeException | CatalogDiskDuplicateIndexException

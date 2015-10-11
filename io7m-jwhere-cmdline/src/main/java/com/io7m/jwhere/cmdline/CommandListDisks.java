@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParser;
 import com.io7m.jwhere.core.CatalogJSONParserType;
@@ -31,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.SortedMap;
@@ -79,18 +80,19 @@ public final class CommandListDisks extends CommandBase
       CommandListDisks.LOG.debug("Opening {}", file);
 
       final Catalog c = CommandBase.openCatalogForReading(p, file);
-      final SortedMap<BigInteger, CatalogDisk> dm = c.getDisks();
-      final Iterator<BigInteger> iter = dm.keySet().iterator();
+      final SortedMap<CatalogDiskID, CatalogDisk> dm = c.getDisks();
+      final Iterator<CatalogDiskID> iter = dm.keySet().iterator();
       while (iter.hasNext()) {
-        final BigInteger index = iter.next();
+        final CatalogDiskID index = iter.next();
         final CatalogDisk disk = dm.get(index);
+        final CatalogDiskMetadata meta = disk.getMeta();
 
         System.out.printf(
           "[%s] %-32s %s %s\n",
           index,
-          disk.getDiskName(),
-          disk.getDiskSize(),
-          disk.getFilesystemType());
+          meta.getDiskName(),
+          meta.getSize(),
+          meta.getFilesystemType());
       }
 
     } catch (final CatalogNodeException | CatalogDiskDuplicateIndexException
