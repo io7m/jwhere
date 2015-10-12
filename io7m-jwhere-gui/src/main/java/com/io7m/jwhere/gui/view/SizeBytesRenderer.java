@@ -30,7 +30,7 @@ final class SizeBytesRenderer extends DefaultTableCellRenderer
   public static final BigDecimal BYTE_MEGABYTE_DIVISOR;
 
   static {
-    BYTE_MEGABYTE_DIVISOR = BigDecimal.valueOf(1_000_000L);
+    BYTE_MEGABYTE_DIVISOR = BigDecimal.valueOf(10000L);
   }
 
   SizeBytesRenderer()
