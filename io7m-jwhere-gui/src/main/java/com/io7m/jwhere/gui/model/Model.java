@@ -89,9 +89,13 @@ public final class Model
       this.state_history::peek, tm, dtm);
     this.catalog_tree_model = new CatalogTreeModel();
 
+    // Checkstyle is currently choking on these definitions, claiming
+    // that an explicit 'this' is required.
+    // CHECKSTYLE:OFF
     this.unsaved = new ObservableValue<>(this::isCatalogUnsaved);
     this.undo = new ObservableValue<>(this::catalogCanUndo);
     this.redo = new ObservableValue<>(this::catalogCanRedo);
+    // CHECKSTYLE:ON
   }
 
   private UndoAvailable catalogCanUndo()
@@ -194,6 +198,17 @@ public final class Model
       this.catalog_tree_model.changeTree(c);
     }
   }
+
+  /**
+   * Add a disk to the catalog.
+   *
+   * @param disk_name The name of the disk
+   * @param disk_id   The disk ID
+   * @param path      The path to the root of the disk
+   *
+   * @throws IOException      On I/O errors
+   * @throws CatalogException On catalog errors
+   */
 
   public void catalogAddDisk(
     final CatalogDiskName disk_name,
@@ -298,10 +313,18 @@ public final class Model
     this.catalog_table_model.reset();
   }
 
+  /**
+   * Redo the most recent action, if one exists.
+   */
+
   public void catalogRedo()
   {
 
   }
+
+  /**
+   * Undo the most recent action, if one exists.
+   */
 
   public void catalogUndo()
   {
@@ -322,17 +345,33 @@ public final class Model
     }
   }
 
+  /**
+   * Subscribe to changes of the unsaved state of the catalog.
+   *
+   * @param listener The listener
+   */
+
   public void catalogUnsavedChangesSubscribe(
     final Consumer<UnsavedChanges> listener)
   {
     this.unsaved.addObserver(listener);
   }
 
+  /**
+   * Subscribe to changes of the undo state of the catalog.
+   *
+   * @param listener The listener
+   */
+
   public void catalogUndoSubscribe(
     final Consumer<UndoAvailable> listener)
   {
     this.undo.addObserver(listener);
   }
+
+  /**
+   * @return A new disk ID that is guaranteed not to exist in the catalog
+   */
 
   public CatalogDiskID catalogGetFreshDiskID()
   {
@@ -348,6 +387,12 @@ public final class Model
 
     return new CatalogDiskID(BigInteger.ZERO);
   }
+
+  /**
+   * Subscribe to changes of the redo state of the catalog.
+   *
+   * @param listener The listener
+   */
 
   public void catalogRedoSubscribe(final Consumer<RedoAvailable> listener)
   {
