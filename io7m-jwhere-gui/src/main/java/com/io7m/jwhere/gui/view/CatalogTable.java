@@ -18,7 +18,7 @@ package com.io7m.jwhere.gui.view;
 
 import com.io7m.jnull.NullCheck;
 import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskName;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.model.DirectoryEntryDirectory;
 import com.io7m.jwhere.gui.model.DirectoryEntryFile;
 import com.io7m.jwhere.gui.model.DirectoryEntryType;
@@ -53,7 +53,7 @@ final class CatalogTable extends JTable
     this.setDefaultRenderer(DirectoryEntryType.class, er);
 
     this.setDefaultRenderer(
-      CatalogDiskName.class, new CatalogDiskNameRenderer());
+      CatalogDiskMetadata.class, new CatalogDiskMetadataRenderer());
     this.setDefaultRenderer(
       CatalogDiskID.class, new CatalogDiskIDRenderer());
     this.setDefaultRenderer(SizeBytes.class, new SizeBytesRenderer());

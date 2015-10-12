@@ -27,26 +27,39 @@ import com.io7m.jwhere.core.CatalogDiskID;
 
 public final class DirectoryEntryUp implements DirectoryEntryType
 {
-  private final CatalogDiskID           disk_index;
+  private final CatalogDiskID        disk_index;
   private final CatalogDirectoryNode node;
   private final String               name;
+  private final boolean              is_root;
 
   /**
    * Construct a directory entry.
    *
    * @param in_disk_index The index of the disk in which the directory exists
    * @param in_name       The name of the entry
-   * @param in_node     The actual directory node
+   * @param in_node       The actual directory node
+   * @param in_is_root    The directory is the root directory
    */
 
   public DirectoryEntryUp(
     final CatalogDiskID in_disk_index,
     final String in_name,
-    final CatalogDirectoryNode in_node)
+    final CatalogDirectoryNode in_node,
+    final boolean in_is_root)
   {
     this.disk_index = NullCheck.notNull(in_disk_index);
     this.name = NullCheck.notNull(in_name);
     this.node = NullCheck.notNull(in_node);
+    this.is_root = in_is_root;
+  }
+
+  /**
+   * @return {@code true} iff this directory is the root directory
+   */
+
+  public boolean isRoot()
+  {
+    return this.is_root;
   }
 
   /**

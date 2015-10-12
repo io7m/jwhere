@@ -16,16 +16,16 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jwhere.core.CatalogDiskName;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import org.valid4j.Assertive;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
 
-final class CatalogDiskNameRenderer extends DefaultTableCellRenderer
+final class CatalogDiskMetadataRenderer extends DefaultTableCellRenderer
 {
-  CatalogDiskNameRenderer()
+  CatalogDiskMetadataRenderer()
   {
     super();
   }
@@ -41,10 +41,16 @@ final class CatalogDiskNameRenderer extends DefaultTableCellRenderer
     super.getTableCellRendererComponent(
       table, value, is_selected, has_focus, row, column);
 
-    Assertive.require(value instanceof CatalogDiskName);
-    final CatalogDiskName name = (CatalogDiskName) value;
+    Assertive.require(value instanceof CatalogDiskMetadata);
+    final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
 
-    this.setText(name.getValue());
+    if ("iso9660".equals(meta.getFilesystemType())) {
+      this.setIcon(Icons.getDiskOpticalIcon16());
+    } else {
+      this.setIcon(Icons.getDiskIcon16());
+    }
+
+    this.setText(meta.getDiskName().getValue());
     return this;
   }
 }

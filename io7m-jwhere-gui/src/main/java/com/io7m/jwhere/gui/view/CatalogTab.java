@@ -17,19 +17,25 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jnull.NullCheck;
+import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.ControllerType;
 import com.io7m.jwhere.gui.model.CatalogRootType;
 import com.io7m.jwhere.gui.model.DirectoryEntryDirectory;
+import com.io7m.jwhere.gui.model.DirectoryEntryFile;
 import com.io7m.jwhere.gui.model.DirectoryEntryUp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -46,7 +52,10 @@ final class CatalogTab extends JPanel
   private final CatalogTable   catalog_table;
   private final ControllerType controller;
 
-  CatalogTab(final ControllerType in_controller)
+  CatalogTab(
+    final JFrame parent,
+    final StatusBar status,
+    final ControllerType in_controller)
   {
     super();
     this.controller = NullCheck.notNull(in_controller);
@@ -64,18 +73,42 @@ final class CatalogTab extends JPanel
               final Object val = target.getValueAt(row, 0);
               CatalogTab.LOG.debug("selected: {} ({})", val, val.getClass());
 
-              if (val instanceof DirectoryEntryUp) {
-                final DirectoryEntryUp up = (DirectoryEntryUp) val;
-                in_controller.catalogSelectDiskAtDirectory(
-                  up.getDiskIndex(), up.getNode());
+              if (val instanceof CatalogDiskMetadata) {
+                final CatalogDiskMetadata meta = (CatalogDiskMetadata) val;
+                in_controller.catalogSelectDiskAtRoot(meta.getDiskID());
+                return;
               }
+
+              if (val instanceof DirectoryEntryUp) {
+                handleDirectoryEntryUp((DirectoryEntryUp) val);
+                return;
+              }
+
               if (val instanceof DirectoryEntryDirectory) {
                 final DirectoryEntryDirectory dir =
                   (DirectoryEntryDirectory) val;
                 in_controller.catalogSelectDiskAtDirectory(
                   dir.getDiskIndex(), dir.getNode());
+                return;
               }
+
+              if (val instanceof DirectoryEntryFile) {
+                // Ignore for now.
+                return;
+              }
+
+              throw new UnreachableCodeException();
             }
+          }
+        }
+
+        private void handleDirectoryEntryUp(final DirectoryEntryUp up)
+        {
+          if (up.isRoot()) {
+            in_controller.catalogSelectRoot();
+          } else {
+            in_controller.catalogSelectDiskAtDirectory(
+              up.getDiskIndex(), up.getNode());
           }
         }
       });
@@ -102,12 +135,20 @@ final class CatalogTab extends JPanel
         if (node_value instanceof CatalogDiskMetadata) {
           final CatalogDiskMetadata meta = (CatalogDiskMetadata) node_value;
           this.controller.catalogSelectDiskAtRoot(meta.getDiskID());
+          return;
         }
 
         if (node_value instanceof CatalogRootType) {
           this.controller.catalogSelectRoot();
+          return;
         }
+
+        throw new UnreachableCodeException();
       });
+
+    this.catalog_disk_list.addMouseListener(
+      new CatalogTreePopupListener(
+        parent, this.controller, status, this.catalog_disk_list));
 
     final JScrollPane list_scroller = new JScrollPane();
     list_scroller.setViewportView(this.catalog_disk_list);
@@ -119,5 +160,80 @@ final class CatalogTab extends JPanel
 
     this.setLayout(new BorderLayout());
     this.add(splitter, BorderLayout.CENTER);
+  }
+
+  static final class CatalogTreePopupListener extends MouseAdapter
+  {
+    private final CatalogTree    tree;
+    private final JPopupMenu     disk_popup;
+    private final JPopupMenu     catalog_popup;
+    private final ControllerType controller;
+
+    CatalogTreePopupListener(
+      final JFrame parent,
+      final ControllerType in_controller,
+      final StatusBar in_status,
+      final CatalogTree in_tree)
+    {
+      this.controller = NullCheck.notNull(in_controller);
+      this.tree = NullCheck.notNull(in_tree);
+
+      this.disk_popup = new JPopupMenu();
+      this.catalog_popup = new JPopupMenu();
+
+      {
+        final JMenuItem add_disk = new JMenuItem("Add disk...");
+        add_disk.addActionListener(
+          (e) -> {
+            final CatalogAddDiskDialog d =
+              new CatalogAddDiskDialog(parent, in_controller, in_status);
+            d.pack();
+            d.setVisible(true);
+          });
+        this.catalog_popup.add(add_disk);
+      }
+
+      {
+        final JMenuItem verify_disk = new JMenuItem("Verify disk...");
+        this.disk_popup.add(verify_disk);
+      }
+    }
+
+    @Override public void mousePressed(final MouseEvent e)
+    {
+      this.maybeShowPopup(e);
+    }
+
+    @Override public void mouseReleased(final MouseEvent e)
+    {
+      this.maybeShowPopup(e);
+    }
+
+    private void maybeShowPopup(final MouseEvent e)
+    {
+      if (e.isPopupTrigger()) {
+        final int cx = e.getX();
+        final int cy = e.getY();
+
+        final TreePath p = this.tree.getPathForLocation(cx, cy);
+        if (p == null) {
+          return;
+        }
+
+        final DefaultMutableTreeNode last =
+          (DefaultMutableTreeNode) p.getLastPathComponent();
+        final Object node_value = last.getUserObject();
+
+        CatalogTab.LOG.debug("popup selected: {}", node_value.getClass());
+
+        if (node_value instanceof CatalogDiskMetadata) {
+          this.disk_popup.show(e.getComponent(), e.getX(), e.getY());
+        }
+
+        if (node_value instanceof CatalogRootType) {
+          this.catalog_popup.show(e.getComponent(), e.getX(), e.getY());
+        }
+      }
+    }
   }
 }

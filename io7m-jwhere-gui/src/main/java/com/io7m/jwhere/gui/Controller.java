@@ -23,8 +23,12 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.gui.model.Model;
+import com.io7m.jwhere.gui.model.RedoAvailable;
+import com.io7m.jwhere.gui.model.UndoAvailable;
+import com.io7m.jwhere.gui.model.UnsavedChanges;
 import com.io7m.jwhere.gui.view.UnsavedChangesChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +48,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 final class Controller implements ControllerType
 {
@@ -84,7 +89,7 @@ final class Controller implements ControllerType
     return this.model.getCatalogTableModel();
   }
 
-  @Override public boolean catalogIsUnsaved()
+  @Override public UnsavedChanges catalogIsUnsaved()
   {
     return this.model.isCatalogUnsaved();
   }
@@ -150,27 +155,27 @@ final class Controller implements ControllerType
     final FunctionType<Unit, Optional<Path>> on_want_save_file)
     throws CancellationException
   {
-    if (this.catalogIsUnsaved()) {
-      switch (on_unsaved_changes.call(Unit.unit())) {
-        case UNSAVED_CHANGES_DISCARD: {
-          Controller.LOG.debug("discarding unsaved changes");
-          return Optional.empty();
+    switch (this.catalogIsUnsaved()) {
+      case NO_UNSAVED_CHANGES:
+        return Optional.empty();
+      case UNSAVED_CHANGES:
+        switch (on_unsaved_changes.call(Unit.unit())) {
+          case UNSAVED_CHANGES_DISCARD: {
+            Controller.LOG.debug("discarding unsaved changes");
+            return Optional.empty();
+          }
+          case UNSAVED_CHANGES_CANCEL: {
+            Controller.LOG.debug("cancelling");
+            throw new CancellationException();
+          }
+          case UNSAVED_CHANGES_SAVE: {
+            Controller.LOG.debug("user wants to save changes");
+            return this.getSaveFile(on_want_save_file);
+          }
         }
-        case UNSAVED_CHANGES_CANCEL: {
-          Controller.LOG.debug("cancelling");
-          throw new CancellationException();
-        }
-        case UNSAVED_CHANGES_SAVE: {
-          Controller.LOG.debug("user wants to save changes");
-          return this.getSaveFile(on_want_save_file);
-        }
-        default: {
-          throw new UnreachableCodeException();
-        }
-      }
-    } else {
-      return Optional.empty();
     }
+
+    throw new UnreachableCodeException();
   }
 
   /**
@@ -325,6 +330,61 @@ final class Controller implements ControllerType
   @Override public ListModel<CatalogTask> catalogGetTasksListModel()
   {
     return this.tasks_list_model;
+  }
+
+  @Override public void catalogUnsavedChangesSubscribe(
+    final Consumer<UnsavedChanges> listener)
+  {
+    this.model.catalogUnsavedChangesSubscribe(listener);
+  }
+
+  @Override public void catalogUndoSubscribe(
+    final Consumer<UndoAvailable> listener)
+  {
+    this.model.catalogUndoSubscribe(listener);
+  }
+
+  @Override
+  public void catalogRedoSubscribe(
+    final Consumer<RedoAvailable> listener)
+  {
+    this.model.catalogRedoSubscribe(listener);
+  }
+
+  @Override public void catalogRedo()
+  {
+    this.model.catalogRedo();
+  }
+
+  @Override public void catalogUndo()
+  {
+    this.model.catalogUndo();
+  }
+
+  @Override public void catalogAddDisk(
+    final CatalogDiskName disk_name,
+    final CatalogDiskID disk_id,
+    final Path path,
+    final Runnable on_start_io,
+    final ProcedureType<Optional<Throwable>> on_finish_io)
+  {
+    this.taskSubmit(
+      "Add disk", CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            on_start_io.run();
+            this.model.catalogAddDisk(disk_name, disk_id, path);
+            return Unit.unit();
+          } catch (IOException | CatalogException e) {
+            throw new IOError(e);
+          }
+        }, this.exec).whenComplete(
+        (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+  }
+
+  @Override public CatalogDiskID catalogGetFreshDiskID()
+  {
+    return this.model.catalogGetFreshDiskID();
   }
 
   private Long taskSubmit(

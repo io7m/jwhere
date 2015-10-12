@@ -34,11 +34,10 @@ final class StatusBar extends JPanel
   private final JLabel         text;
   private final JLabel         error_icon;
   private final Component      padding;
-  private final ControllerType controller;
 
   StatusBar(final ControllerType in_controller)
   {
-    this.controller = NullCheck.notNull(in_controller);
+    NullCheck.notNull(in_controller);
 
     this.setBorder(new LineBorder(this.getBackground(), 1));
     this.setPreferredSize(new Dimension(this.getWidth(), 24));

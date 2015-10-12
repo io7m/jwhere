@@ -41,12 +41,10 @@ final class TasksTab extends JPanel
     LOG = LoggerFactory.getLogger(TasksTab.class);
   }
 
-  private final ControllerType controller;
-
   TasksTab(final ControllerType in_controller)
   {
     super();
-    this.controller = NullCheck.notNull(in_controller);
+    NullCheck.notNull(in_controller);
 
     /**
      * Task list.

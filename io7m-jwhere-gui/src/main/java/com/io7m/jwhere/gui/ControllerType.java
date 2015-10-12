@@ -21,6 +21,10 @@ import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskName;
+import com.io7m.jwhere.gui.model.RedoAvailable;
+import com.io7m.jwhere.gui.model.UndoAvailable;
+import com.io7m.jwhere.gui.model.UnsavedChanges;
 import com.io7m.jwhere.gui.view.UnsavedChangesChoice;
 
 import javax.swing.ListModel;
@@ -28,6 +32,7 @@ import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * The main controller.
@@ -42,10 +47,10 @@ public interface ControllerType
   TableModel catalogGetTableModel();
 
   /**
-   * @return {@code true} if the catalog has unsaved changes
+   * @return A value indicating if the catalog has unsaved changes
    */
 
-  boolean catalogIsUnsaved();
+  UnsavedChanges catalogIsUnsaved();
 
   /**
    * Open a catalog.
@@ -180,4 +185,70 @@ public interface ControllerType
    */
 
   ListModel<CatalogTask> catalogGetTasksListModel();
+
+  /**
+   * Subscribe for changes to the saved or unsaved state of the catalog.
+   *
+   * @param listener The listener that will receive the state of the catalog
+   */
+
+  void catalogUnsavedChangesSubscribe(Consumer<UnsavedChanges> listener);
+
+  /**
+   * Subscribe for changes to the availability of undo steps for the catalog.
+   *
+   * @param listener The listener that will receive the state of the catalog
+   */
+
+  void catalogUndoSubscribe(Consumer<UndoAvailable> listener);
+
+  /**
+   * Subscribe for changes to the availability of redo steps for the catalog.
+   *
+   * @param listener The listener that will receive the state of the catalog
+   */
+
+  void catalogRedoSubscribe(Consumer<RedoAvailable> listener);
+
+  /**
+   * Redo the last undone operation.
+   *
+   * @see #catalogUndo()
+   */
+
+  void catalogRedo();
+
+  /**
+   * Undo the last operation.
+   */
+
+  void catalogUndo();
+
+  /**
+   * Add a disk to the catalog.
+   *
+   * @param disk_name    The name that will be used for the disk.
+   * @param disk_id      The disk ID
+   * @param path         The root of the filesystem
+   * @param on_start_io  A procedure that, when evaluated, indicates that the
+   *                     operation has started.
+   * @param on_finish_io A procedure that, when evaluated, indicates that the
+   *                     operation has started, passing it a non-empty optional
+   *                     exception in the case of failure.
+   */
+
+  void catalogAddDisk(
+    CatalogDiskName disk_name,
+    CatalogDiskID disk_id,
+    Path path,
+    Runnable on_start_io,
+    ProcedureType<Optional<Throwable>> on_finish_io);
+
+  /**
+   * @return A new disk ID that is guaranteed not to be equal to any other disk
+   * ID in the catalog at the time of the call
+   */
+
+  CatalogDiskID catalogGetFreshDiskID();
+
 }

@@ -21,6 +21,7 @@ import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jwhere.gui.ControllerType;
+import com.io7m.jwhere.gui.model.UnsavedChanges;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -87,7 +89,7 @@ public final class MainWindow extends JFrame
      */
 
     final JTabbedPane tabs = new JTabbedPane();
-    this.tab_catalog = new CatalogTab(this.controller);
+    this.tab_catalog = new CatalogTab(this, this.status, this.controller);
     this.tab_search = new SearchTab(this.controller);
     this.tab_tasks = new TasksTab(this.controller);
     tabs.add("Catalog", this.tab_catalog);
@@ -95,7 +97,15 @@ public final class MainWindow extends JFrame
     tabs.add("Tasks", this.tab_tasks);
     pane.add(tabs, BorderLayout.CENTER);
 
-    this.setTitle(this.makeTitle());
+    /**
+     * Set the window title and arrange to set it every time the unsaved
+     * state of the catalog changes.
+     */
+
+    this.setTitle(this.makeTitle(UnsavedChanges.NO_UNSAVED_CHANGES));
+    this.controller.catalogUnsavedChangesSubscribe(
+      c -> SwingUtilities.invokeLater(() -> this.setTitle(this.makeTitle(c))));
+
     this.setMinimumSize(new Dimension(640, 480));
     this.setJMenuBar(MainWindow.makeMenu(this, this.status, in_controller));
     this.addWindowListener(
@@ -118,8 +128,38 @@ public final class MainWindow extends JFrame
   {
     final JMenuBar bar = new JMenuBar();
     final JMenu file = MainWindow.makeMenuFile(window, status, controller);
+    final JMenu edit = MainWindow.makeMenuEdit(window, status, controller);
     bar.add(file);
+    bar.add(edit);
     return bar;
+  }
+
+  private static JMenu makeMenuEdit(
+    final JFrame window,
+    final StatusBar status,
+    final ControllerType controller)
+  {
+    final JMenuItem edit_undo = new JMenuItem("Undo");
+    edit_undo.setMnemonic('U');
+    edit_undo.addActionListener((e) -> controller.catalogUndo());
+    edit_undo.setAccelerator(
+      KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+    edit_undo.setModel(new UndoButtonModel(controller));
+
+    final JMenuItem edit_redo = new JMenuItem("Redo");
+    edit_redo.setMnemonic('R');
+    edit_redo.addActionListener((e) -> controller.catalogRedo());
+    edit_redo.setAccelerator(
+      KeyStroke.getKeyStroke(
+        KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+    edit_redo.setModel(new RedoButtonModel(controller));
+
+    final JMenu edit = new JMenu("Edit");
+    edit.setMnemonic('E');
+    edit.add(edit_undo);
+    edit.add(edit_redo);
+
+    return edit;
   }
 
   private static JMenu makeMenuFile(
@@ -145,6 +185,7 @@ public final class MainWindow extends JFrame
       KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
     file_save.addActionListener(
       (e) -> MainWindow.onActionCatalogSave(window, status, controller));
+    file_save.setModel(new UnsavedButtonModel(controller));
 
     final JMenuItem file_save_as = new JMenuItem("Save as...");
     file_save_as.addActionListener(
@@ -392,13 +433,21 @@ public final class MainWindow extends JFrame
     return r_path;
   }
 
-  private String makeTitle()
+  private String makeTitle(final UnsavedChanges c)
   {
     final Package p = this.getClass().getPackage();
     final StringBuilder sb = new StringBuilder(64);
     sb.append(p.getImplementationTitle());
     sb.append(" ");
     sb.append(p.getImplementationVersion());
+
+    switch (c) {
+      case NO_UNSAVED_CHANGES:
+        break;
+      case UNSAVED_CHANGES:
+        sb.append(" (modified)");
+    }
     return sb.toString();
   }
+
 }
