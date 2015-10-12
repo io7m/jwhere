@@ -22,6 +22,7 @@ import com.io7m.jfunctional.Unit;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gui.model.RedoAvailable;
 import com.io7m.jwhere.gui.model.UndoAvailable;
 import com.io7m.jwhere.gui.model.UnsavedChanges;
@@ -75,7 +76,7 @@ public interface ControllerType
 
   void catalogOpen(
     FunctionType<Unit, UnsavedChangesChoice> on_unsaved,
-    FunctionType<Unit, Optional<Path>> on_no_save_file_name,
+    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_no_save_file_name,
     FunctionType<Unit, Optional<Path>> on_open_file,
     Runnable on_start_io,
     ProcedureType<Optional<Throwable>> on_finish_io);
@@ -99,7 +100,7 @@ public interface ControllerType
 
   void catalogClose(
     FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    FunctionType<Unit, Optional<Path>> on_want_save_file,
+    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_want_save_file,
     Runnable on_start_io,
     ProcedureType<Optional<Throwable>> on_finish_io);
 
@@ -125,7 +126,7 @@ public interface ControllerType
    */
 
   void catalogSave(
-    FunctionType<Unit, Optional<Path>> on_want_save_file,
+    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_want_save_file,
     Runnable on_start_io,
     ProcedureType<Optional<Throwable>> on_finish_io);
 
@@ -143,7 +144,7 @@ public interface ControllerType
    */
 
   void catalogSaveAs(
-    FunctionType<Unit, Optional<Path>> on_want_save_file,
+    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_want_save_file,
     Runnable on_start_io,
     ProcedureType<Optional<Throwable>> on_finish_io);
 

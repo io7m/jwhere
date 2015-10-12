@@ -28,6 +28,20 @@ import java.io.OutputStream;
 public interface CatalogJSONSerializerType
 {
   /**
+   * Serialize the catalog to the given path.
+   *
+   * @param c The catalog
+   * @param s The specification of where the catalog should go
+   *
+   * @throws IOException On I/O errors
+   */
+
+  void serializeCatalogToPath(
+    Catalog c,
+    CatalogSaveSpecification s)
+    throws IOException;
+
+  /**
    * Serialize the catalog to the given stream.
    *
    * @param c  The catalog

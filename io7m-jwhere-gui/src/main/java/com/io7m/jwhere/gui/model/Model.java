@@ -29,6 +29,7 @@ import com.io7m.jwhere.core.CatalogJSONParser;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valid4j.Assertive;
@@ -36,10 +37,7 @@ import org.valid4j.Assertive;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.SortedMap;
@@ -58,10 +56,10 @@ public final class Model
     LOG = LoggerFactory.getLogger(Model.class);
   }
 
-  private final CatalogMultiTableModel  catalog_table_model;
-  private final CatalogTreeModel        catalog_tree_model;
-  private final Revisions<CatalogState> catalog_history;
-  private       Optional<Path>          catalog_file;
+  private final CatalogMultiTableModel             catalog_table_model;
+  private final CatalogTreeModel                   catalog_tree_model;
+  private final Revisions<CatalogState>            catalog_history;
+  private       Optional<CatalogSaveSpecification> catalog_save_spec;
 
   /**
    * Construct the model.
@@ -69,7 +67,7 @@ public final class Model
 
   public Model()
   {
-    this.catalog_file = Optional.empty();
+    this.catalog_save_spec = Optional.empty();
     this.catalog_history = new Revisions<>(CatalogState.newEmpty(), 32);
 
     final CatalogTableModel tm =
@@ -102,33 +100,32 @@ public final class Model
    * @return The current catalog filename, if any
    */
 
-  public Optional<Path> getCatalogFileName()
+  public Optional<CatalogSaveSpecification> getCatalogSaveSpecification()
   {
-    return this.catalog_file;
+    return this.catalog_save_spec;
   }
 
   /**
-   * Save the catalog to {@code path}.
+   * Save the catalog.
    *
-   * @param path The path to the catalog
+   * @param spec The save specification
    *
    * @throws IOException On I/O errors
    */
 
-  public void catalogSave(final Path path)
+  public void catalogSave(
+    final CatalogSaveSpecification spec)
     throws IOException
   {
-    Model.LOG.debug("saving catalog to: {}", path);
+    Model.LOG.debug("saving catalog to: {}", spec);
 
     final CatalogJSONSerializerType serial =
       CatalogJSONSerializer.newSerializer();
 
     final CatalogState current = this.catalog_history.getCurrentValue();
-    try (final OutputStream stream = Files.newOutputStream(path)) {
-      serial.serializeCatalogToStream(current.getCatalog(), stream);
-      this.catalog_history.save();
-      this.catalog_file = Optional.of(path);
-    }
+    serial.serializeCatalogToPath(current.getCatalog(), spec);
+    this.catalog_history.save();
+    this.catalog_save_spec = Optional.of(spec);
   }
 
   /**
@@ -146,13 +143,13 @@ public final class Model
     Model.LOG.debug("opening catalog from: {}", path);
 
     final CatalogJSONParserType parser = CatalogJSONParser.newParser();
-    try (final InputStream stream = Files.newInputStream(path)) {
-      final Catalog c = parser.parseCatalogFromStream(stream);
-      this.catalog_history.reset(CatalogState.newWithCatalog(c));
-      this.catalog_file = Optional.of(path);
-      this.catalog_table_model.reset();
-      this.catalog_tree_model.changeTree(c);
-    }
+    final Catalog c = parser.parseCatalogFromPath(path);
+    this.catalog_history.reset(CatalogState.newWithCatalog(c));
+    this.catalog_save_spec = Optional.of(
+      new CatalogSaveSpecification(
+        CatalogSaveSpecification.Compress.COMPRESS_GZIP, path));
+    this.catalog_table_model.reset();
+    this.catalog_tree_model.changeTree(c);
   }
 
   /**
@@ -204,7 +201,7 @@ public final class Model
 
     final CatalogState current = CatalogState.newEmpty();
     this.catalog_history.reset(current);
-    this.catalog_file = Optional.empty();
+    this.catalog_save_spec = Optional.empty();
     this.catalog_table_model.reset();
     this.catalog_tree_model.changeTree(current.getCatalog());
   }
