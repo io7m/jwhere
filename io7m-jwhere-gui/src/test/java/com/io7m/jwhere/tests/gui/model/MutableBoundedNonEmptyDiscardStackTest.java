@@ -86,4 +86,133 @@ public final class MutableBoundedNonEmptyDiscardStackTest
     Assert.assertEquals(Integer.valueOf(6), stack.peek());
     Assert.assertEquals(1L, (long) stack.size());
   }
+
+  @Test public void testClear()
+  {
+    final MutableBoundedNonEmptyDiscardStack<Integer> stack =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    stack.push(Integer.valueOf(1));
+    stack.push(Integer.valueOf(2));
+    stack.push(Integer.valueOf(3));
+    stack.push(Integer.valueOf(4));
+    stack.push(Integer.valueOf(5));
+
+    Assert.assertEquals(5L, (long) stack.size());
+
+    stack.clear(Integer.valueOf(23));
+    Assert.assertEquals(1L, (long) stack.size());
+    Assert.assertEquals(23L, stack.peek().longValue());
+  }
+
+  @Test public void testEquals()
+  {
+    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    s0.push(Integer.valueOf(1));
+    s0.push(Integer.valueOf(2));
+    s0.push(Integer.valueOf(3));
+    s0.push(Integer.valueOf(4));
+
+    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    s1.push(Integer.valueOf(1));
+    s1.push(Integer.valueOf(2));
+    s1.push(Integer.valueOf(3));
+    s1.push(Integer.valueOf(4));
+
+    final MutableBoundedNonEmptyDiscardStack<Integer> s2 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    final MutableBoundedNonEmptyDiscardStack<Integer> s3 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    s3.push(Integer.valueOf(1));
+    s3.push(Integer.valueOf(2));
+    s3.push(Integer.valueOf(3));
+    s3.push(Integer.valueOf(4));
+
+    // Reflexive
+    Assert.assertEquals(s0, s0);
+
+    // Symmetric
+    Assert.assertEquals(s0, s1);
+    Assert.assertEquals(s1, s0);
+
+    // Transitive
+    Assert.assertEquals(s0, s1);
+    Assert.assertEquals(s1, s3);
+    Assert.assertEquals(s0, s3);
+
+    Assert.assertNotEquals(s0, s2);
+    Assert.assertNotEquals(s0, null);
+    Assert.assertNotEquals(s0, Integer.valueOf(23));
+
+    Assert.assertEquals((long) s0.hashCode(), (long) s1.hashCode());
+  }
+
+  @Test public void testEqualsNot_0()
+  {
+    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 4);
+
+    Assert.assertNotEquals(s0, s1);
+  }
+
+  @Test public void testEqualsNot_1()
+  {
+    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0),5);
+    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    s0.push(Integer.valueOf(0));
+    s1.push(Integer.valueOf(1));
+
+    Assert.assertNotEquals(s0, s1);
+  }
+
+  @Test public void testEqualsNot_2()
+  {
+    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0),5);
+    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    s0.push(Integer.valueOf(0));
+
+    Assert.assertNotEquals(s0, s1);
+  }
+
+  @Test public void testEqualsNot_3()
+  {
+    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0),5);
+    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
+
+    s0.push(Integer.valueOf(0));
+    s0.push(Integer.valueOf(0));
+
+    s1.push(Integer.valueOf(0));
+
+    Assert.assertNotEquals(s0, s1);
+  }
+
+  @Test public void testEqualsNot_4()
+  {
+    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0),5);
+    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+      new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(1), 5);
+
+    s0.push(Integer.valueOf(0));
+    s1.push(Integer.valueOf(0));
+
+    Assert.assertNotEquals(s0, s1);
+  }
 }

@@ -41,6 +41,19 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>io7m-jwhere-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.java.quickcheck</groupId>
+      <artifactId>quickcheck</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

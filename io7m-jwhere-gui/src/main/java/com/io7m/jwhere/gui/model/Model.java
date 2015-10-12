@@ -58,17 +58,10 @@ public final class Model
     LOG = LoggerFactory.getLogger(Model.class);
   }
 
-  private final CatalogMultiTableModel
-    catalog_table_model;
-  private final CatalogTreeModel
-                                                               catalog_tree_model;
-  private final MutableBoundedNonEmptyDiscardStack<ModelState> state_history;
-  private final ObservableValue<UnsavedChanges>                unsaved;
-  private final ObservableValue<UndoAvailable>                 undo;
-  private final ObservableValue<RedoAvailable>                 redo;
-  private       BigInteger
-                                                               state_revision_saved;
-  private       Optional<Path>                                 catalog_file;
+  private final CatalogMultiTableModel  catalog_table_model;
+  private final CatalogTreeModel        catalog_tree_model;
+  private final Revisions<CatalogState> catalog_history;
+  private       Optional<Path>          catalog_file;
 
   /**
    * Construct the model.
@@ -77,39 +70,14 @@ public final class Model
   public Model()
   {
     this.catalog_file = Optional.empty();
-
-    this.state_revision_saved = BigInteger.ZERO;
-    this.state_history = new MutableBoundedNonEmptyDiscardStack<>(
-      ModelState.newEmpty(this.state_revision_saved), 32);
+    this.catalog_history = new Revisions<>(CatalogState.newEmpty(), 32);
 
     final CatalogTableModel tm =
-      new CatalogTableModel(this.state_history::peek);
+      new CatalogTableModel(this.catalog_history::getCurrentValue);
     final CatalogDiskTableModel dtm = new CatalogDiskTableModel();
     this.catalog_table_model = new CatalogMultiTableModel(
-      this.state_history::peek, tm, dtm);
+      this.catalog_history::getCurrentValue, tm, dtm);
     this.catalog_tree_model = new CatalogTreeModel();
-
-    // Checkstyle is currently choking on these definitions, claiming
-    // that an explicit 'this' is required.
-    // CHECKSTYLE:OFF
-    this.unsaved = new ObservableValue<>(this::isCatalogUnsaved);
-    this.undo = new ObservableValue<>(this::catalogCanUndo);
-    this.redo = new ObservableValue<>(this::catalogCanRedo);
-    // CHECKSTYLE:ON
-  }
-
-  private UndoAvailable catalogCanUndo()
-  {
-    if (this.state_history.size() > 1) {
-      return UndoAvailable.UNDO_AVAILABLE;
-    } else {
-      return UndoAvailable.UNDO_UNAVAILABLE;
-    }
-  }
-
-  private RedoAvailable catalogCanRedo()
-  {
-    return RedoAvailable.REDO_UNAVAILABLE;
   }
 
   /**
@@ -127,13 +95,7 @@ public final class Model
 
   public UnsavedChanges isCatalogUnsaved()
   {
-    final BigInteger current_revision = this.state_history.peek().getRevision();
-    final boolean saved = current_revision.equals(this.state_revision_saved);
-    if (saved) {
-      return UnsavedChanges.NO_UNSAVED_CHANGES;
-    } else {
-      return UnsavedChanges.UNSAVED_CHANGES;
-    }
+    return this.catalog_history.hasUnsavedChanges();
   }
 
   /**
@@ -161,10 +123,10 @@ public final class Model
     final CatalogJSONSerializerType serial =
       CatalogJSONSerializer.newSerializer();
 
-    final ModelState current = this.state_history.peek();
+    final CatalogState current = this.catalog_history.getCurrentValue();
     try (final OutputStream stream = Files.newOutputStream(path)) {
       serial.serializeCatalogToStream(current.getCatalog(), stream);
-      this.state_revision_saved = current.getRevision();
+      this.catalog_history.save();
       this.catalog_file = Optional.of(path);
     }
   }
@@ -186,13 +148,7 @@ public final class Model
     final CatalogJSONParserType parser = CatalogJSONParser.newParser();
     try (final InputStream stream = Files.newInputStream(path)) {
       final Catalog c = parser.parseCatalogFromStream(stream);
-
-      final ModelState current = ModelState.newCatalog(c, BigInteger.ZERO);
-      this.state_history.clear(current);
-      this.state_revision_saved = BigInteger.ZERO;
-      this.unsaved.broadcast();
-      this.undo.broadcast();
-
+      this.catalog_history.reset(CatalogState.newWithCatalog(c));
       this.catalog_file = Optional.of(path);
       this.catalog_table_model.reset();
       this.catalog_tree_model.changeTree(c);
@@ -218,7 +174,7 @@ public final class Model
   {
     Model.LOG.debug("adding disk: {} {} {}", disk_name, disk_id, path);
 
-    final ModelState current = this.state_history.peek();
+    final CatalogState current = this.catalog_history.getCurrentValue();
     final SortedMap<CatalogDiskID, CatalogDisk> disks =
       current.getCatalog().getDisks();
 
@@ -228,15 +184,12 @@ public final class Model
 
     final CatalogDisk disk =
       CatalogFilesystemReader.newDisk(disk_name, disk_id, path);
-
     final SortedMap<CatalogDiskID, CatalogDisk> new_disks =
       new TreeMap<>(disks);
     new_disks.put(disk_id, disk);
     final Catalog c = new Catalog(new_disks);
 
-    this.state_history.push(current.withNewCatalog(c));
-    this.unsaved.broadcast();
-    this.undo.broadcast();
+    this.catalog_history.newRevision(CatalogState.newWithCatalog(c));
     this.catalog_table_model.fireTableDataChanged();
     this.catalog_tree_model.changeTree(c);
   }
@@ -249,12 +202,8 @@ public final class Model
   {
     Model.LOG.debug("closing catalog");
 
-    final ModelState current = ModelState.newEmpty(BigInteger.ZERO);
-    this.state_history.clear(current);
-    this.state_revision_saved = BigInteger.ZERO;
-    this.unsaved.broadcast();
-    this.undo.broadcast();
-
+    final CatalogState current = CatalogState.newEmpty();
+    this.catalog_history.reset(current);
     this.catalog_file = Optional.empty();
     this.catalog_table_model.reset();
     this.catalog_tree_model.changeTree(current.getCatalog());
@@ -279,7 +228,7 @@ public final class Model
   {
     NullCheck.notNull(index);
 
-    final Catalog c = this.state_history.peek().getCatalog();
+    final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
     Assertive.require(c.getDisks().containsKey(index));
     this.catalog_table_model.openDiskAtRoot(index);
   }
@@ -299,7 +248,7 @@ public final class Model
     NullCheck.notNull(index);
     NullCheck.notNull(dir);
 
-    final Catalog c = this.state_history.peek().getCatalog();
+    final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
     Assertive.require(c.getDisks().containsKey(index));
     this.catalog_table_model.openDiskAtDirectory(index, dir);
   }
@@ -319,7 +268,10 @@ public final class Model
 
   public void catalogRedo()
   {
-
+    this.catalog_history.redo();
+    final CatalogState current = this.catalog_history.getCurrentValue();
+    this.catalog_table_model.fireTableDataChanged();
+    this.catalog_tree_model.changeTree(current.getCatalog());
   }
 
   /**
@@ -328,21 +280,10 @@ public final class Model
 
   public void catalogUndo()
   {
-    Model.LOG.debug(
-      "undo: requesting at revision {}",
-      this.state_history.peek().getRevision());
-
-    if (this.catalogCanUndo() == UndoAvailable.UNDO_AVAILABLE) {
-      this.state_history.pop();
-      final ModelState current = this.state_history.peek();
-      Model.LOG.debug("undo: now at revision {}", current.getRevision());
-      this.unsaved.broadcast();
-      this.undo.broadcast();
-      this.catalog_tree_model.changeTree(current.getCatalog());
-      this.catalog_table_model.fireTableDataChanged();
-    } else {
-      Model.LOG.debug("undo: empty stack");
-    }
+    this.catalog_history.undo();
+    final CatalogState current = this.catalog_history.getCurrentValue();
+    this.catalog_table_model.fireTableDataChanged();
+    this.catalog_tree_model.changeTree(current.getCatalog());
   }
 
   /**
@@ -354,7 +295,7 @@ public final class Model
   public void catalogUnsavedChangesSubscribe(
     final Consumer<UnsavedChanges> listener)
   {
-    this.unsaved.addObserver(listener);
+    this.catalog_history.subscribeUnsaved(listener);
   }
 
   /**
@@ -366,7 +307,7 @@ public final class Model
   public void catalogUndoSubscribe(
     final Consumer<UndoAvailable> listener)
   {
-    this.undo.addObserver(listener);
+    this.catalog_history.subscribeUndo(listener);
   }
 
   /**
@@ -375,7 +316,7 @@ public final class Model
 
   public CatalogDiskID catalogGetFreshDiskID()
   {
-    final Catalog current = this.state_history.peek().getCatalog();
+    final Catalog current = this.catalog_history.getCurrentValue().getCatalog();
     final SortedMap<CatalogDiskID, CatalogDisk> disks = current.getDisks();
     if (!disks.isEmpty()) {
       final CatalogDiskID last = disks.lastKey();
@@ -396,6 +337,6 @@ public final class Model
 
   public void catalogRedoSubscribe(final Consumer<RedoAvailable> listener)
   {
-    this.redo.addObserver(listener);
+    this.catalog_history.subscribeRedo(listener);
   }
 }

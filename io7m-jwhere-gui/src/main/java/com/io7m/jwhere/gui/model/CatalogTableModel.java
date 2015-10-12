@@ -33,9 +33,9 @@ import java.util.function.Supplier;
 
 final class CatalogTableModel extends AbstractTableModel
 {
-  private final Supplier<ModelState> state_get;
+  private final Supplier<CatalogState> state_get;
 
-  CatalogTableModel(final Supplier<ModelState> in_state_get)
+  CatalogTableModel(final Supplier<CatalogState> in_state_get)
   {
     this.state_get = NullCheck.notNull(in_state_get);
   }
@@ -87,7 +87,7 @@ final class CatalogTableModel extends AbstractTableModel
     final int row,
     final int col)
   {
-    final ModelState state = this.state_get.get();
+    final CatalogState state = this.state_get.get();
     final SortedMap<CatalogDiskID, CatalogDisk> disks =
       state.getCatalog().getDisks();
 

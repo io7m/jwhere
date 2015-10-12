@@ -23,68 +23,75 @@ import com.io7m.jwhere.core.CatalogDiskID;
 import net.jcip.annotations.Immutable;
 import org.valid4j.Assertive;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-@Immutable final class ModelState
+/**
+ * The current immutable catalog state.
+ */
+
+@Immutable public final class CatalogState
 {
   private final Catalog             catalog;
   private final List<CatalogDiskID> catalog_disks;
-  private final BigInteger          revision;
 
-  private ModelState(
-    final Catalog in_catalog,
-    final List<CatalogDiskID> in_catalog_disks,
-    final BigInteger in_revision)
+  private CatalogState(final Catalog c)
   {
-    this.catalog = NullCheck.notNull(in_catalog);
-    this.catalog_disks = NullCheck.notNull(in_catalog_disks);
-    this.revision = NullCheck.notNull(in_revision);
-  }
-
-  static ModelState newEmpty(final BigInteger in_revision)
-  {
-    return new ModelState(
-      new Catalog(new TreeMap<>()), new ArrayList<>(1), in_revision);
-  }
-
-  static ModelState newCatalog(
-    final Catalog c,
-    final BigInteger in_revision)
-  {
-    NullCheck.notNull(c);
-    NullCheck.notNull(in_revision);
+    this.catalog = NullCheck.notNull(c);
 
     final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
     final List<CatalogDiskID> rows = new ArrayList<>(disks.size());
     rows.addAll(disks.keySet());
-    return new ModelState(c, rows, in_revision);
+    this.catalog_disks = rows;
   }
+
+  /**
+   * @return A new empty catalog state
+   */
+
+  public static CatalogState newEmpty()
+  {
+    return new CatalogState(new Catalog(new TreeMap<>()));
+  }
+
+  /**
+   * Construct a new catalog state with catalog {@code c}.
+   *
+   * @param c The new catalog
+   *
+   * @return A new catalog state
+   */
+
+  public static CatalogState newWithCatalog(final Catalog c)
+  {
+    return new CatalogState(c);
+  }
+
+  /**
+   * @return The catalog
+   */
 
   public Catalog getCatalog()
   {
     return this.catalog;
   }
 
-  public BigInteger getRevision()
-  {
-    return this.revision;
-  }
-
-  ModelState withNewCatalog(
-    final Catalog c)
-  {
-    NullCheck.notNull(c);
-    return ModelState.newCatalog(c, this.revision.add(BigInteger.ONE));
-  }
+  /**
+   * @return The number of disks in the catalog
+   */
 
   public int getCatalogDiskCount()
   {
     return this.catalog_disks.size();
   }
+
+  /**
+   * @param row The disk position
+   *
+   * @return The disk at position {@code row} in the catalog
+   */
 
   public CatalogDiskID getCatalogDiskAt(final int row)
   {

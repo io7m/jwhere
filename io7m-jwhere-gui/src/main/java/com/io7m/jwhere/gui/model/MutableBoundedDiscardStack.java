@@ -21,6 +21,7 @@ import org.valid4j.Assertive;
 
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -30,52 +31,47 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * @param <T> The type of elements
  */
 
-public final class MutableBoundedNonEmptyDiscardStack<T>
-  implements MutableBoundedNonEmptyDiscardStackType<T>
+public final class MutableBoundedDiscardStack<T>
+  implements MutableBoundedDiscardStackType<T>
 {
   private final Deque<T> stack;
   private final int      bound;
-  private       T        top;
 
   /**
    * Construct a stack.
    *
-   * @param in_top   The initial element
-   * @param in_bound The maximum stack size (must be {@code > 1})
+   * @param in_bound The maximum stack size (must be {@code >= 1})
    */
 
-  public MutableBoundedNonEmptyDiscardStack(
-    final T in_top,
+  public MutableBoundedDiscardStack(
     final int in_bound)
   {
     Assertive.require(
-      in_bound > 1, "Bound %d must be > 1", Integer.valueOf(in_bound));
+      in_bound >= 1, "Bound %d must be >= 1", Integer.valueOf(in_bound));
 
     this.stack = new ConcurrentLinkedDeque<>();
-    this.top = NullCheck.notNull(in_top);
     this.bound = in_bound;
   }
 
-  @Override public void clear(final T x)
+  @Override public void clear()
   {
-    this.top = NullCheck.notNull(x);
     this.stack.clear();
   }
 
-  @Override public T peek()
+  @Override public Optional<T> peek()
   {
-    return this.top;
+    if (this.stack.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(this.stack.peek());
   }
 
-  @Override public T pop()
+  @Override public Optional<T> pop()
   {
-    Assertive.require(
-      this.size() > 1,
-      "Stack must have more than one element to pop and remain non-empty");
-
-    final T old_top = this.top;
-    this.top = this.stack.pop();
-    return old_top;
+    if (this.stack.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(this.stack.pop());
   }
 
   @Override public void push(final T x)
@@ -84,8 +80,7 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     if (this.size() == this.bound) {
       this.stack.removeLast();
     }
-    this.stack.push(this.top);
-    this.top = x;
+    this.stack.push(x);
   }
 
   @Override public boolean equals(final Object o)
@@ -97,13 +92,10 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
       return false;
     }
 
-    final MutableBoundedNonEmptyDiscardStack<?> that =
-      (MutableBoundedNonEmptyDiscardStack<?>) o;
+    final MutableBoundedDiscardStack<?> that =
+      (MutableBoundedDiscardStack<?>) o;
 
     if (this.bound != that.bound) {
-      return false;
-    }
-    if (!this.top.equals(that.top)) {
       return false;
     }
 
@@ -130,7 +122,6 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
   {
     int result = this.hashStack();
     result = 31 * result + this.bound;
-    result = 31 * result + this.top.hashCode();
     return result;
   }
 
@@ -147,6 +138,6 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
 
   @Override public int size()
   {
-    return 1 + this.stack.size();
+    return this.stack.size();
   }
 }

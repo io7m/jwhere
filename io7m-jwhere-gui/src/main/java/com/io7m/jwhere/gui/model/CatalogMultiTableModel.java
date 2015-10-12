@@ -35,11 +35,11 @@ final class CatalogMultiTableModel extends AbstractTableModel
 {
   private final CatalogTableModel     catalog_model;
   private final CatalogDiskTableModel disk_model;
-  private final Supplier<ModelState>  state_get;
-  private       CatalogTarget         target;
+  private final Supplier<CatalogState> state_get;
+  private       CatalogTarget               target;
 
   CatalogMultiTableModel(
-    final Supplier<ModelState> in_state_get,
+    final Supplier<CatalogState> in_state_get,
     final CatalogTableModel in_catalog_model,
     final CatalogDiskTableModel in_disk_model)
   {
@@ -94,7 +94,7 @@ final class CatalogMultiTableModel extends AbstractTableModel
     NullCheck.notNull(index);
     NullCheck.notNull(dir);
 
-    final ModelState state = this.state_get.get();
+    final CatalogState state = this.state_get.get();
     final SortedMap<CatalogDiskID, CatalogDisk> disks =
       state.getCatalog().getDisks();
     final CatalogDisk disk = disks.get(index);
@@ -108,7 +108,7 @@ final class CatalogMultiTableModel extends AbstractTableModel
   {
     NullCheck.notNull(index);
 
-    final ModelState state = this.state_get.get();
+    final CatalogState state = this.state_get.get();
     final SortedMap<CatalogDiskID, CatalogDisk> disks =
       state.getCatalog().getDisks();
     final CatalogDisk disk = disks.get(index);
