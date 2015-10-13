@@ -21,6 +21,7 @@ import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
@@ -28,6 +29,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 
 public abstract class CatalogJSONSerializationContract<S extends
   CatalogJSONSerializerType, P extends CatalogJSONParserType>
@@ -85,5 +89,85 @@ public abstract class CatalogJSONSerializationContract<S extends
           Assert.assertEquals(c0, c2);
         }
       });
+  }
+
+  @Test public final void testSerializationCatalogRoundTripCompressStream()
+    throws Exception
+  {
+    final S s = this.getSerializer();
+    final P p = this.getParser();
+    final Generator<Catalog> g = CatalogGenerator.getDefault();
+
+    try (final FileSystem fs = CatalogTestFilesystems.makeEmptyUnixFilesystem
+      ()) {
+
+      final Path root = fs.getRootDirectories().iterator().next();
+      final Path file = root.resolve("file.txt");
+
+      QuickCheck.forAll(
+        3, g, new AbstractCharacteristic<Catalog>()
+        {
+          @Override protected void doSpecify(final Catalog c0)
+            throws Throwable
+          {
+            s.serializeCatalogToPath(
+              c0, new CatalogSaveSpecification(
+                CatalogSaveSpecification.Compress.COMPRESS_GZIP, file));
+
+            final Catalog c1 = p.parseCatalogFromPathWithCompression(
+              file, CatalogSaveSpecification.Compress.COMPRESS_GZIP);
+
+            s.serializeCatalogToPath(
+              c1, new CatalogSaveSpecification(
+                CatalogSaveSpecification.Compress.COMPRESS_GZIP, file));
+
+            final Catalog c2 = p.parseCatalogFromPathWithCompression(
+              file, CatalogSaveSpecification.Compress.COMPRESS_GZIP);
+
+            Assert.assertEquals(c0, c1);
+            Assert.assertEquals(c0, c2);
+          }
+        });
+    }
+  }
+
+  @Test public final void testSerializationCatalogRoundTripUncompressedStream()
+    throws Exception
+  {
+    final S s = this.getSerializer();
+    final P p = this.getParser();
+    final Generator<Catalog> g = CatalogGenerator.getDefault();
+
+    try (final FileSystem fs = CatalogTestFilesystems.makeEmptyUnixFilesystem
+      ()) {
+
+      final Path root = fs.getRootDirectories().iterator().next();
+      final Path file = root.resolve("file.txt");
+
+      QuickCheck.forAll(
+        3, g, new AbstractCharacteristic<Catalog>()
+        {
+          @Override protected void doSpecify(final Catalog c0)
+            throws Throwable
+          {
+            s.serializeCatalogToPath(
+              c0, new CatalogSaveSpecification(
+                CatalogSaveSpecification.Compress.COMPRESS_NONE, file));
+
+            final Catalog c1 = p.parseCatalogFromPathWithCompression(
+              file, CatalogSaveSpecification.Compress.COMPRESS_NONE);
+
+            s.serializeCatalogToPath(
+              c1, new CatalogSaveSpecification(
+                CatalogSaveSpecification.Compress.COMPRESS_NONE, file));
+
+            final Catalog c2 = p.parseCatalogFromPathWithCompression(
+              file, CatalogSaveSpecification.Compress.COMPRESS_NONE);
+
+            Assert.assertEquals(c0, c1);
+            Assert.assertEquals(c0, c2);
+          }
+        });
+    }
   }
 }
