@@ -17,6 +17,7 @@
 package com.io7m.jwhere.cmdline;
 
 import com.io7m.jwhere.core.Catalog;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -44,6 +45,15 @@ public final class CommandInit extends CommandBase
   }
 
   /**
+   * The compression scheme to use for the catalog
+   */
+
+  @Option(name = "--catalog-compress",
+          arity = 1,
+          description = "The compression scheme to use for the catalog")
+  private final CatalogSaveSpecification.Compress catalog_compress =
+    CatalogSaveSpecification.Compress.COMPRESS_GZIP;
+  /**
    * The path to the catalog.
    */
 
@@ -63,7 +73,7 @@ public final class CommandInit extends CommandBase
 
   @Override public void run()
   {
-    this.configureLogLevel();
+    super.setup();
 
     try {
       CommandInit.LOG.debug("Initializing {}", this.catalog);
@@ -72,7 +82,8 @@ public final class CommandInit extends CommandBase
       final Path p = new File(this.catalog).toPath();
 
       if (Files.notExists(p, LinkOption.NOFOLLOW_LINKS)) {
-        CommandBase.writeCatalogToDisk(c, p);
+        CommandBase.writeCatalogToDisk(
+          c, new CatalogSaveSpecification(this.catalog_compress, p));
       } else {
         throw new FileAlreadyExistsException(this.catalog);
       }

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 /**
  * The type of JSON parsers.
@@ -28,7 +29,55 @@ import java.io.InputStream;
 public interface CatalogJSONParserType
 {
   /**
-   * Parse a catalog from the given JSON node.
+   * Parse a catalog from the given path. Some intelligence is used: If the path
+   * appears to be a compressed catalog, an attempt will be made to open it as
+   * such.
+   *
+   * @param p The path
+   *
+   * @return A catalog
+   *
+   * @throws CatalogJSONParseException          On parsing or validation errors
+   * @throws CatalogNodeException               On malformed disk errors
+   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   *                                            same ID
+   * @throws IOException                        On I/O errors
+   */
+
+  Catalog parseCatalogFromPath(Path p)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException,
+    IOException;
+
+  /**
+   * Parse a catalog from the given path using the given compression setting.
+   *
+   * @param p           The path
+   * @param compression The compression method used to compress the target
+   *                    catalog
+   *
+   * @return A catalog
+   *
+   * @throws CatalogJSONParseException          On parsing or validation errors
+   * @throws CatalogNodeException               On malformed disk errors
+   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   *                                            same ID
+   * @throws IOException                        On I/O errors
+   */
+
+  Catalog parseCatalogFromPathWithCompression(
+    Path p,
+    CatalogSaveSpecification.Compress compression)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException,
+    IOException;
+
+  /**
+   * Parse a catalog from the given input stream.
    *
    * @param is An input stream
    *

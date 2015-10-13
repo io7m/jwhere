@@ -70,7 +70,7 @@ public final class CommandListDisks extends CommandBase
 
   @Override public void run()
   {
-    this.configureLogLevel();
+    super.setup();
 
     try {
       final CatalogJSONParserType p = CatalogJSONParser.newParser();

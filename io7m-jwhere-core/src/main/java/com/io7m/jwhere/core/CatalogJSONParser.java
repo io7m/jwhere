@@ -21,10 +21,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.jnull.NullCheck;
+import com.io7m.junreachable.UnreachableCodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
@@ -32,6 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
 
 /**
  * The default implementation of the {@link CatalogJSONParserType} interface.
@@ -39,6 +45,12 @@ import java.util.TreeMap;
 
 public final class CatalogJSONParser implements CatalogJSONParserType
 {
+  private static final Logger LOG;
+
+  static {
+    LOG = LoggerFactory.getLogger(CatalogJSONParser.class);
+  }
+
   private CatalogJSONParser()
   {
 
@@ -151,6 +163,63 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   public static CatalogJSONParserType newParser()
   {
     return new CatalogJSONParser();
+  }
+
+  @Override public Catalog parseCatalogFromPath(final Path p)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException,
+    IOException
+  {
+    NullCheck.notNull(p);
+
+    final String guess_type = Files.probeContentType(p);
+    if ("application/gzip".equals(guess_type)) {
+      CatalogJSONParser.LOG.debug(
+        "path {} appears to be of type {}, opening as compressed stream",
+        p,
+        guess_type);
+      return this.parseCatalogFromPathWithCompression(
+        p, CatalogSaveSpecification.Compress.COMPRESS_GZIP);
+    } else {
+      CatalogJSONParser.LOG.debug(
+        "path {} appears to be of type {}, opening as uncompressed stream",
+        p,
+        guess_type);
+      return this.parseCatalogFromPathWithCompression(
+        p, CatalogSaveSpecification.Compress.COMPRESS_NONE);
+    }
+  }
+
+  @Override public Catalog parseCatalogFromPathWithCompression(
+    final Path p,
+    final CatalogSaveSpecification.Compress compression)
+    throws
+    CatalogJSONParseException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIndexException,
+    IOException
+  {
+    NullCheck.notNull(p);
+    NullCheck.notNull(compression);
+
+    // Checkstyle is unable to determine that these cases do not "fall through"
+    // CHECKSTYLE:OFF
+    switch (compression) {
+      case COMPRESS_NONE:
+        try (final InputStream s = Files.newInputStream(p)) {
+          return this.parseCatalogFromStream(s);
+        }
+      case COMPRESS_GZIP:
+        try (final InputStream s = new GZIPInputStream(
+          Files.newInputStream(p))) {
+          return this.parseCatalogFromStream(s);
+        }
+    }
+    // CHECKSTYLE:ON
+
+    throw new UnreachableCodeException();
   }
 
   @Override public Catalog parseCatalogFromStream(final InputStream is)
