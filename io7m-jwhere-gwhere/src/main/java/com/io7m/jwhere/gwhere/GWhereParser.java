@@ -21,10 +21,13 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskBuilderType;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogNodeException;
@@ -34,16 +37,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * The default implementation of the {@link GWhereParserType} interface.
@@ -71,17 +75,16 @@ public final class GWhereParser implements GWhereParserType
   /**
    * Construct a new parser.
    *
-   * @param bc A readable byte channel
+   * @param is A readable stream
    *
    * @return A new parser
    */
 
-  public static GWhereParserType newParser(final ReadableByteChannel bc)
+  public static GWhereParserType newParser(final InputStream is)
   {
-    NullCheck.notNull(bc);
+    NullCheck.notNull(is);
 
-    final BufferedReader r = new BufferedReader(
-      new InputStreamReader(Channels.newInputStream(bc)));
+    final BufferedReader r = new BufferedReader(new InputStreamReader(is));
     return new GWhereParser(r);
   }
 
@@ -126,6 +129,77 @@ public final class GWhereParser implements GWhereParserType
 
     this.parseDirectory(db, root_node);
     return db.build();
+  }
+
+  @Override public Catalog parseCatalog()
+    throws
+    IOException,
+    GWhereParserException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIDException
+  {
+    this.parseHeader();
+    this.parseArchiveHeader();
+
+    final SortedMap<CatalogDiskID, CatalogDisk> disks = new TreeMap<>();
+    while (this.reader.ready()) {
+      final String line = this.getLineOrEOF();
+      if (line == null) {
+        break;
+      }
+
+      if ("//".equals(line)) {
+        final CatalogDisk disk = this.parseDisk();
+        final CatalogDiskMetadata meta = disk.getMeta();
+        final CatalogDiskID disk_id = meta.getDiskID();
+        if (disks.containsKey(disk_id)) {
+          throw new CatalogDiskDuplicateIDException(disk_id.toString());
+        }
+        disks.put(disk_id, disk);
+      }
+    }
+
+    return new Catalog(disks);
+  }
+
+  private void parseArchiveHeader()
+    throws
+    IOException,
+    GWhereUnexpectedEOFException,
+    GWhereExpectedArchiveLineException
+  {
+    final String line = this.getLineNotEOF();
+    if (!line.startsWith("archive:")) {
+      final StringBuilder sb = new StringBuilder(128);
+      sb.append("Expected a line starting with 'archive:'");
+      sb.append(System.lineSeparator());
+      sb.append("Got: ");
+      sb.append(line);
+      sb.append(System.lineSeparator());
+      final String m = sb.toString();
+      throw new GWhereExpectedArchiveLineException(
+        this.pos_line, this.pos_column, m);
+    }
+  }
+
+  private void parseHeader()
+    throws
+    IOException,
+    GWhereUnexpectedEOFException,
+    GWhereExpectedArchiveLineException
+  {
+    final String line = this.getLineNotEOF();
+    if (!line.startsWith("GWhere")) {
+      final StringBuilder sb = new StringBuilder(128);
+      sb.append("Expected a line starting with 'GWhere'");
+      sb.append(System.lineSeparator());
+      sb.append("Got: ");
+      sb.append(line);
+      sb.append(System.lineSeparator());
+      final String m = sb.toString();
+      throw new GWhereExpectedArchiveLineException(
+        this.pos_line, this.pos_column, m);
+    }
   }
 
   private Pair<String, CatalogDirectoryNode> parseDiskDirectory()

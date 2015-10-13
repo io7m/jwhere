@@ -14,35 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.core;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+/**
+ * The type of items that can appear in verification reports that signify
+ * validated files.
+ */
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
-
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+public interface CatalogVerificationReportItemOKType
+  extends CatalogVerificationReportItemType
 {
-
-  SizeBytesRenderer()
-  {
-    super();
-  }
-
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
-  {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
-
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
-  }
+  // No extra functions
 }

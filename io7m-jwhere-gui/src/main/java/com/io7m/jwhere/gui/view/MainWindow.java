@@ -20,20 +20,26 @@ import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jnull.NullCheck;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gui.ControllerType;
 import com.io7m.jwhere.gui.model.UnsavedChanges;
+import net.java.dev.designgridlayout.DesignGridLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -62,6 +68,7 @@ public final class MainWindow extends JFrame
   private final CatalogTab     tab_catalog;
   private final SearchTab      tab_search;
   private final TasksTab       tab_tasks;
+  private final VerifyTab      tab_verify;
 
   /**
    * Construct the main window.
@@ -92,9 +99,11 @@ public final class MainWindow extends JFrame
     this.tab_catalog = new CatalogTab(this, this.status, this.controller);
     this.tab_search = new SearchTab(this.controller);
     this.tab_tasks = new TasksTab(this.controller);
+    this.tab_verify = new VerifyTab(this.controller, this.status);
     tabs.add("Catalog", this.tab_catalog);
     tabs.add("Search", this.tab_search);
     tabs.add("Tasks", this.tab_tasks);
+    tabs.add("Verify", this.tab_verify);
     pane.add(tabs, BorderLayout.CENTER);
 
     /**
@@ -113,7 +122,7 @@ public final class MainWindow extends JFrame
       {
         @Override public void windowClosing(final WindowEvent e)
         {
-          MainWindow.onActionCatalogClose(
+          MainWindow.onActionExit(
             MainWindow.this,
             MainWindow.this.status,
             MainWindow.this.controller);
@@ -222,14 +231,17 @@ public final class MainWindow extends JFrame
   {
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
       (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
-    final FunctionType<Unit, Optional<Path>> on_want_save_file =
-      (x) -> MainWindow.onWantSaveFile(window);
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
 
     /**
      * Evaluated when saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Exiting...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Exiting...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -240,6 +252,7 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("closing/saving failed: ", ex);
         status.onErrorLater("Closing failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         MainWindow.LOG.debug("closing/saving finished");
@@ -258,8 +271,8 @@ public final class MainWindow extends JFrame
   {
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
       (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
-    final FunctionType<Unit, Optional<Path>> on_want_save_file =
-      (x) -> MainWindow.onWantSaveFile(window);
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
     final FunctionType<Unit, Optional<Path>> on_want_open_file =
       (x) -> MainWindow.onWantOpenFile(window);
 
@@ -267,7 +280,10 @@ public final class MainWindow extends JFrame
      * Evaluated when saving/loading starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Loading...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Loading...");
+    };
 
     /**
      * Evaluated when saving/loading is finished.
@@ -278,9 +294,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("loading/saving failed: ", ex);
         status.onErrorLater("Load failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Loaded catalog");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 
@@ -297,14 +315,17 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final FunctionType<Unit, Optional<Path>> on_want_save_file =
-      (x) -> MainWindow.onWantSaveFile(window);
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
 
     /**
      * Evaluated when closing/saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Saving...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Saving...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -315,9 +336,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("saving failed: ", ex);
         status.onErrorLater("Save failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Save completed");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 
@@ -330,14 +353,17 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final FunctionType<Unit, Optional<Path>> on_want_save_file =
-      (x) -> MainWindow.onWantSaveFile(window);
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
 
     /**
      * Evaluated when closing/saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Saving...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Saving...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -348,9 +374,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("saving failed: ", ex);
         status.onErrorLater("Save failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Save completed");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 
@@ -365,14 +393,17 @@ public final class MainWindow extends JFrame
   {
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
       (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
-    final FunctionType<Unit, Optional<Path>> on_want_save_file =
-      (x) -> MainWindow.onWantSaveFile(window);
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
 
     /**
      * Evaluated when closing/saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Closing...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Closing...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -383,9 +414,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("closing/saving failed: ", ex);
         status.onErrorLater("Closing failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Closed catalog");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 
@@ -402,6 +435,9 @@ public final class MainWindow extends JFrame
   {
     final Optional<Path> r_path;
     final JFileChooser chooser = new JFileChooser();
+    final FileFilter filter = new CatalogFileFilter();
+    chooser.addChoosableFileFilter(filter);
+    chooser.setFileFilter(filter);
     final int r = chooser.showOpenDialog(window);
     if (r == JFileChooser.APPROVE_OPTION) {
       final File file = chooser.getSelectedFile();
@@ -418,18 +454,36 @@ public final class MainWindow extends JFrame
    * indicates that the whole process should be aborted.
    */
 
-  private static Optional<Path> onWantSaveFile(final JFrame window)
+  private static Optional<CatalogSaveSpecification> onWantSaveFile(
+    final JFrame window)
   {
-    final Optional<Path> r_path;
+    final SaveSpecificationPanel spec_panel = new SaveSpecificationPanel();
+    final Optional<CatalogSaveSpecification> r_path;
     final JFileChooser chooser = new JFileChooser();
+    final FileFilter filter = new CatalogFileFilter();
+    chooser.addChoosableFileFilter(filter);
+    chooser.setFileFilter(filter);
+    chooser.setAccessory(spec_panel);
+
     final int r = chooser.showSaveDialog(window);
     if (r == JFileChooser.APPROVE_OPTION) {
       final File file = chooser.getSelectedFile();
-      MainWindow.LOG.debug("save: selected {}", file);
-      r_path = Optional.of(file.toPath());
+      final boolean compress = spec_panel.isCompressSelected();
+      final CatalogSaveSpecification spec;
+      if (compress) {
+        spec = new CatalogSaveSpecification(
+          CatalogSaveSpecification.Compress.COMPRESS_GZIP, file.toPath());
+      } else {
+        spec = new CatalogSaveSpecification(
+          CatalogSaveSpecification.Compress.COMPRESS_NONE, file.toPath());
+      }
+
+      MainWindow.LOG.debug("save: selected {}", spec);
+      r_path = Optional.of(spec);
     } else {
       r_path = Optional.empty();
     }
+
     return r_path;
   }
 
@@ -450,4 +504,43 @@ public final class MainWindow extends JFrame
     return sb.toString();
   }
 
+  private static final class SaveSpecificationPanel extends JPanel
+  {
+    private final JCheckBox compress;
+
+    SaveSpecificationPanel()
+    {
+      this.compress = new JCheckBox();
+      this.compress.setSelected(true);
+
+      final DesignGridLayout dg = new DesignGridLayout(this);
+      dg.row().grid(new JLabel("Compress")).add(this.compress);
+    }
+
+    boolean isCompressSelected()
+    {
+      return this.compress.isSelected();
+    }
+  }
+
+  private static final class CatalogFileFilter extends FileFilter
+  {
+    CatalogFileFilter()
+    {
+
+    }
+
+    @Override public boolean accept(final File f)
+    {
+      final String name = f.getName();
+      final boolean likely_file =
+        f.isFile() && name.endsWith(".jcz") || name.endsWith(".jcz");
+      return f.isDirectory() || likely_file;
+    }
+
+    @Override public String getDescription()
+    {
+      return "Catalogs (*.jc, *.jcz)";
+    }
+  }
 }

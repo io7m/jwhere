@@ -38,7 +38,7 @@ final class CatalogTreeModel extends DefaultTreeModel
       new DefaultMutableTreeNode((CatalogRootType) () -> "Catalog"));
   }
 
-  public void changeTree(final Catalog in_catalog)
+  public void update(final Catalog in_catalog)
   {
     final DefaultMutableTreeNode new_root = new DefaultMutableTreeNode(
       (CatalogRootType) () -> "Catalog");

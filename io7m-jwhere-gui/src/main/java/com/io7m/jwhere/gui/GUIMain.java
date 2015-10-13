@@ -70,7 +70,7 @@ public final class GUIMain
     SwingUtilities.invokeLater(
       () -> {
         final MainWindow w = new MainWindow(controller);
-        w.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        w.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         w.pack();
         w.setVisible(true);
       });

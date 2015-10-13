@@ -63,6 +63,7 @@ public final class Main
     builder.withCommand(CommandListDisks.class);
     builder.withCommand(CommandAddDisk.class);
     builder.withCommand(CommandVerifyDisk.class);
+    builder.withCommand(CommandImportGWhere.class);
     builder.withCommand(Help.class);
     final Cli<Runnable> parser = builder.build();
 

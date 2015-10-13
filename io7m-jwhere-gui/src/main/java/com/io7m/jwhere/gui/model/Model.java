@@ -20,26 +20,31 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
+import com.io7m.jwhere.core.CatalogIgnoreAccessTime;
 import com.io7m.jwhere.core.CatalogJSONParser;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
+import com.io7m.jwhere.core.CatalogVerificationListenerType;
+import com.io7m.jwhere.core.CatalogVerificationReportItemErrorType;
+import com.io7m.jwhere.core.CatalogVerificationReportItemOKType;
+import com.io7m.jwhere.core.CatalogVerificationReportSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valid4j.Assertive;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.SortedMap;
@@ -58,10 +63,12 @@ public final class Model
     LOG = LoggerFactory.getLogger(Model.class);
   }
 
-  private final CatalogMultiTableModel  catalog_table_model;
-  private final CatalogTreeModel        catalog_tree_model;
-  private final Revisions<CatalogState> catalog_history;
-  private       Optional<Path>          catalog_file;
+  private final CatalogMultiTableModel             catalog_table_model;
+  private final CatalogTreeModel                   catalog_tree_model;
+  private final Revisions<CatalogState>            catalog_history;
+  private final CatalogComboBoxModel               catalog_combo_box_model;
+  private final CatalogVerificationTableModel      catalog_verification_model;
+  private       Optional<CatalogSaveSpecification> catalog_save_spec;
 
   /**
    * Construct the model.
@@ -69,15 +76,20 @@ public final class Model
 
   public Model()
   {
-    this.catalog_file = Optional.empty();
+    this.catalog_save_spec = Optional.empty();
     this.catalog_history = new Revisions<>(CatalogState.newEmpty(), 32);
 
     final CatalogTableModel tm =
       new CatalogTableModel(this.catalog_history::getCurrentValue);
-    final CatalogDiskTableModel dtm = new CatalogDiskTableModel();
+    final CatalogDiskTableModel dtm =
+      new CatalogDiskTableModel(this.catalog_history::getCurrentValue);
     this.catalog_table_model = new CatalogMultiTableModel(
       this.catalog_history::getCurrentValue, tm, dtm);
     this.catalog_tree_model = new CatalogTreeModel();
+    this.catalog_combo_box_model =
+      new CatalogComboBoxModel(this.catalog_history::getCurrentValue);
+
+    this.catalog_verification_model = new CatalogVerificationTableModel();
   }
 
   /**
@@ -102,33 +114,32 @@ public final class Model
    * @return The current catalog filename, if any
    */
 
-  public Optional<Path> getCatalogFileName()
+  public Optional<CatalogSaveSpecification> getCatalogSaveSpecification()
   {
-    return this.catalog_file;
+    return this.catalog_save_spec;
   }
 
   /**
-   * Save the catalog to {@code path}.
+   * Save the catalog.
    *
-   * @param path The path to the catalog
+   * @param spec The save specification
    *
    * @throws IOException On I/O errors
    */
 
-  public void catalogSave(final Path path)
+  public void catalogSave(
+    final CatalogSaveSpecification spec)
     throws IOException
   {
-    Model.LOG.debug("saving catalog to: {}", path);
+    Model.LOG.debug("saving catalog to: {}", spec);
 
     final CatalogJSONSerializerType serial =
       CatalogJSONSerializer.newSerializer();
 
     final CatalogState current = this.catalog_history.getCurrentValue();
-    try (final OutputStream stream = Files.newOutputStream(path)) {
-      serial.serializeCatalogToStream(current.getCatalog(), stream);
-      this.catalog_history.save();
-      this.catalog_file = Optional.of(path);
-    }
+    serial.serializeCatalogToPath(current.getCatalog(), spec);
+    this.catalog_history.save();
+    this.catalog_save_spec = Optional.of(spec);
   }
 
   /**
@@ -146,13 +157,14 @@ public final class Model
     Model.LOG.debug("opening catalog from: {}", path);
 
     final CatalogJSONParserType parser = CatalogJSONParser.newParser();
-    try (final InputStream stream = Files.newInputStream(path)) {
-      final Catalog c = parser.parseCatalogFromStream(stream);
-      this.catalog_history.reset(CatalogState.newWithCatalog(c));
-      this.catalog_file = Optional.of(path);
-      this.catalog_table_model.reset();
-      this.catalog_tree_model.changeTree(c);
-    }
+    final Catalog c = parser.parseCatalogFromPath(path);
+    this.catalog_history.reset(CatalogState.newWithCatalog(c));
+    this.catalog_save_spec = Optional.of(
+      new CatalogSaveSpecification(
+        CatalogSaveSpecification.Compress.COMPRESS_GZIP, path));
+    this.catalog_table_model.reset();
+    this.catalog_tree_model.update(c);
+    this.catalog_combo_box_model.update();
   }
 
   /**
@@ -179,7 +191,7 @@ public final class Model
       current.getCatalog().getDisks();
 
     if (disks.containsKey(disk_id)) {
-      throw new CatalogDiskDuplicateIndexException(disk_id.toString());
+      throw new CatalogDiskDuplicateIDException(disk_id.toString());
     }
 
     final CatalogDisk disk =
@@ -191,7 +203,8 @@ public final class Model
 
     this.catalog_history.newRevision(CatalogState.newWithCatalog(c));
     this.catalog_table_model.fireTableDataChanged();
-    this.catalog_tree_model.changeTree(c);
+    this.catalog_tree_model.update(c);
+    this.catalog_combo_box_model.update();
   }
 
   /**
@@ -204,9 +217,10 @@ public final class Model
 
     final CatalogState current = CatalogState.newEmpty();
     this.catalog_history.reset(current);
-    this.catalog_file = Optional.empty();
+    this.catalog_save_spec = Optional.empty();
     this.catalog_table_model.reset();
-    this.catalog_tree_model.changeTree(current.getCatalog());
+    this.catalog_tree_model.update(current.getCatalog());
+    this.catalog_combo_box_model.update();
   }
 
   /**
@@ -271,7 +285,8 @@ public final class Model
     this.catalog_history.redo();
     final CatalogState current = this.catalog_history.getCurrentValue();
     this.catalog_table_model.fireTableDataChanged();
-    this.catalog_tree_model.changeTree(current.getCatalog());
+    this.catalog_tree_model.update(current.getCatalog());
+    this.catalog_combo_box_model.update();
   }
 
   /**
@@ -283,7 +298,9 @@ public final class Model
     this.catalog_history.undo();
     final CatalogState current = this.catalog_history.getCurrentValue();
     this.catalog_table_model.fireTableDataChanged();
-    this.catalog_tree_model.changeTree(current.getCatalog());
+    this.catalog_tree_model.update(current.getCatalog());
+    this.catalog_combo_box_model.update();
+    this.catalog_combo_box_model.update();
   }
 
   /**
@@ -338,5 +355,74 @@ public final class Model
   public void catalogRedoSubscribe(final Consumer<RedoAvailable> listener)
   {
     this.catalog_history.subscribeRedo(listener);
+  }
+
+  /**
+   * Verify the disk with {@code id} against {@code path}.
+   *
+   * @param id   The disk ID
+   * @param path The path
+   *
+   * @throws IOException      On I/O errors
+   * @throws CatalogException On other catalog errors
+   */
+
+  public void catalogVerifyDisk(
+    final CatalogDiskID id,
+    final Path path)
+    throws IOException, CatalogException
+  {
+    NullCheck.notNull(id);
+    NullCheck.notNull(path);
+
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+
+    final Catalog current = this.catalog_history.getCurrentValue().getCatalog();
+    final SortedMap<CatalogDiskID, CatalogDisk> disks = current.getDisks();
+    Assertive.require(disks.containsKey(id));
+    final CatalogDisk disk = disks.get(id);
+    final CatalogVerificationTableModel cvm = this.catalog_verification_model;
+
+    cvm.reset();
+    CatalogFilesystemReader.verifyDisk(
+      disk, settings, path, new CatalogVerificationListenerType()
+      {
+        @Override public void onItemVerified(
+          final CatalogVerificationReportItemOKType ok)
+        {
+          cvm.add(ok);
+        }
+
+        @Override public void onItemError(
+          final CatalogVerificationReportItemErrorType error)
+        {
+          cvm.add(error);
+        }
+
+        @Override public void onCompleted()
+        {
+          // Nothing
+        }
+      });
+  }
+
+  /**
+   * @return The list of disks as a combo box model.
+   */
+
+  public ComboBoxModel<CatalogDiskMetadata> getCatalogComboBoxModel()
+  {
+    return this.catalog_combo_box_model;
+  }
+
+  /**
+   * @return The table model for verification results
+   */
+
+  public TableModel getVerificationTableModel()
+  {
+    return this.catalog_verification_model;
   }
 }

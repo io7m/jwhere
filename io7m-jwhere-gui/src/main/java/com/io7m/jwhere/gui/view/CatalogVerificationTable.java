@@ -16,33 +16,33 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+import com.io7m.jnull.NullCheck;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.TableModel;
 
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+final class CatalogVerificationTable extends JTable
 {
+  private static final Logger LOG;
 
-  SizeBytesRenderer()
-  {
-    super();
+  static {
+    LOG = LoggerFactory.getLogger(CatalogVerificationTable.class);
   }
 
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
+  CatalogVerificationTable(final TableModel in_model)
   {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
+    super(in_model);
+    NullCheck.notNull(in_model);
 
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
+    this.getTableHeader().setReorderingAllowed(false);
+
+    this.setFont(Fonts.getMonospacedSmall());
+
+    this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.setRowSelectionAllowed(true);
+    this.setColumnSelectionAllowed(false);
   }
 }

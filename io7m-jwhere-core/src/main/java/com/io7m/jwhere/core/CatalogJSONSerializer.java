@@ -27,12 +27,14 @@ import org.jgrapht.graph.UnmodifiableGraph;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * The default implementation of the {@link CatalogJSONSerializerType}
@@ -152,6 +154,26 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   public static CatalogJSONSerializerType newSerializer()
   {
     return new CatalogJSONSerializer();
+  }
+
+  @Override public void serializeCatalogToPath(
+    final Catalog c,
+    final CatalogSaveSpecification s)
+    throws IOException
+  {
+    switch (s.getCompression()) {
+      case COMPRESS_NONE:
+        try (final OutputStream os = Files.newOutputStream(s.getPath())) {
+          this.serializeCatalogToStream(c, os);
+        }
+        break;
+      case COMPRESS_GZIP:
+        try (final OutputStream os = new GZIPOutputStream(
+          Files.newOutputStream(s.getPath()))) {
+          this.serializeCatalogToStream(c, os);
+        }
+        break;
+    }
   }
 
   @Override public void serializeCatalogToStream(

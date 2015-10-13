@@ -19,7 +19,7 @@ package com.io7m.jwhere.cmdline;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogJSONParseException;
@@ -70,7 +70,7 @@ public final class CommandListDisks extends CommandBase
 
   @Override public void run()
   {
-    this.configureLogLevel();
+    super.setup();
 
     try {
       final CatalogJSONParserType p = CatalogJSONParser.newParser();
@@ -95,7 +95,7 @@ public final class CommandListDisks extends CommandBase
           meta.getFilesystemType());
       }
 
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIndexException
+    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException
       e) {
       CommandListDisks.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());

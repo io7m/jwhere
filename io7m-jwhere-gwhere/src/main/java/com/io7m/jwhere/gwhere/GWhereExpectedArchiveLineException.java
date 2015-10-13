@@ -14,35 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.gwhere;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+import java.math.BigInteger;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
+/**
+ * An exception indicating that an archive line was expected, but something else
+ * was encountered.
+ */
 
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+public final class GWhereExpectedArchiveLineException
+  extends GWhereParserException
 {
+  /**
+   * Construct an exception
+   *
+   * @param line   The line number
+   * @param column The column number
+   * @param s      The exception message
+   */
 
-  SizeBytesRenderer()
+  public GWhereExpectedArchiveLineException(
+    final BigInteger line,
+    final BigInteger column,
+    final String s)
   {
-    super();
-  }
-
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
-  {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
-
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
+    super(line, column, s);
   }
 }

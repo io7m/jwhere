@@ -60,7 +60,7 @@ final class CatalogAddDiskDialog extends JDialog
     final BigIntegerTextField disk_id = new BigIntegerTextField();
     disk_id.setText(controller.catalogGetFreshDiskID().toString());
 
-    final JTextField disk_root = new JTextField();
+    final JTextField disk_root = new JTextField(32);
 
     final JButton disk_root_open = new JButton("Open...");
     disk_root_open.addActionListener(
@@ -90,16 +90,20 @@ final class CatalogAddDiskDialog extends JDialog
             if (ex_opt.isPresent()) {
               final Throwable ex = ex_opt.get();
               status.onErrorLater("Adding disk failed!");
+              status.onProgressIndeterminateFinishLater();
               CatalogAddDiskDialog.LOG.error(
                 "Failed to add disk: ", ex);
               ErrorBox.showErrorLater(ex);
             } else {
               status.onInfoLater("Added disk.");
+              status.onProgressIndeterminateFinishLater();
             }
           };
 
-          final Runnable on_start_io =
-            () -> status.onInfoLater("Adding disk...");
+          final Runnable on_start_io = () -> {
+            status.onProgressIndeterminateStartLater();
+            status.onInfoLater("Adding disk...");
+          };
 
           controller.catalogAddDisk(
             new_name, new_id, new_path, on_start_io, on_finish_io);
@@ -110,8 +114,10 @@ final class CatalogAddDiskDialog extends JDialog
     final DesignGridLayout dg = new DesignGridLayout(this.getContentPane());
     dg.row().grid(new JLabel("Disk Name")).add(disk_name);
     dg.row().grid(new JLabel("Disk ID")).add(disk_id);
-    dg.row().grid(new JLabel("Root Directory")).add(disk_root).add(
+    dg.row().grid(new JLabel("Root Directory")).add(disk_root, 3).add(
       disk_root_open);
     dg.row().right().add(cancel).add(add);
+
+    this.getRootPane().setDefaultButton(add);
   }
 }

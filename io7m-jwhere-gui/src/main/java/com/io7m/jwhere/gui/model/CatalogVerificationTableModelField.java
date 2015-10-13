@@ -14,35 +14,33 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.gui.model;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+import java.nio.file.Path;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
-
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+enum CatalogVerificationTableModelField
 {
+  NAME("Path", Path.class),
+  RESULT("Result", String.class);
 
-  SizeBytesRenderer()
+  private final String   name;
+  private final Class<?> type;
+
+  CatalogVerificationTableModelField(
+    final String in_name,
+    final Class<?> in_type)
   {
-    super();
+    this.name = in_name;
+    this.type = in_type;
   }
 
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
+  public String getName()
   {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
+    return this.name;
+  }
 
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
+  public Class<?> getType()
+  {
+    return this.type;
   }
 }

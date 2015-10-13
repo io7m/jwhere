@@ -16,24 +16,13 @@
 
 package com.io7m.jwhere.core;
 
-import java.nio.file.Path;
-
 /**
  * The type of items that can appear in verification reports that signify
  * errors.
  */
 
 public interface CatalogVerificationReportItemErrorType
+  extends CatalogVerificationReportItemType
 {
-  /**
-   * @return The path of the file in question
-   */
-
-  Path getPath();
-
-  /**
-   * @return A humanly-readable description of the problem
-   */
-
-  String show();
+  // No extra functions
 }

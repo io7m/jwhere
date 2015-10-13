@@ -14,35 +14,25 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.core;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+/**
+ * An exception indicating an attempt to load a catalog that has two disks with
+ * the same ID.
+ */
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
-
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+public final class CatalogDiskDuplicateIDException extends CatalogException
 {
+  private static final long serialVersionUID = 1L;
 
-  SizeBytesRenderer()
+  /**
+   * Construct an exception.
+   *
+   * @param m The exception message
+   */
+
+  public CatalogDiskDuplicateIDException(final String m)
   {
-    super();
-  }
-
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
-  {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
-
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
+    super(m);
   }
 }

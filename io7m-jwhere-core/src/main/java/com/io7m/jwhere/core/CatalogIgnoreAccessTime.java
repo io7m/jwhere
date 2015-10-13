@@ -14,35 +14,23 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.core;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+/**
+ * A value indicating whether or not access times should be ignored.
+ */
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
-
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+public enum CatalogIgnoreAccessTime
 {
+  /**
+   * Ignore access time changes.
+   */
 
-  SizeBytesRenderer()
-  {
-    super();
-  }
+  IGNORE_ACCESS_TIME,
 
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
-  {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
+  /**
+   * Do not ignore access time changes.
+   */
 
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
-  }
+  DO_NOT_IGNORE_ACCESS_TIME
 }

@@ -44,12 +44,7 @@ final class CatalogDiskMetadataRenderer extends DefaultTableCellRenderer
     Assertive.require(value instanceof CatalogDiskMetadata);
     final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
 
-    if ("iso9660".equals(meta.getFilesystemType())) {
-      this.setIcon(Icons.getDiskOpticalIcon16());
-    } else {
-      this.setIcon(Icons.getDiskIcon16());
-    }
-
+    this.setIcon(CatalogDiskIcons.getIconForDisk(meta));
     this.setText(meta.getDiskName().getValue());
     return this;
   }

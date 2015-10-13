@@ -18,7 +18,7 @@ package com.io7m.jwhere.cmdline;
 
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
@@ -28,6 +28,7 @@ import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParser;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogNodeException;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -54,6 +55,16 @@ public final class CommandAddDisk extends CommandBase
   }
 
   /**
+   * The compression scheme to use for the catalog
+   */
+
+  @Option(name = "--catalog-compress",
+          arity = 1,
+          description = "The compression scheme to use for the catalog")
+  private final CatalogSaveSpecification.Compress catalog_compress =
+    CatalogSaveSpecification.Compress.COMPRESS_GZIP;
+
+  /**
    * The path to the input catalog.
    */
 
@@ -61,7 +72,6 @@ public final class CommandAddDisk extends CommandBase
           arity = 1,
           description = "The path to the input catalog file",
           required = true) private String catalog_in;
-
   /**
    * The path to the output catalog.
    */
@@ -70,7 +80,6 @@ public final class CommandAddDisk extends CommandBase
           arity = 1,
           description = "The path to the output catalog file",
           required = true) private String catalog_out;
-
   /**
    * The filesystem root.
    */
@@ -109,7 +118,7 @@ public final class CommandAddDisk extends CommandBase
 
   @Override public void run()
   {
-    this.configureLogLevel();
+    super.setup();
 
     try {
       CommandAddDisk.LOG.debug("Disk {}", this.disk_name);
@@ -128,7 +137,7 @@ public final class CommandAddDisk extends CommandBase
       final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
       final CatalogDiskID id = new CatalogDiskID(this.disk_index);
       if (disks.containsKey(id)) {
-        throw new CatalogDiskDuplicateIndexException(
+        throw new CatalogDiskDuplicateIDException(
           String.format(
             "Catalog already contains a disk with index %s", id));
       }
@@ -138,9 +147,11 @@ public final class CommandAddDisk extends CommandBase
       final CatalogDiskMetadata meta = disk.getMeta();
 
       disks.put(meta.getDiskID(), disk);
-      CommandBase.writeCatalogToDisk(c, catalog_out_path);
+      CommandBase.writeCatalogToDisk(
+        c, new CatalogSaveSpecification(
+          this.catalog_compress, catalog_out_path));
 
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIndexException
+    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException
       e) {
       CommandAddDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());

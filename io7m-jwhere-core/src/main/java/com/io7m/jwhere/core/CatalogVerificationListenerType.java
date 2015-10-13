@@ -14,35 +14,35 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.core;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+/**
+ * A listener that receives the results of verification as they are created.
+ */
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
-
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+public interface CatalogVerificationListenerType
 {
+  /**
+   * An item was verified.
+   *
+   * @param ok The verification result
+   */
 
-  SizeBytesRenderer()
-  {
-    super();
-  }
+  void onItemVerified(
+    CatalogVerificationReportItemOKType ok);
 
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
-  {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
+  /**
+   * An item failed to verify.
+   *
+   * @param error The verification result
+   */
 
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
-  }
+  void onItemError(
+    CatalogVerificationReportItemErrorType error);
+
+  /**
+   * Verification completed.
+   */
+
+  void onCompleted();
 }

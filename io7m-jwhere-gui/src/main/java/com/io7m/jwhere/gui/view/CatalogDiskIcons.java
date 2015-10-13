@@ -16,33 +16,27 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+import com.io7m.jnull.NullCheck;
+import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
+import javax.swing.Icon;
 
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+final class CatalogDiskIcons
 {
-
-  SizeBytesRenderer()
+  private CatalogDiskIcons()
   {
-    super();
+    throw new UnreachableCodeException();
   }
 
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
+  static Icon getIconForDisk(final CatalogDiskMetadata disk_meta)
   {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
+    NullCheck.notNull(disk_meta);
 
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
+    if ("iso9660".equals(disk_meta.getFilesystemType())) {
+      return Icons.getDiskOpticalIcon16();
+    } else {
+      return Icons.getDiskIcon16();
+    }
   }
 }

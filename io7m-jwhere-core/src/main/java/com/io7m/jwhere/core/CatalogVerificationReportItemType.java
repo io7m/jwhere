@@ -16,23 +16,33 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
+
+import java.nio.file.Path;
+
 /**
- * An exception indicating an attempt to load a catalog that has two disks with
- * the same ID.
+ * The type of items that can appear in verification reports.
  */
 
-public final class CatalogDiskDuplicateIndexException extends CatalogException
+public interface CatalogVerificationReportItemType
+  extends Comparable<CatalogVerificationReportItemType>
 {
-  private static final long serialVersionUID = 1L;
-
   /**
-   * Construct an exception.
-   *
-   * @param m The exception message
+   * @return The path of the file in question
    */
 
-  public CatalogDiskDuplicateIndexException(final String m)
+  Path getPath();
+
+  /**
+   * @return A humanly-readable description of the problem
+   */
+
+  String show();
+
+  @Override
+  default int compareTo(final @Nullable CatalogVerificationReportItemType o)
   {
-    super(m);
+    return this.getPath().compareTo(NullCheck.notNull(o).getPath());
   }
 }

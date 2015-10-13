@@ -19,21 +19,21 @@ package com.io7m.jwhere.gui.view;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jwhere.gui.ControllerType;
 
-import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 final class StatusBar extends JPanel
 {
-  private final JLabel         text;
-  private final JLabel         error_icon;
-  private final Component      padding;
+  private final JLabel       text;
+  private final JLabel       error_icon;
+  private final JProgressBar progress;
 
   StatusBar(final ControllerType in_controller)
   {
@@ -42,19 +42,26 @@ final class StatusBar extends JPanel
     this.setBorder(new LineBorder(this.getBackground(), 1));
     this.setPreferredSize(new Dimension(this.getWidth(), 24));
 
-    this.padding = Box.createRigidArea(new Dimension(2, 1));
-
+    this.progress = new JProgressBar();
     this.error_icon = new JLabel(Icons.getWarningIcon16());
     this.text = new JLabel();
     this.text.setFont(Fonts.getMonospacedSmall());
     this.text.setHorizontalAlignment(SwingConstants.LEFT);
     this.text.setText("");
 
-    final FlowLayout layout = new FlowLayout(FlowLayout.LEFT);
-    layout.setHgap(3);
-    layout.setVgap(3);
+    final BorderLayout layout = new BorderLayout(4, 4);
     this.setLayout(layout);
-    this.add(this.text);
+
+    this.error_icon.setBorder(new EmptyBorder(0, 4, 0, 4));
+    this.text.setBorder(new EmptyBorder(0, 4, 0, 4));
+
+    this.add(this.error_icon, BorderLayout.LINE_START);
+    this.add(this.text, BorderLayout.CENTER);
+    this.add(this.progress, BorderLayout.LINE_END);
+
+    this.text.setVisible(false);
+    this.error_icon.setVisible(false);
+    this.progress.setVisible(false);
   }
 
   public void onErrorLater(final String message)
@@ -67,27 +74,42 @@ final class StatusBar extends JPanel
     SwingUtilities.invokeLater(() -> this.onInfo(message));
   }
 
+  public void onProgressIndeterminateStartLater()
+  {
+    SwingUtilities.invokeLater(() -> this.onProgressIndeterminateStart());
+  }
+
+  public void onProgressIndeterminateFinishLater()
+  {
+    SwingUtilities.invokeLater(() -> this.onProgressIndeterminateFinish());
+  }
+
+  private void onProgressIndeterminateFinish()
+  {
+    this.progress.setVisible(false);
+    this.validate();
+  }
+
+  private void onProgressIndeterminateStart()
+  {
+    this.progress.setVisible(true);
+    this.progress.setIndeterminate(true);
+    this.validate();
+  }
+
   private void onInfo(final String message)
   {
-    this.remove(this.error_icon);
-    this.remove(this.padding);
-    this.remove(this.text);
-
     this.text.setText(message);
-    this.add(this.text);
+    this.text.setVisible(true);
+    this.error_icon.setVisible(false);
     this.validate();
   }
 
   private void onError(final String message)
   {
-    this.remove(this.error_icon);
-    this.remove(this.padding);
-    this.remove(this.text);
-
     this.text.setText(message);
-    this.add(this.error_icon);
-    this.add(this.padding);
-    this.add(this.text);
+    this.text.setVisible(true);
+    this.error_icon.setVisible(true);
     this.validate();
   }
 }

@@ -43,6 +43,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -155,11 +156,14 @@ public final class CatalogFilesystemReader
             try {
               CatalogFilesystemReader.LOG.debug("visitFile: {}", file);
 
-              final CatalogDirectoryNode current = dirs.peek();
-              final CatalogFileNode new_file =
-                CatalogFilesystemReader.onFile(id_pool, file);
-              final String name = file.getFileName().toString();
-              db.addNode(current, name, new_file);
+              if (attrs.isRegularFile()) {
+                final CatalogDirectoryNode current = dirs.peek();
+                final CatalogFileNode new_file =
+                  CatalogFilesystemReader.onFile(id_pool, file);
+                final String name = file.getFileName().toString();
+                db.addNode(current, name, new_file);
+              }
+
               return FileVisitResult.CONTINUE;
             } catch (final CatalogNodeException e) {
               throw new IOException(e);
@@ -206,21 +210,22 @@ public final class CatalogFilesystemReader
    * @param d        The disk to be verified
    * @param settings The report settings
    * @param root     The root directory
-   *
-   * @return A verification report
+   * @param listener A listener that will receive verification results
    *
    * @throws IOException On I/O errors
    */
 
-  public static CatalogVerificationReport verifyDisk(
+  public static void verifyDisk(
     final CatalogDisk d,
-    final CatalogVerificationReport.Settings settings,
-    final Path root)
+    final CatalogVerificationReportSettings settings,
+    final Path root,
+    final CatalogVerificationListenerType listener)
     throws IOException
   {
     NullCheck.notNull(d);
     NullCheck.notNull(settings);
     NullCheck.notNull(root);
+    NullCheck.notNull(listener);
 
     final CatalogDiskMetadata meta = d.getMeta();
     CatalogFilesystemReader.LOG.debug(
@@ -229,11 +234,10 @@ public final class CatalogFilesystemReader
       meta.getDiskID(),
       root);
 
-    final CatalogVerificationReportBuilderType rb =
-      CatalogVerificationReport.newBuilder();
-
     final AtomicReference<BigInteger> id_pool =
       new AtomicReference<>(BigInteger.ZERO);
+
+    final LoggingListener logging_listener = new LoggingListener(d, listener);
 
     Files.walkFileTree(
       root,
@@ -250,6 +254,7 @@ public final class CatalogFilesystemReader
             "preVisitDirectory: {}", dir);
 
           final Path path_rel = root.relativize(dir);
+
           final List<String> path =
             CatalogFilesystemReader.pathToStringList(path_rel);
           CatalogFilesystemReader.LOG.debug("path: {}", path);
@@ -262,7 +267,8 @@ public final class CatalogFilesystemReader
           }
 
           if (!node_opt.isPresent()) {
-            rb.addItemUncatalogued(path_rel);
+            logging_listener.onItemError(
+              new CatalogVerificationUncataloguedItem(path_rel));
             return FileVisitResult.CONTINUE;
           }
 
@@ -271,7 +277,7 @@ public final class CatalogFilesystemReader
             CatalogFilesystemReader.onDirectory(id_pool, dir);
 
           CatalogFilesystemReader.compareNodes(
-            settings, path_rel, node, node_now, rb);
+            settings, path_rel, node, node_now, logging_listener);
 
           return FileVisitResult.CONTINUE;
         }
@@ -282,6 +288,7 @@ public final class CatalogFilesystemReader
           throws IOException
         {
           final Path path_rel = root.relativize(file);
+
           final List<String> path =
             CatalogFilesystemReader.pathToStringList(path_rel);
           CatalogFilesystemReader.LOG.debug("path: {}", path);
@@ -289,7 +296,8 @@ public final class CatalogFilesystemReader
           final Optional<CatalogNodeType> node_opt = d.getNodeForPath(path);
 
           if (!node_opt.isPresent()) {
-            rb.addItemUncatalogued(path_rel);
+            logging_listener.onItemError(
+              new CatalogVerificationUncataloguedItem(path_rel));
             return FileVisitResult.CONTINUE;
           }
 
@@ -298,7 +306,7 @@ public final class CatalogFilesystemReader
             CatalogFilesystemReader.onFile(id_pool, file);
 
           CatalogFilesystemReader.compareNodes(
-            settings, path_rel, node, node_now, rb);
+            settings, path_rel, node, node_now, logging_listener);
 
           return FileVisitResult.CONTINUE;
         }
@@ -328,23 +336,23 @@ public final class CatalogFilesystemReader
       final List<String> p = d.getPathForNode(v);
       final Path q = CatalogFilesystemReader.stringListToPath(root, p);
 
-      if (!rb.pathIsReferenced(q)) {
-        rb.addItemDisappeared(q);
+      if (!logging_listener.pathIsReferenced(q)) {
+        listener.onItemError(new CatalogVerificationVanishedItem(q));
       }
     }
 
-    return rb.build();
+    listener.onCompleted();
   }
 
   private static void compareNodes(
-    final CatalogVerificationReport.Settings settings,
+    final CatalogVerificationReportSettings settings,
     final Path path,
     final CatalogNodeType node,
     final CatalogNodeType node_now,
-    final CatalogVerificationReportBuilderType rb)
+    final LoggingListener rb)
   {
     if (!node.getClass().equals(node_now.getClass())) {
-      rb.addItemChangedType(path, node, node_now);
+      rb.onItemError(new CatalogVerificationChangedType(path, node, node_now));
     }
 
     CatalogFilesystemReader.compareNodeOwnership(path, node, node_now, rb);
@@ -353,7 +361,7 @@ public final class CatalogFilesystemReader
     CatalogFilesystemReader.compareNodeHashes(path, node, node_now, rb);
 
     if (!rb.pathIsReferenced(path)) {
-      rb.addItemOK(path);
+      rb.onItemVerified(new CatalogVerificationOKItem(path));
     }
   }
 
@@ -361,7 +369,7 @@ public final class CatalogFilesystemReader
     final Path path,
     final CatalogNodeType node,
     final CatalogNodeType node_now,
-    final CatalogVerificationReportBuilderType rb)
+    final LoggingListener rb)
   {
     node.matchNode(
       new CatalogNodeMatcherType<Unit, UnreachableCodeException>()
@@ -377,8 +385,9 @@ public final class CatalogFilesystemReader
               final CatalogFileHash hash_then = then_opt.get();
               final CatalogFileHash hash_now = now_opt.get();
               if (!hash_then.equals(hash_now)) {
-                rb.addItemHashChanged(
-                  path, hash_then, hash_now);
+                rb.onItemError(
+                  new CatalogVerificationChangedHash(
+                    path, hash_then, hash_now));
               }
             }
           }
@@ -394,44 +403,47 @@ public final class CatalogFilesystemReader
   }
 
   private static void compareNodeTimes(
-    final CatalogVerificationReport.Settings settings,
+    final CatalogVerificationReportSettings settings,
     final Path path,
     final CatalogNodeType node,
     final CatalogNodeType node_now,
-    final CatalogVerificationReportBuilderType rb)
+    final LoggingListener rb)
   {
     if (settings.getIgnoreAccessTime()
-        == CatalogVerificationReport.IgnoreAccessTime
+        == CatalogIgnoreAccessTime
           .DO_NOT_IGNORE_ACCESS_TIME) {
       final Instant then_atime = node.getAccessTime();
       final Instant curr_atime = node_now.getAccessTime();
       if (!then_atime.equals(curr_atime)) {
-        rb.addItemMetadataChanged(
-          path,
-          CatalogVerificationChangedMetadata.Field.ACCESS_TIME,
-          then_atime.toString(),
-          curr_atime.toString());
+        rb.onItemError(
+          new CatalogVerificationChangedMetadata(
+            path,
+            CatalogVerificationChangedMetadata.Field.ACCESS_TIME,
+            then_atime.toString(),
+            curr_atime.toString()));
       }
     }
 
     final Instant then_mtime = node.getModificationTime();
     final Instant curr_mtime = node_now.getModificationTime();
     if (!then_mtime.equals(curr_mtime)) {
-      rb.addItemMetadataChanged(
-        path,
-        CatalogVerificationChangedMetadata.Field.MODIFICATION_TIME,
-        then_mtime.toString(),
-        curr_mtime.toString());
+      rb.onItemError(
+        new CatalogVerificationChangedMetadata(
+          path,
+          CatalogVerificationChangedMetadata.Field.MODIFICATION_TIME,
+          then_mtime.toString(),
+          curr_mtime.toString()));
     }
 
     final Instant then_ctime = node.getCreationTime();
     final Instant curr_ctime = node_now.getCreationTime();
     if (!then_ctime.equals(curr_ctime)) {
-      rb.addItemMetadataChanged(
-        path,
-        CatalogVerificationChangedMetadata.Field.CREATION_TIME,
-        then_ctime.toString(),
-        curr_ctime.toString());
+      rb.onItemError(
+        new CatalogVerificationChangedMetadata(
+          path,
+          CatalogVerificationChangedMetadata.Field.CREATION_TIME,
+          then_ctime.toString(),
+          curr_ctime.toString()));
     }
   }
 
@@ -439,30 +451,33 @@ public final class CatalogFilesystemReader
     final Path path,
     final CatalogNodeType node,
     final CatalogNodeType node_now,
-    final CatalogVerificationReportBuilderType rb)
+    final LoggingListener rb)
   {
     if (!node.getOwner().equals(node_now.getOwner())) {
-      rb.addItemMetadataChanged(
-        path,
-        CatalogVerificationChangedMetadata.Field.OWNER,
-        node.getOwner(),
-        node_now.getOwner());
+      rb.onItemError(
+        new CatalogVerificationChangedMetadata(
+          path,
+          CatalogVerificationChangedMetadata.Field.OWNER,
+          node.getOwner(),
+          node_now.getOwner()));
     }
 
     if (!node.getGroup().equals(node_now.getGroup())) {
-      rb.addItemMetadataChanged(
-        path,
-        CatalogVerificationChangedMetadata.Field.GROUP,
-        node.getGroup(),
-        node_now.getGroup());
+      rb.onItemError(
+        new CatalogVerificationChangedMetadata(
+          path,
+          CatalogVerificationChangedMetadata.Field.GROUP,
+          node.getGroup(),
+          node_now.getGroup()));
     }
 
     if (!node.getPermissions().equals(node_now.getPermissions())) {
-      rb.addItemMetadataChanged(
-        path,
-        CatalogVerificationChangedMetadata.Field.PERMISSIONS,
-        PosixFilePermissions.toString(node.getPermissions()),
-        PosixFilePermissions.toString(node_now.getPermissions()));
+      rb.onItemError(
+        new CatalogVerificationChangedMetadata(
+          path,
+          CatalogVerificationChangedMetadata.Field.PERMISSIONS,
+          PosixFilePermissions.toString(node.getPermissions()),
+          PosixFilePermissions.toString(node_now.getPermissions())));
     }
   }
 
@@ -593,5 +608,46 @@ public final class CatalogFilesystemReader
       a_time,
       c_time,
       m_time);
+  }
+
+  private static final class LoggingListener
+    implements CatalogVerificationListenerType
+  {
+    private final Set<Path>                       reported_paths;
+    private final CatalogVerificationListenerType delegate;
+
+    LoggingListener(
+      final CatalogDisk in_disk,
+      final CatalogVerificationListenerType in_delegate)
+    {
+      NullCheck.notNull(in_disk);
+      this.delegate = NullCheck.notNull(in_delegate);
+      this.reported_paths =
+        new HashSet<>(in_disk.getFilesystemGraph().vertexSet().size());
+    }
+
+    @Override
+    public void onItemVerified(final CatalogVerificationReportItemOKType ok)
+    {
+      this.reported_paths.add(ok.getPath());
+      this.delegate.onItemVerified(ok);
+    }
+
+    @Override
+    public void onItemError(final CatalogVerificationReportItemErrorType error)
+    {
+      this.reported_paths.add(error.getPath());
+      this.delegate.onItemError(error);
+    }
+
+    @Override public void onCompleted()
+    {
+      this.delegate.onCompleted();
+    }
+
+    boolean pathIsReferenced(final Path p)
+    {
+      return this.reported_paths.contains(NullCheck.notNull(p));
+    }
   }
 }

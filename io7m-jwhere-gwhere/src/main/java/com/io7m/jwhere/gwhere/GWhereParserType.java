@@ -16,7 +16,9 @@
 
 package com.io7m.jwhere.gwhere;
 
+import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogNodeException;
 
 import java.io.IOException;
@@ -28,7 +30,7 @@ import java.io.IOException;
 public interface GWhereParserType
 {
   /**
-   * @return A new parser
+   * @return A parsed disk
    *
    * @throws IOException           On I/O errors
    * @throws GWhereParserException On parse errors
@@ -37,4 +39,21 @@ public interface GWhereParserType
 
   CatalogDisk parseDisk()
     throws IOException, GWhereParserException, CatalogNodeException;
+
+  /**
+   * @return A parsed catalog
+   *
+   * @throws IOException                     On I/O errors
+   * @throws GWhereParserException           On parse errors
+   * @throws CatalogNodeException            On filesystem errors
+   * @throws CatalogDiskDuplicateIDException Iff two disks in the catalog have
+   *                                         the same ID
+   */
+
+  Catalog parseCatalog()
+    throws
+    IOException,
+    GWhereParserException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIDException;
 }

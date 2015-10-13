@@ -14,35 +14,39 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.core;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+import com.io7m.jnull.NullCheck;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
+import java.nio.file.Path;
 
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+/**
+ * An item that was verified.
+ */
+
+public final class CatalogVerificationOKItem
+  implements CatalogVerificationReportItemOKType
 {
+  private final Path path;
 
-  SizeBytesRenderer()
+  /**
+   * Construct an item.
+   *
+   * @param in_path The path
+   */
+
+  public CatalogVerificationOKItem(final Path in_path)
   {
-    super();
+    this.path = NullCheck.notNull(in_path);
   }
 
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
+  @Override public Path getPath()
   {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
+    return this.path;
+  }
 
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
+  @Override public String show()
+  {
+    return "Verified";
   }
 }

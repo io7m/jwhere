@@ -20,7 +20,6 @@ import com.io7m.jwhere.gwhere.GWhereParser;
 import com.io7m.jwhere.gwhere.GWhereParserType;
 
 import java.io.InputStream;
-import java.nio.channels.Channels;
 
 public final class GWhereParserTest
   extends GWhereParserContract<GWhereParserType>
@@ -28,6 +27,6 @@ public final class GWhereParserTest
   @Override protected GWhereParserType getParser(final String file)
   {
     final InputStream s = GWhereParserTest.class.getResourceAsStream(file);
-    return GWhereParser.newParser(Channels.newChannel(s));
+    return GWhereParser.newParser(s);
   }
 }

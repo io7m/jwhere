@@ -23,8 +23,10 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogException;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gui.model.Model;
 import com.io7m.jwhere.gui.model.RedoAvailable;
 import com.io7m.jwhere.gui.model.UndoAvailable;
@@ -33,6 +35,7 @@ import com.io7m.jwhere.gui.view.UnsavedChangesChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 import javax.swing.table.TableModel;
@@ -50,7 +53,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-final class Controller implements ControllerType
+/**
+ * The default implementation of the {@link ControllerType}
+ */
+
+public final class Controller implements ControllerType
 {
   private static final Logger LOG;
 
@@ -79,6 +86,14 @@ final class Controller implements ControllerType
     this.tasks_list_model = new DefaultListModel<>();
   }
 
+  /**
+   * Construct a new controller.
+   *
+   * @param model The model
+   *
+   * @return A new controller
+   */
+
   public static ControllerType newController(final Model model)
   {
     return new Controller(model);
@@ -96,7 +111,8 @@ final class Controller implements ControllerType
 
   @Override public void catalogOpen(
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    final FunctionType<Unit, Optional<Path>> on_want_save_file,
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file,
     final FunctionType<Unit, Optional<Path>> on_open_file,
     final Runnable on_start_io,
     final ProcedureType<Optional<Throwable>> on_finish_io)
@@ -106,7 +122,7 @@ final class Controller implements ControllerType
      * aborted.
      */
 
-    Optional<Path> save_file = Optional.empty();
+    Optional<CatalogSaveSpecification> save_file = Optional.empty();
     boolean cancel = false;
 
     try {
@@ -116,7 +132,7 @@ final class Controller implements ControllerType
       cancel = true;
     }
 
-    final Optional<Path> save_file_last = save_file;
+    final Optional<CatalogSaveSpecification> save_file_last = save_file;
 
     if (!cancel) {
       final Optional<Path> open_file = on_open_file.call(Unit.unit());
@@ -150,9 +166,10 @@ final class Controller implements ControllerType
    * whole operation should be aborted.
    */
 
-  private Optional<Path> getSaveFileForUnsavedChanges(
+  private Optional<CatalogSaveSpecification> getSaveFileForUnsavedChanges(
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    final FunctionType<Unit, Optional<Path>> on_want_save_file)
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file)
     throws CancellationException
   {
     switch (this.catalogIsUnsaved()) {
@@ -183,17 +200,20 @@ final class Controller implements ControllerType
    * CancellationException} if the whole operation should be aborted.
    */
 
-  private Optional<Path> getSaveFile(
-    final FunctionType<Unit, Optional<Path>> on_want_save_file)
+  private Optional<CatalogSaveSpecification> getSaveFile(
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file)
     throws CancellationException
   {
-    final Optional<Path> file_opt = this.model.getCatalogFileName();
+    final Optional<CatalogSaveSpecification> file_opt =
+      this.model.getCatalogSaveSpecification();
     if (file_opt.isPresent()) {
       Controller.LOG.debug("using existing file name");
       return file_opt;
     } else {
       Controller.LOG.debug("no save file specified, asking user");
-      final Optional<Path> save_opt = on_want_save_file.call(Unit.unit());
+      final Optional<CatalogSaveSpecification> save_opt =
+        on_want_save_file.call(Unit.unit());
       if (save_opt.isPresent()) {
         Controller.LOG.debug("provided save file");
         return save_opt;
@@ -206,7 +226,8 @@ final class Controller implements ControllerType
 
   @Override public void catalogClose(
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    final FunctionType<Unit, Optional<Path>> on_want_save_file,
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file,
     final Runnable on_start_io,
     final ProcedureType<Optional<Throwable>> on_finish_io)
   {
@@ -215,7 +236,7 @@ final class Controller implements ControllerType
      * aborted.
      */
 
-    Optional<Path> save_file = Optional.empty();
+    Optional<CatalogSaveSpecification> save_file = Optional.empty();
     boolean cancel = false;
 
     try {
@@ -225,7 +246,7 @@ final class Controller implements ControllerType
       cancel = true;
     }
 
-    final Optional<Path> save_file_opt = save_file;
+    final Optional<CatalogSaveSpecification> save_file_opt = save_file;
     if (!cancel) {
       this.taskSubmit(
         "Close catalog", CompletableFuture.supplyAsync(
@@ -254,12 +275,14 @@ final class Controller implements ControllerType
   }
 
   @Override public void catalogSave(
-    final FunctionType<Unit, Optional<Path>> on_want_save_file,
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file,
     final Runnable on_start_io,
     final ProcedureType<Optional<Throwable>> on_finish_io)
   {
     try {
-      final Optional<Path> save_file = this.getSaveFile(on_want_save_file);
+      final Optional<CatalogSaveSpecification> save_file =
+        this.getSaveFile(on_want_save_file);
       this.taskSubmit(
         "Save catalog", CompletableFuture.supplyAsync(
           () -> {
@@ -280,12 +303,14 @@ final class Controller implements ControllerType
   }
 
   @Override public void catalogSaveAs(
-    final FunctionType<Unit, Optional<Path>> on_want_save_file,
+    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
+      on_want_save_file,
     final Runnable on_start_io,
     final ProcedureType<Optional<Throwable>> on_finish_io)
   {
     try {
-      final Optional<Path> save_file = on_want_save_file.call(Unit.unit());
+      final Optional<CatalogSaveSpecification> save_file =
+        on_want_save_file.call(Unit.unit());
       if (save_file.isPresent()) {
         this.taskSubmit(
           "Save catalog", CompletableFuture.supplyAsync(
@@ -344,8 +369,7 @@ final class Controller implements ControllerType
     this.model.catalogUndoSubscribe(listener);
   }
 
-  @Override
-  public void catalogRedoSubscribe(
+  @Override public void catalogRedoSubscribe(
     final Consumer<RedoAvailable> listener)
   {
     this.model.catalogRedoSubscribe(listener);
@@ -385,6 +409,36 @@ final class Controller implements ControllerType
   @Override public CatalogDiskID catalogGetFreshDiskID()
   {
     return this.model.catalogGetFreshDiskID();
+  }
+
+  @Override public void catalogVerifyDisk(
+    final CatalogDiskID id,
+    final Path path,
+    final Runnable on_start_io,
+    final ProcedureType<Optional<Throwable>> on_finish_io)
+  {
+    this.taskSubmit(
+      "Verify disk", CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            on_start_io.run();
+            this.model.catalogVerifyDisk(id, path);
+            return Unit.unit();
+          } catch (IOException | CatalogException e) {
+            throw new IOError(e);
+          }
+        }, this.exec).whenComplete(
+        (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+  }
+
+  @Override public ComboBoxModel<CatalogDiskMetadata> catalogGetComboBoxModel()
+  {
+    return this.model.getCatalogComboBoxModel();
+  }
+
+  @Override public TableModel catalogGetVerificationTableModel()
+  {
+    return this.model.getVerificationTableModel();
   }
 
   private Long taskSubmit(

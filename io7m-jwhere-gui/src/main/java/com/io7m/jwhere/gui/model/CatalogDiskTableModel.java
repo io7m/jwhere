@@ -19,9 +19,11 @@ package com.io7m.jwhere.gui.model;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
+import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogFileNode;
@@ -37,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.function.Supplier;
 
 /**
  * A table model that maps directories of a given disk to table rows and
@@ -46,11 +50,14 @@ import java.util.Set;
 final class CatalogDiskTableModel extends AbstractTableModel
 {
   private final     List<CatalogDirectoryEntry> current_entries;
+  private final     Supplier<CatalogState>      state_supplier;
   private @Nullable CatalogDisk                 current_disk;
+  private @Nullable CatalogDirectoryNode        current_dir;
 
-  CatalogDiskTableModel()
+  CatalogDiskTableModel(final Supplier<CatalogState> supplier)
   {
     this.current_entries = new ArrayList<>(128);
+    this.state_supplier = NullCheck.notNull(supplier);
   }
 
   private static void makeEntries(
@@ -145,6 +152,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
     Assertive.require(graph.containsVertex(node));
 
     this.current_disk = disk;
+    this.current_dir = node;
 
     CatalogDiskTableModel.makeEntries(graph, node, this.current_entries);
   }
@@ -272,5 +280,38 @@ final class CatalogDiskTableModel extends AbstractTableModel
     Assertive.require(col >= 0);
 
     return CatalogDiskTableModelField.values()[col].getType();
+  }
+
+  public void checkStillValid()
+  {
+    final CatalogState state = this.state_supplier.get();
+    final Catalog c = state.getCatalog();
+    final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+
+    if (this.current_disk != null) {
+      final CatalogDirectoryNode dir = NullCheck.notNull(this.current_dir);
+
+      final CatalogDiskMetadata meta = this.current_disk.getMeta();
+      final CatalogDiskID disk_id = meta.getDiskID();
+      if (!disks.containsKey(disk_id)) {
+        this.reset();
+        return;
+      }
+
+      final CatalogDisk disk = disks.get(disk_id);
+      final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> root =
+        disk.getFilesystemGraph();
+      if (!root.containsVertex(dir)) {
+        this.reset();
+        return;
+      }
+    }
+  }
+
+  private void reset()
+  {
+    this.current_dir = null;
+    this.current_disk = null;
+    this.current_entries.clear();
   }
 }

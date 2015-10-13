@@ -14,35 +14,36 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.core;
 
-import com.io7m.jwhere.gui.model.SizeBytes;
+import com.io7m.jnull.NullCheck;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
+/**
+ * Report settings.
+ */
 
-final class SizeBytesRenderer extends DefaultTableCellRenderer
+public final class CatalogVerificationReportSettings
 {
+  private final CatalogIgnoreAccessTime atime;
 
-  SizeBytesRenderer()
+  /**
+   * Construct report settings.
+   *
+   * @param in_atime Whether or not to ignore access time changes
+   */
+
+  public CatalogVerificationReportSettings(
+    final CatalogIgnoreAccessTime in_atime)
   {
-    super();
+    this.atime = NullCheck.notNull(in_atime);
   }
 
-  @Override public Component getTableCellRendererComponent(
-    final JTable table,
-    final Object value,
-    final boolean is_selected,
-    final boolean has_focus,
-    final int row,
-    final int column)
-  {
-    super.getTableCellRendererComponent(
-      table, value, is_selected, has_focus, row, column);
+  /**
+   * @return The current access time setting
+   */
 
-    final SizeBytes size = (SizeBytes) value;
-    this.setText(size.toHumanString());
-    return this;
+  public CatalogIgnoreAccessTime getIgnoreAccessTime()
+  {
+    return this.atime;
   }
 }
