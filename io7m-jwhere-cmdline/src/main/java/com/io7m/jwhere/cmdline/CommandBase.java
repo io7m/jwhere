@@ -19,7 +19,7 @@ package com.io7m.jwhere.cmdline;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.io7m.jwhere.core.Catalog;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
@@ -51,8 +51,7 @@ public abstract class CommandBase implements Runnable
     throws
     IOException,
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException
+    CatalogNodeException, CatalogDiskDuplicateIDException
   {
     return p.parseCatalogFromPath(file);
   }

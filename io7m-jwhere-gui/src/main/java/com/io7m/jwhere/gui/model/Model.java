@@ -20,7 +20,7 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogException;
@@ -177,7 +177,7 @@ public final class Model
       current.getCatalog().getDisks();
 
     if (disks.containsKey(disk_id)) {
-      throw new CatalogDiskDuplicateIndexException(disk_id.toString());
+      throw new CatalogDiskDuplicateIDException(disk_id.toString());
     }
 
     final CatalogDisk disk =

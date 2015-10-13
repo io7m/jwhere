@@ -39,7 +39,7 @@ public interface CatalogJSONParserType
    *
    * @throws CatalogJSONParseException          On parsing or validation errors
    * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
    *                                            same ID
    * @throws IOException                        On I/O errors
    */
@@ -47,8 +47,7 @@ public interface CatalogJSONParserType
   Catalog parseCatalogFromPath(Path p)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException,
+    CatalogNodeException, CatalogDiskDuplicateIDException,
     IOException;
 
   /**
@@ -62,7 +61,7 @@ public interface CatalogJSONParserType
    *
    * @throws CatalogJSONParseException          On parsing or validation errors
    * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
    *                                            same ID
    * @throws IOException                        On I/O errors
    */
@@ -72,8 +71,7 @@ public interface CatalogJSONParserType
     CatalogSaveSpecification.Compress compression)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException,
+    CatalogNodeException, CatalogDiskDuplicateIDException,
     IOException;
 
   /**
@@ -85,7 +83,7 @@ public interface CatalogJSONParserType
    *
    * @throws CatalogJSONParseException          On parsing or validation errors
    * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
    *                                            same ID
    * @throws IOException                        On I/O errors
    */
@@ -93,8 +91,7 @@ public interface CatalogJSONParserType
   Catalog parseCatalogFromStream(InputStream is)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException,
+    CatalogNodeException, CatalogDiskDuplicateIDException,
     IOException;
 
   /**
@@ -106,15 +103,14 @@ public interface CatalogJSONParserType
    *
    * @throws CatalogJSONParseException          On parsing or validation errors
    * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIndexException Iff two parsed disks have the
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
    *                                            same ID
    */
 
   Catalog parseCatalog(ObjectNode c)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException;
+    CatalogNodeException, CatalogDiskDuplicateIDException;
 
   /**
    * Parse a disk from the given JSON node.

@@ -18,7 +18,7 @@ package com.io7m.jwhere.cmdline;
 
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
@@ -137,7 +137,7 @@ public final class CommandAddDisk extends CommandBase
       final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
       final CatalogDiskID id = new CatalogDiskID(this.disk_index);
       if (disks.containsKey(id)) {
-        throw new CatalogDiskDuplicateIndexException(
+        throw new CatalogDiskDuplicateIDException(
           String.format(
             "Catalog already contains a disk with index %s", id));
       }
@@ -151,7 +151,7 @@ public final class CommandAddDisk extends CommandBase
         c, new CatalogSaveSpecification(
           this.catalog_compress, catalog_out_path));
 
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIndexException
+    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException
       e) {
       CommandAddDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());

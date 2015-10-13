@@ -21,7 +21,7 @@ package com.io7m.jwhere.core;
  * the same ID.
  */
 
-public final class CatalogDiskDuplicateIndexException extends CatalogException
+public final class CatalogDiskDuplicateIDException extends CatalogException
 {
   private static final long serialVersionUID = 1L;
 
@@ -31,7 +31,7 @@ public final class CatalogDiskDuplicateIndexException extends CatalogException
    * @param m The exception message
    */
 
-  public CatalogDiskDuplicateIndexException(final String m)
+  public CatalogDiskDuplicateIDException(final String m)
   {
     super(m);
   }

@@ -168,8 +168,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public Catalog parseCatalogFromPath(final Path p)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException,
+    CatalogNodeException, CatalogDiskDuplicateIDException,
     IOException
   {
     NullCheck.notNull(p);
@@ -197,8 +196,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     final CatalogSaveSpecification.Compress compression)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException,
+    CatalogNodeException, CatalogDiskDuplicateIDException,
     IOException
   {
     NullCheck.notNull(p);
@@ -225,8 +223,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public Catalog parseCatalogFromStream(final InputStream is)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException,
+    CatalogNodeException, CatalogDiskDuplicateIDException,
     IOException
   {
     NullCheck.notNull(is);
@@ -240,8 +237,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public Catalog parseCatalog(final ObjectNode c)
     throws
     CatalogJSONParseException,
-    CatalogNodeException,
-    CatalogDiskDuplicateIndexException
+    CatalogNodeException, CatalogDiskDuplicateIDException
   {
     NullCheck.notNull(c);
 
@@ -264,7 +260,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
         sb.append(System.lineSeparator());
         sb.append("  Duplicate number: ");
         sb.append(disk_index);
-        throw new CatalogDiskDuplicateIndexException(sb.toString());
+        throw new CatalogDiskDuplicateIDException(sb.toString());
       }
       disks.put(disk_index, disk);
     }

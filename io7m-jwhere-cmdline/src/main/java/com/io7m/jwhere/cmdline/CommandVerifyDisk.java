@@ -18,7 +18,7 @@ package com.io7m.jwhere.cmdline;
 
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
+import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
@@ -133,7 +133,7 @@ public final class CommandVerifyDisk extends CommandBase
       if (this.isDebug()) {
         CommandVerifyDisk.LOG.error("Exception trace: ", e);
       }
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIndexException
+    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException
       e) {
       CommandVerifyDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());

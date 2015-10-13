@@ -14,19 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.tests.gwhere;
+package com.io7m.jwhere.gwhere;
 
-import com.io7m.jwhere.gwhere.GWhereParser;
-import com.io7m.jwhere.gwhere.GWhereParserType;
+import java.math.BigInteger;
 
-import java.io.InputStream;
+/**
+ * An exception indicating that an archive line was expected, but something else
+ * was encountered.
+ */
 
-public final class GWhereParserTest
-  extends GWhereParserContract<GWhereParserType>
+public final class GWhereExpectedArchiveLineException
+  extends GWhereParserException
 {
-  @Override protected GWhereParserType getParser(final String file)
+  /**
+   * Construct an exception
+   *
+   * @param line   The line number
+   * @param column The column number
+   * @param s      The exception message
+   */
+
+  public GWhereExpectedArchiveLineException(
+    final BigInteger line,
+    final BigInteger column,
+    final String s)
   {
-    final InputStream s = GWhereParserTest.class.getResourceAsStream(file);
-    return GWhereParser.newParser(s);
+    super(line, column, s);
   }
 }

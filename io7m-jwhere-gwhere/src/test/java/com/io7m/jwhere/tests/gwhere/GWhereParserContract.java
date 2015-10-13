@@ -19,6 +19,7 @@ package com.io7m.jwhere.tests.gwhere;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
@@ -49,6 +50,7 @@ import java.time.Instant;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedMap;
 
 public abstract class GWhereParserContract<P extends GWhereParserType>
 {
@@ -397,5 +399,22 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(2L, (long) names.size());
     Assert.assertTrue(names.contains("catalog.gz"));
     Assert.assertTrue(names.contains("empty"));
+  }
+
+  @Test public final void testParserCatalogReal0()
+    throws Exception
+  {
+    final P p = this.getParser("archive-real-0.ctg");
+    final Catalog c = p.parseCatalog();
+
+    final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+    Assert.assertEquals(3L, (long) disks.size());
+
+    Assert.assertTrue(
+      disks.containsKey(new CatalogDiskID(BigInteger.valueOf(179L))));
+    Assert.assertTrue(
+      disks.containsKey(new CatalogDiskID(BigInteger.valueOf(180L))));
+    Assert.assertTrue(
+      disks.containsKey(new CatalogDiskID(BigInteger.valueOf(181L))));
   }
 }
