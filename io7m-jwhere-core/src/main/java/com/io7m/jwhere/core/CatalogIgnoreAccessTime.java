@@ -17,12 +17,20 @@
 package com.io7m.jwhere.core;
 
 /**
- * The type of items that can appear in verification reports that signify
- * errors.
+ * A value indicating whether or not access times should be ignored.
  */
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+public enum CatalogIgnoreAccessTime
 {
-  // No extra functions
+  /**
+   * Ignore access time changes.
+   */
+
+  IGNORE_ACCESS_TIME,
+
+  /**
+   * Do not ignore access time changes.
+   */
+
+  DO_NOT_IGNORE_ACCESS_TIME
 }

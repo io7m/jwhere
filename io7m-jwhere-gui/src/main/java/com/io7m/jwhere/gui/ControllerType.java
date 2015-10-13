@@ -21,6 +21,7 @@ import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gui.model.RedoAvailable;
@@ -28,6 +29,7 @@ import com.io7m.jwhere.gui.model.UndoAvailable;
 import com.io7m.jwhere.gui.model.UnsavedChanges;
 import com.io7m.jwhere.gui.view.UnsavedChangesChoice;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
@@ -252,4 +254,34 @@ public interface ControllerType
 
   CatalogDiskID catalogGetFreshDiskID();
 
+  /**
+   * Verify the disk {@code id}, which is assumed to be mounted at {@code
+   * path}.
+   *
+   * @param id           The disk ID
+   * @param path         The path
+   * @param on_start_io  A procedure that, when evaluated, indicates that the
+   *                     operation has started.
+   * @param on_finish_io A procedure that, when evaluated, indicates that the
+   *                     operation has started, passing it a non-empty optional
+   *                     exception in the case of failure.
+   */
+
+  void catalogVerifyDisk(
+    CatalogDiskID id,
+    Path path,
+    Runnable on_start_io,
+    ProcedureType<Optional<Throwable>> on_finish_io);
+
+  /**
+   * @return The combo box model for the catalog
+   */
+
+  ComboBoxModel<CatalogDiskMetadata> catalogGetComboBoxModel();
+
+  /**
+   * @return The table model for the most recent disk verification results
+   */
+
+  TableModel catalogGetVerificationTableModel();
 }

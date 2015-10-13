@@ -23,6 +23,7 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
@@ -34,6 +35,7 @@ import com.io7m.jwhere.gui.view.UnsavedChangesChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 import javax.swing.table.TableModel;
@@ -83,6 +85,14 @@ public final class Controller implements ControllerType
     this.task_ids = new AtomicLong(0L);
     this.tasks_list_model = new DefaultListModel<>();
   }
+
+  /**
+   * Construct a new controller.
+   *
+   * @param model The model
+   *
+   * @return A new controller
+   */
 
   public static ControllerType newController(final Model model)
   {
@@ -399,6 +409,36 @@ public final class Controller implements ControllerType
   @Override public CatalogDiskID catalogGetFreshDiskID()
   {
     return this.model.catalogGetFreshDiskID();
+  }
+
+  @Override public void catalogVerifyDisk(
+    final CatalogDiskID id,
+    final Path path,
+    final Runnable on_start_io,
+    final ProcedureType<Optional<Throwable>> on_finish_io)
+  {
+    this.taskSubmit(
+      "Verify disk", CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            on_start_io.run();
+            this.model.catalogVerifyDisk(id, path);
+            return Unit.unit();
+          } catch (IOException | CatalogException e) {
+            throw new IOError(e);
+          }
+        }, this.exec).whenComplete(
+        (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+  }
+
+  @Override public ComboBoxModel<CatalogDiskMetadata> catalogGetComboBoxModel()
+  {
+    return this.model.getCatalogComboBoxModel();
+  }
+
+  @Override public TableModel catalogGetVerificationTableModel()
+  {
+    return this.model.getVerificationTableModel();
   }
 
   private Long taskSubmit(

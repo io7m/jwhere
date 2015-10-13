@@ -14,15 +14,35 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.core;
+package com.io7m.jwhere.gui.view;
 
-/**
- * The type of items that can appear in verification reports that signify
- * errors.
- */
+import com.io7m.jnull.NullCheck;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.TableModel;
+
+final class CatalogVerificationTable extends JTable
 {
-  // No extra functions
+  private static final Logger LOG;
+
+  static {
+    LOG = LoggerFactory.getLogger(CatalogVerificationTable.class);
+  }
+
+  CatalogVerificationTable(final TableModel in_model)
+  {
+    super(in_model);
+    NullCheck.notNull(in_model);
+
+    this.getTableHeader().setReorderingAllowed(false);
+
+    this.setFont(Fonts.getMonospacedSmall());
+
+    this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.setRowSelectionAllowed(true);
+    this.setColumnSelectionAllowed(false);
+  }
 }

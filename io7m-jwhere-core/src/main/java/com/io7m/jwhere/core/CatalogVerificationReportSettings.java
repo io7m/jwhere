@@ -16,13 +16,34 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.jnull.NullCheck;
+
 /**
- * The type of items that can appear in verification reports that signify
- * errors.
+ * Report settings.
  */
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+public final class CatalogVerificationReportSettings
 {
-  // No extra functions
+  private final CatalogIgnoreAccessTime atime;
+
+  /**
+   * Construct report settings.
+   *
+   * @param in_atime Whether or not to ignore access time changes
+   */
+
+  public CatalogVerificationReportSettings(
+    final CatalogIgnoreAccessTime in_atime)
+  {
+    this.atime = NullCheck.notNull(in_atime);
+  }
+
+  /**
+   * @return The current access time setting
+   */
+
+  public CatalogIgnoreAccessTime getIgnoreAccessTime()
+  {
+    return this.atime;
+  }
 }

@@ -17,21 +17,16 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jnull.NullCheck;
-import com.io7m.jwhere.gui.Controller;
 import com.io7m.jwhere.gui.ControllerType;
-import com.io7m.jwhere.gui.model.Model;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 
 final class StatusBar extends JPanel
@@ -67,28 +62,6 @@ final class StatusBar extends JPanel
     this.text.setVisible(false);
     this.error_icon.setVisible(false);
     this.progress.setVisible(false);
-  }
-
-  public static void main(final String[] args)
-  {
-    SwingUtilities.invokeLater(
-      () -> {
-        final Model m = new Model();
-        final ControllerType c = Controller.newController(m);
-        final StatusBar status = new StatusBar(c);
-
-        final JFrame frame = new JFrame();
-        frame.setPreferredSize(new Dimension(640, 480));
-        final Container pane = frame.getContentPane();
-        pane.setLayout(new BorderLayout());
-        pane.add(status, BorderLayout.SOUTH);
-
-        frame.pack();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        status.onError("Error!");
-      });
   }
 
   public void onErrorLater(final String message)

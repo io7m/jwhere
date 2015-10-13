@@ -18,10 +18,10 @@ package com.io7m.jwhere.core;
 
 /**
  * The type of items that can appear in verification reports that signify
- * errors.
+ * validated files.
  */
 
-public interface CatalogVerificationReportItemErrorType
+public interface CatalogVerificationReportItemOKType
   extends CatalogVerificationReportItemType
 {
   // No extra functions

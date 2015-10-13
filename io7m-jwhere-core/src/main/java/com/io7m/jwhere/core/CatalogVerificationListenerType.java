@@ -17,12 +17,32 @@
 package com.io7m.jwhere.core;
 
 /**
- * The type of items that can appear in verification reports that signify
- * errors.
+ * A listener that receives the results of verification as they are created.
  */
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+public interface CatalogVerificationListenerType
 {
-  // No extra functions
+  /**
+   * An item was verified.
+   *
+   * @param ok The verification result
+   */
+
+  void onItemVerified(
+    CatalogVerificationReportItemOKType ok);
+
+  /**
+   * An item failed to verify.
+   *
+   * @param error The verification result
+   */
+
+  void onItemError(
+    CatalogVerificationReportItemErrorType error);
+
+  /**
+   * Verification completed.
+   */
+
+  void onCompleted();
 }

@@ -16,13 +16,37 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.jnull.NullCheck;
+
+import java.nio.file.Path;
+
 /**
- * The type of items that can appear in verification reports that signify
- * errors.
+ * An item that was verified.
  */
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+public final class CatalogVerificationOKItem
+  implements CatalogVerificationReportItemOKType
 {
-  // No extra functions
+  private final Path path;
+
+  /**
+   * Construct an item.
+   *
+   * @param in_path The path
+   */
+
+  public CatalogVerificationOKItem(final Path in_path)
+  {
+    this.path = NullCheck.notNull(in_path);
+  }
+
+  @Override public Path getPath()
+  {
+    return this.path;
+  }
+
+  @Override public String show()
+  {
+    return "Verified";
+  }
 }

@@ -16,13 +16,33 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
+
+import java.nio.file.Path;
+
 /**
- * The type of items that can appear in verification reports that signify
- * errors.
+ * The type of items that can appear in verification reports.
  */
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+public interface CatalogVerificationReportItemType
+  extends Comparable<CatalogVerificationReportItemType>
 {
-  // No extra functions
+  /**
+   * @return The path of the file in question
+   */
+
+  Path getPath();
+
+  /**
+   * @return A humanly-readable description of the problem
+   */
+
+  String show();
+
+  @Override
+  default int compareTo(final @Nullable CatalogVerificationReportItemType o)
+  {
+    return this.getPath().compareTo(NullCheck.notNull(o).getPath());
+  }
 }

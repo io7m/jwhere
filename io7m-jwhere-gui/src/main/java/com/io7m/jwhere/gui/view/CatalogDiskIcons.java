@@ -14,15 +14,29 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.core;
+package com.io7m.jwhere.gui.view;
 
-/**
- * The type of items that can appear in verification reports that signify
- * errors.
- */
+import com.io7m.jnull.NullCheck;
+import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+import javax.swing.Icon;
+
+final class CatalogDiskIcons
 {
-  // No extra functions
+  private CatalogDiskIcons()
+  {
+    throw new UnreachableCodeException();
+  }
+
+  static Icon getIconForDisk(final CatalogDiskMetadata disk_meta)
+  {
+    NullCheck.notNull(disk_meta);
+
+    if ("iso9660".equals(disk_meta.getFilesystemType())) {
+      return Icons.getDiskOpticalIcon16();
+    } else {
+      return Icons.getDiskIcon16();
+    }
+  }
 }

@@ -22,11 +22,15 @@ import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
+import com.io7m.jwhere.core.CatalogIgnoreAccessTime;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParser;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogNodeException;
-import com.io7m.jwhere.core.CatalogVerificationReport;
+import com.io7m.jwhere.core.CatalogVerificationListenerType;
+import com.io7m.jwhere.core.CatalogVerificationReportItemErrorType;
+import com.io7m.jwhere.core.CatalogVerificationReportItemOKType;
+import com.io7m.jwhere.core.CatalogVerificationReportSettings;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -118,14 +122,35 @@ public final class CommandVerifyDisk extends CommandBase
       }
 
       final CatalogDisk disk = disks.get(id);
-      final CatalogVerificationReport.Settings settings =
-        new CatalogVerificationReport.Settings(
-          CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root_path);
+      final CatalogVerificationReportSettings settings =
+        new CatalogVerificationReportSettings(
+          CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
-      CatalogVerificationReport.showReport(
-        report, this.only_errors, System.out);
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root_path, new CatalogVerificationListenerType()
+        {
+          @Override
+          public void onItemVerified(final
+          CatalogVerificationReportItemOKType ok)
+          {
+            System.out.printf("%s | OK | %s\n", ok.getPath(), ok.show());
+          }
+
+          @Override
+          public void onItemError(final
+          CatalogVerificationReportItemErrorType error)
+          {
+            System.out.printf(
+              "%s | FAILED | %s\n",
+              error.getPath(),
+              error.show());
+          }
+
+          @Override public void onCompleted()
+          {
+            // Nothing
+          }
+        });
 
     } catch (final NoSuchElementException e) {
       CommandVerifyDisk.LOG.error(
@@ -133,8 +158,7 @@ public final class CommandVerifyDisk extends CommandBase
       if (this.isDebug()) {
         CommandVerifyDisk.LOG.error("Exception trace: ", e);
       }
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException
-      e) {
+    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
       CommandVerifyDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {

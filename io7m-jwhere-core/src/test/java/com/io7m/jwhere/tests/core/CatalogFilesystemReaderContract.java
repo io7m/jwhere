@@ -19,6 +19,9 @@ package com.io7m.jwhere.tests.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.gs.collections.api.collection.MutableCollection;
+import com.gs.collections.api.multimap.MutableMultimap;
+import com.gs.collections.impl.multimap.bag.HashBagMultimap;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -27,14 +30,17 @@ import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
+import com.io7m.jwhere.core.CatalogIgnoreAccessTime;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
 import com.io7m.jwhere.core.CatalogNodeType;
 import com.io7m.jwhere.core.CatalogVerificationChangedHash;
 import com.io7m.jwhere.core.CatalogVerificationChangedMetadata;
 import com.io7m.jwhere.core.CatalogVerificationChangedType;
-import com.io7m.jwhere.core.CatalogVerificationReport;
+import com.io7m.jwhere.core.CatalogVerificationListenerType;
 import com.io7m.jwhere.core.CatalogVerificationReportItemErrorType;
+import com.io7m.jwhere.core.CatalogVerificationReportItemOKType;
+import com.io7m.jwhere.core.CatalogVerificationReportSettings;
 import com.io7m.jwhere.core.CatalogVerificationUncataloguedItem;
 import com.io7m.jwhere.core.CatalogVerificationVanishedItem;
 import net.java.quickcheck.QuickCheck;
@@ -162,9 +168,7 @@ public abstract class CatalogFilesystemReaderContract
       final Path root = fs.getRootDirectories().iterator().next();
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       final CatalogDiskMetadata meta = disk.getMeta();
       Assert.assertEquals(new CatalogDiskName("test"), meta.getDiskName());
@@ -206,9 +210,7 @@ public abstract class CatalogFilesystemReaderContract
       final Path root = fs.getRootDirectories().iterator().next();
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       final Optional<CatalogNodeType> r =
         disk.getNodeForPath(Arrays.asList("nonexistent", "other"));
@@ -226,9 +228,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createDirectory(base);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       final Optional<CatalogNodeType> r =
         disk.getNodeForPath(Arrays.asList("subdir", "nonexistent"));
@@ -253,9 +253,7 @@ public abstract class CatalogFilesystemReaderContract
         "Hello file2".getBytes(StandardCharsets.UTF_8));
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       final CatalogDiskMetadata meta = disk.getMeta();
       Assert.assertEquals(new CatalogDiskName("test"), meta.getDiskName());
@@ -397,7 +395,9 @@ public abstract class CatalogFilesystemReaderContract
 
             final Path root = fs.getRootDirectories().iterator().next();
             final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-              new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
+              new CatalogDiskName("test"),
+              new CatalogDiskID(BigInteger.ZERO),
+              root);
 
             for (final Path p : hashes.keySet()) {
               final CatalogFileHash hash = hashes.get(p);
@@ -423,9 +423,9 @@ public abstract class CatalogFilesystemReaderContract
     final CatalogTestFilesystemGenerator fs_gen =
       new CatalogTestFilesystemGenerator(this.getFilesystemProfile());
 
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
     QuickCheck.forAll(
       100, fs_gen, new AbstractCharacteristic<CatalogTestFilesystem>()
@@ -444,24 +444,15 @@ public abstract class CatalogFilesystemReaderContract
               new CatalogDiskID(BigInteger.ZERO),
               root);
 
-            final CatalogVerificationReport report =
-              CatalogFilesystemReader.verifyDisk(disk, settings, root);
-            final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-              errors = report.getErrors();
-            final SortedSet<Path> without_errors =
-              report.getPathsWithoutErrors();
+            final CheckedListener listener = new CheckedListener();
 
-            if (errors.isEmpty() == false) {
-              System.err.println();
-              System.out.println();
-              Thread.sleep(1000L);
-              CatalogVerificationReport.showReport(report, true, System.out);
-            }
+            CatalogFilesystemReader.verifyDisk(
+              disk, settings, root, listener);
 
             final int expected_size = hashes.size() + directories.size();
-            Assert.assertTrue(errors.isEmpty());
+            Assert.assertTrue(listener.errors.isEmpty());
             Assert.assertEquals(
-              (long) expected_size, (long) without_errors.size());
+              (long) expected_size, (long) listener.valids.size());
 
           } finally {
             tfs.close();
@@ -473,39 +464,31 @@ public abstract class CatalogFilesystemReaderContract
   @Test public final void testVerificationEmpty()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
         new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      final CheckedListener listener = new CheckedListener();
 
-      if (errors.isEmpty() == false) {
-        System.err.println();
-        System.out.println();
-        Thread.sleep(1000L);
-        CatalogVerificationReport.showReport(report, true, System.out);
-      }
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      Assert.assertTrue(errors.isEmpty());
-      Assert.assertEquals(1L, (long) without_errors.size());
+      Assert.assertTrue(listener.errors.isEmpty());
+      Assert.assertEquals(1L, (long) listener.valids.size());
     }
   }
 
   @Test public final void testVerificationTimeAccessChanged()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -513,40 +496,37 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.readAllBytes(file);
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      final CheckedListener listener = new CheckedListener();
 
-      Assert.assertEquals(1L, (long) errors.size());
-      Assert.assertTrue(errors.containsKey(file));
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      final Set<CatalogVerificationReportItemErrorType> file_errors =
-        errors.get(file);
+      Assert.assertEquals(1L, (long) listener.errors.size());
+      Assert.assertTrue(listener.errors.containsKey(file));
+
+      final MutableCollection<CatalogVerificationReportItemErrorType>
+        file_errors = listener.errors.get(file);
       final Set<CatalogVerificationReportItemErrorType> file_wanted_errors =
         file_errors.stream()
           .filter(CatalogFilesystemReaderContract::isAccessTimeError)
           .collect(Collectors.toSet());
 
       Assert.assertEquals(1L, (long) file_wanted_errors.size());
-      Assert.assertEquals(1L, (long) without_errors.size());
+      Assert.assertEquals(1L, (long) listener.valids.size());
     }
   }
 
   @Test public final void testVerificationTimeModificationChanged()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -554,40 +534,36 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       Files.setLastModifiedTime(file, FileTime.from(Instant.ofEpochMilli(1L)));
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
+      final CheckedListener listener = new CheckedListener();
 
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      Assert.assertEquals(1L, (long) errors.size());
-      Assert.assertTrue(errors.containsKey(file));
+      Assert.assertEquals(1L, (long) listener.errors.size());
+      Assert.assertTrue(listener.errors.containsKey(file));
 
-      final Set<CatalogVerificationReportItemErrorType> file_errors =
-        errors.get(file);
+      final MutableCollection<CatalogVerificationReportItemErrorType>
+        file_errors = listener.errors.get(file);
       final Set<CatalogVerificationReportItemErrorType> file_wanted_errors =
         file_errors.stream()
           .filter(CatalogFilesystemReaderContract::isModificationTimeError)
           .collect(Collectors.toSet());
 
       Assert.assertEquals(1L, (long) file_wanted_errors.size());
-      Assert.assertEquals(1L, (long) without_errors.size());
+      Assert.assertEquals(1L, (long) listener.valids.size());
     }
   }
 
   @Test public final void testVerificationFileTypeChanged()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -595,43 +571,38 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.delete(file);
       Files.createDirectories(file);
       Thread.sleep(1000L);
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
+      final CheckedListener listener = new CheckedListener();
 
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      Assert.assertEquals(2L, (long) errors.size());
-      Assert.assertTrue(errors.containsKey(file));
+      Assert.assertTrue(listener.errors.containsKey(file));
 
-      final Set<CatalogVerificationReportItemErrorType> file_errors =
-        errors.get(file);
+      final MutableCollection<CatalogVerificationReportItemErrorType>
+        file_errors = listener.errors.get(file);
       final Set<CatalogVerificationReportItemErrorType> file_wanted_errors =
         file_errors.stream()
           .filter(CatalogFilesystemReaderContract::isTypeChangedError)
           .collect(Collectors.toSet());
 
       Assert.assertEquals(1L, (long) file_wanted_errors.size());
-      Assert.assertEquals(0L, (long) without_errors.size());
+      Assert.assertEquals(0L, (long) listener.valids.size());
     }
   }
 
   @Test public final void testVerificationFileVanished()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -639,42 +610,38 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.delete(file);
       Thread.sleep(1000L);
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
+      final CheckedListener listener = new CheckedListener();
 
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      Assert.assertEquals(2L, (long) errors.size());
-      Assert.assertTrue(errors.containsKey(file));
+      Assert.assertEquals(2L, (long) listener.errors.size());
+      Assert.assertTrue(listener.errors.containsKey(file));
 
-      final Set<CatalogVerificationReportItemErrorType> file_errors =
-        errors.get(file);
+      final MutableCollection<CatalogVerificationReportItemErrorType>
+        file_errors = listener.errors.get(file);
       final Set<CatalogVerificationReportItemErrorType> file_wanted_errors =
         file_errors.stream()
           .filter(CatalogFilesystemReaderContract::isFileVanishedError)
           .collect(Collectors.toSet());
 
       Assert.assertEquals(1L, (long) file_wanted_errors.size());
-      Assert.assertEquals(0L, (long) without_errors.size());
+      Assert.assertEquals(0L, (long) listener.valids.size());
     }
   }
 
   @Test public final void testVerificationFileUncatalogued()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -683,42 +650,38 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.createFile(file_more);
       Thread.sleep(1000L);
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
+      final CheckedListener listener = new CheckedListener();
 
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      Assert.assertEquals(2L, (long) errors.size());
-      Assert.assertTrue(errors.containsKey(file_more));
+      Assert.assertEquals(2L, (long) listener.errors.size());
+      Assert.assertTrue(listener.errors.containsKey(file_more));
 
-      final Set<CatalogVerificationReportItemErrorType> file_errors =
-        errors.get(file_more);
+      final MutableCollection<CatalogVerificationReportItemErrorType>
+        file_errors = listener.errors.get(file_more);
       final Set<CatalogVerificationReportItemErrorType> file_wanted_errors =
         file_errors.stream()
           .filter(CatalogFilesystemReaderContract::isFileUncataloguedError)
           .collect(Collectors.toSet());
 
       Assert.assertEquals(1L, (long) file_wanted_errors.size());
-      Assert.assertEquals(1L, (long) without_errors.size());
+      Assert.assertEquals(1L, (long) listener.valids.size());
     }
   }
 
   @Test public final void testVerificationTimeCreationChanged()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -726,42 +689,37 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.delete(file);
       Files.createFile(file);
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
+      final CheckedListener listener = new CheckedListener();
 
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      Assert.assertEquals(2L, (long) errors.size());
-      Assert.assertTrue(errors.containsKey(file));
+      Assert.assertTrue(listener.errors.containsKey(file));
 
-      final Set<CatalogVerificationReportItemErrorType> file_errors =
-        errors.get(file);
+      final MutableCollection<CatalogVerificationReportItemErrorType>
+        file_errors = listener.errors.get(file);
       final Set<CatalogVerificationReportItemErrorType> file_wanted_errors =
         file_errors.stream()
           .filter(CatalogFilesystemReaderContract::isCreationTimeError)
           .collect(Collectors.toSet());
 
       Assert.assertEquals(1L, (long) file_wanted_errors.size());
-      Assert.assertEquals(0L, (long) without_errors.size());
+      Assert.assertEquals(0L, (long) listener.valids.size());
     }
   }
 
   @Test public final void testVerificationHashChanged()
     throws Exception
   {
-    final CatalogVerificationReport.Settings settings =
-      new CatalogVerificationReport.Settings(
-        CatalogVerificationReport.IgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME);
+    final CatalogVerificationReportSettings settings =
+      new CatalogVerificationReportSettings(
+        CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME);
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -769,31 +727,62 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"),
-        new CatalogDiskID(BigInteger.ZERO),
-        root);
+        new CatalogDiskName("test"), new CatalogDiskID(BigInteger.ZERO), root);
 
       Files.write(file, "Hello".getBytes(StandardCharsets.UTF_8));
       Files.setLastModifiedTime(file, FileTime.from(Instant.ofEpochSecond(1L)));
 
-      final CatalogVerificationReport report =
-        CatalogFilesystemReader.verifyDisk(disk, settings, root);
-      final SortedMap<Path, Set<CatalogVerificationReportItemErrorType>>
-        errors = report.getErrors();
-      final SortedSet<Path> without_errors = report.getPathsWithoutErrors();
+      final CheckedListener listener = new CheckedListener();
 
-      Assert.assertEquals(1L, (long) errors.size());
-      Assert.assertTrue(errors.containsKey(file));
+      CatalogFilesystemReader.verifyDisk(
+        disk, settings, root, listener);
 
-      final Set<CatalogVerificationReportItemErrorType> file_errors =
-        errors.get(file);
+      Assert.assertTrue(listener.errors.containsKey(file));
+
+      final MutableCollection<CatalogVerificationReportItemErrorType>
+        file_errors = listener.errors.get(file);
       final Set<CatalogVerificationReportItemErrorType> file_wanted_errors =
         file_errors.stream()
           .filter(x -> x instanceof CatalogVerificationChangedHash)
           .collect(Collectors.toSet());
 
       Assert.assertEquals(1L, (long) file_wanted_errors.size());
-      Assert.assertEquals(1L, (long) without_errors.size());
+      Assert.assertEquals(1L, (long) listener.valids.size());
+    }
+  }
+
+  private static final class CheckedListener
+    implements CatalogVerificationListenerType
+  {
+    final MutableMultimap<Path, CatalogVerificationReportItemErrorType> errors;
+    final MutableMultimap<Path, CatalogVerificationReportItemOKType>    valids;
+    boolean completed;
+
+    CheckedListener()
+    {
+      this.errors = new HashBagMultimap<>();
+      this.valids = new HashBagMultimap<>();
+    }
+
+    @Override
+    public void onItemVerified(final CatalogVerificationReportItemOKType ok)
+    {
+      CatalogFilesystemReaderContract.LOG.info(
+        "ok: {} | {}", ok.getPath(), ok.show());
+      this.valids.put(ok.getPath(), ok);
+    }
+
+    @Override public void onItemError(
+      final CatalogVerificationReportItemErrorType error)
+    {
+      CatalogFilesystemReaderContract.LOG.error(
+        "error: {} | {}", error.getPath(), error.show());
+      this.errors.put(error.getPath(), error);
+    }
+
+    @Override public void onCompleted()
+    {
+      this.completed = true;
     }
   }
 }

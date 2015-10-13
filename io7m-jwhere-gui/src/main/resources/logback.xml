@@ -10,8 +10,12 @@
     <target>System.err</target>
   </appender>
 
-  <root level="INFO">
-    <appender-ref ref="STDERR" />
+  <logger
+    name="com.io7m.jwhere.core"
+    level="INFO"/>
+
+  <root level="DEBUG">
+    <appender-ref ref="STDERR"/>
   </root>
 
 </configuration>

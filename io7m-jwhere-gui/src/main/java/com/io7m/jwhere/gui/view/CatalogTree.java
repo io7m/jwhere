@@ -79,13 +79,7 @@ final class CatalogTree extends JTree
 
       if (node_value instanceof CatalogDiskMetadata) {
         final CatalogDiskMetadata disk_meta = (CatalogDiskMetadata) node_value;
-
-        if ("iso9660".equals(disk_meta.getFilesystemType())) {
-          this.setIcon(Icons.getDiskOpticalIcon16());
-        } else {
-          this.setIcon(Icons.getDiskIcon16());
-        }
-
+        this.setIcon(CatalogDiskIcons.getIconForDisk(disk_meta));
         this.setText(disk_meta.getDiskName().getValue());
       }
 

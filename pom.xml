@@ -135,6 +135,11 @@
         <artifactId>designgridlayout</artifactId>
         <version>1.11</version>
       </dependency>
+      <dependency>
+        <groupId>com.goldmansachs</groupId>
+        <artifactId>gs-collections</artifactId>
+        <version>6.2.0</version>
+      </dependency>
 
       <dependency>
         <groupId>com.github.marschall</groupId>

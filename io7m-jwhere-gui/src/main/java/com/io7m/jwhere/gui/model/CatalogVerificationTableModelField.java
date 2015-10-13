@@ -14,15 +14,33 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.core;
+package com.io7m.jwhere.gui.model;
 
-/**
- * The type of items that can appear in verification reports that signify
- * errors.
- */
+import java.nio.file.Path;
 
-public interface CatalogVerificationReportItemErrorType
-  extends CatalogVerificationReportItemType
+enum CatalogVerificationTableModelField
 {
-  // No extra functions
+  NAME("Path", Path.class),
+  RESULT("Result", String.class);
+
+  private final String   name;
+  private final Class<?> type;
+
+  CatalogVerificationTableModelField(
+    final String in_name,
+    final Class<?> in_type)
+  {
+    this.name = in_name;
+    this.type = in_type;
+  }
+
+  public String getName()
+  {
+    return this.name;
+  }
+
+  public Class<?> getType()
+  {
+    return this.type;
+  }
 }
