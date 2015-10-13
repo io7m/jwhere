@@ -235,7 +235,10 @@ public final class MainWindow extends JFrame
      * Evaluated when saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Exiting...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Exiting...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -246,6 +249,7 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("closing/saving failed: ", ex);
         status.onErrorLater("Closing failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         MainWindow.LOG.debug("closing/saving finished");
@@ -273,7 +277,10 @@ public final class MainWindow extends JFrame
      * Evaluated when saving/loading starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Loading...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Loading...");
+    };
 
     /**
      * Evaluated when saving/loading is finished.
@@ -284,9 +291,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("loading/saving failed: ", ex);
         status.onErrorLater("Load failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Loaded catalog");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 
@@ -310,7 +319,10 @@ public final class MainWindow extends JFrame
      * Evaluated when closing/saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Saving...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Saving...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -321,9 +333,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("saving failed: ", ex);
         status.onErrorLater("Save failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Save completed");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 
@@ -343,7 +357,10 @@ public final class MainWindow extends JFrame
      * Evaluated when closing/saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Saving...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Saving...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -354,9 +371,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("saving failed: ", ex);
         status.onErrorLater("Save failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Save completed");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 
@@ -378,7 +397,10 @@ public final class MainWindow extends JFrame
      * Evaluated when closing/saving starts.
      */
 
-    final Runnable on_start_io = () -> status.onInfoLater("Closing...");
+    final Runnable on_start_io = () -> {
+      status.onProgressIndeterminateStartLater();
+      status.onInfoLater("Closing...");
+    };
 
     /**
      * Evaluated when closing/saving is finished.
@@ -389,9 +411,11 @@ public final class MainWindow extends JFrame
         final Throwable ex = ex_opt.get();
         MainWindow.LOG.error("closing/saving failed: ", ex);
         status.onErrorLater("Closing failed!");
+        status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
         status.onInfoLater("Closed catalog");
+        status.onProgressIndeterminateFinishLater();
       }
     };
 

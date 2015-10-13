@@ -51,7 +51,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-final class Controller implements ControllerType
+/**
+ * The default implementation of the {@link ControllerType}
+ */
+
+public final class Controller implements ControllerType
 {
   private static final Logger LOG;
 
