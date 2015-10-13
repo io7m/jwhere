@@ -92,4 +92,14 @@ public final class SizeBytesTest
         }
       });
   }
+
+  @Test public void testHumanString()
+  {
+    Assert.assertEquals(
+      "1b", new SizeBytes(BigInteger.valueOf(1L)).toHumanString());
+    Assert.assertEquals(
+      "1.00kb", new SizeBytes(BigInteger.valueOf(1_000L)).toHumanString());
+    Assert.assertEquals(
+      "1.00mb", new SizeBytes(BigInteger.valueOf(1_000_000L)).toHumanString());
+  }
 }

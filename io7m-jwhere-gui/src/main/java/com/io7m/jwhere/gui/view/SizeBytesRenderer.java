@@ -21,17 +21,9 @@ import com.io7m.jwhere.gui.model.SizeBytes;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 
 final class SizeBytesRenderer extends DefaultTableCellRenderer
 {
-  public static final BigDecimal BYTE_MEGABYTE_DIVISOR;
-
-  static {
-    BYTE_MEGABYTE_DIVISOR = BigDecimal.valueOf(10000L);
-  }
 
   SizeBytesRenderer()
   {
@@ -50,14 +42,7 @@ final class SizeBytesRenderer extends DefaultTableCellRenderer
       table, value, is_selected, has_focus, row, column);
 
     final SizeBytes size = (SizeBytes) value;
-    final BigInteger bytes = size.getValue();
-    final BigDecimal mb = new BigDecimal(bytes, 2).divide(
-      SizeBytesRenderer.BYTE_MEGABYTE_DIVISOR, RoundingMode.UP);
-
-    final StringBuilder sb = new StringBuilder(32);
-    sb.append(mb);
-    sb.append("mb");
-    this.setText(sb.toString());
+    this.setText(size.toHumanString());
     return this;
   }
 }

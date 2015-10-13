@@ -18,7 +18,9 @@ package com.io7m.jwhere.gui.model;
 
 import com.io7m.jnull.NullCheck;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 /**
  * A size value in bytes.
@@ -26,6 +28,14 @@ import java.math.BigInteger;
 
 public final class SizeBytes
 {
+  private static final BigDecimal BYTE_MEGABYTE_DIVISOR;
+  private static final BigDecimal BYTE_KILOBYTE_DIVISOR;
+
+  static {
+    BYTE_MEGABYTE_DIVISOR = BigDecimal.valueOf(10000L);
+    BYTE_KILOBYTE_DIVISOR = BigDecimal.valueOf(10L);
+  }
+
   private final BigInteger value;
 
   /**
@@ -37,6 +47,25 @@ public final class SizeBytes
   public SizeBytes(final BigInteger in_value)
   {
     this.value = NullCheck.notNull(in_value);
+  }
+
+  private static String showAsMegabytes(final BigInteger x)
+  {
+    final BigDecimal mb = new BigDecimal(x, 2).divide(
+      SizeBytes.BYTE_MEGABYTE_DIVISOR, RoundingMode.UP);
+    return mb + "mb";
+  }
+
+  private static String showAsKilobytes(final BigInteger x)
+  {
+    final BigDecimal mb = new BigDecimal(x, 2).divide(
+      SizeBytes.BYTE_KILOBYTE_DIVISOR, RoundingMode.UP);
+    return mb + "kb";
+  }
+
+  private static String showAsBytes(final BigInteger x)
+  {
+    return x + "b";
   }
 
   /**
@@ -69,5 +98,23 @@ public final class SizeBytes
   @Override public int hashCode()
   {
     return this.value.hashCode();
+  }
+
+  /**
+   * @return The current byte value as a humanly readable string (as bytes,
+   * kilobytes, or megabytes depending on the size)
+   */
+
+  public String toHumanString()
+  {
+    if (this.value.compareTo(BigInteger.valueOf(1_000L)) < 0) {
+      return SizeBytes.showAsBytes(this.value);
+    }
+
+    if (this.value.compareTo(BigInteger.valueOf(1_000_000L)) < 0) {
+      return SizeBytes.showAsKilobytes(this.value);
+    }
+
+    return SizeBytes.showAsMegabytes(this.value);
   }
 }
