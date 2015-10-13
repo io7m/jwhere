@@ -122,7 +122,7 @@ public final class MainWindow extends JFrame
       {
         @Override public void windowClosing(final WindowEvent e)
         {
-          MainWindow.onActionCatalogClose(
+          MainWindow.onActionExit(
             MainWindow.this,
             MainWindow.this.status,
             MainWindow.this.controller);
