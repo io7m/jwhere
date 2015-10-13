@@ -155,11 +155,14 @@ public final class CatalogFilesystemReader
             try {
               CatalogFilesystemReader.LOG.debug("visitFile: {}", file);
 
-              final CatalogDirectoryNode current = dirs.peek();
-              final CatalogFileNode new_file =
-                CatalogFilesystemReader.onFile(id_pool, file);
-              final String name = file.getFileName().toString();
-              db.addNode(current, name, new_file);
+              if (attrs.isRegularFile()) {
+                final CatalogDirectoryNode current = dirs.peek();
+                final CatalogFileNode new_file =
+                  CatalogFilesystemReader.onFile(id_pool, file);
+                final String name = file.getFileName().toString();
+                db.addNode(current, name, new_file);
+              }
+
               return FileVisitResult.CONTINUE;
             } catch (final CatalogNodeException e) {
               throw new IOException(e);
