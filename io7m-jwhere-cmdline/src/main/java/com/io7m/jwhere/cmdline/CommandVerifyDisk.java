@@ -98,7 +98,7 @@ public final class CommandVerifyDisk extends CommandBase
 
   @Override public void run()
   {
-    this.configureLogLevel();
+    super.setup();
 
     try {
       CommandVerifyDisk.LOG.debug("Index {}", this.disk_index);

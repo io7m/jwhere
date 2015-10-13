@@ -18,27 +18,19 @@ package com.io7m.jwhere.cmdline;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIndexException;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParserType;
-import com.io7m.jwhere.core.CatalogJSONParserUtilities;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
 import com.io7m.jwhere.core.CatalogNodeException;
+import com.io7m.jwhere.core.CatalogSaveSpecification;
 import io.airlift.airline.Option;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 
 /**
  * The base type of all commands.
@@ -49,6 +41,10 @@ public abstract class CommandBase implements Runnable
   @Option(name = "--debug", description = "Enable debug logging")
   private boolean debug;
 
+  @Option(name = "--wait-for-stdin",
+          description = "Wait for a single byte on stdin before executing.")
+  private boolean wait_profiler;
+
   protected static Catalog openCatalogForReading(
     final CatalogJSONParserType p,
     final Path file)
@@ -58,35 +54,32 @@ public abstract class CommandBase implements Runnable
     CatalogNodeException,
     CatalogDiskDuplicateIndexException
   {
-    final ObjectMapper jom = new ObjectMapper();
-    try (InputStream is = Files.newInputStream(
-      file, StandardOpenOption.READ)) {
-      final JsonNode j = jom.readTree(is);
-      final ObjectNode jo = CatalogJSONParserUtilities.checkObject(null, j);
-      return p.parseCatalog(jo);
-    }
+    return p.parseCatalogFromPath(file);
   }
 
   protected static void writeCatalogToDisk(
     final Catalog c,
-    final Path p)
+    final CatalogSaveSpecification spec)
     throws IOException
   {
     final CatalogJSONSerializerType s = CatalogJSONSerializer.newSerializer();
-    final ObjectNode j = s.serializeCatalog(c);
-    final ObjectMapper jom = new ObjectMapper();
-    final ObjectWriter jw = jom.writerWithDefaultPrettyPrinter();
+    s.serializeCatalogToPath(c, spec);
+  }
 
-    try (final OutputStream os = Files.newOutputStream(
-      p,
-      StandardOpenOption.CREATE,
-      StandardOpenOption.WRITE,
-      StandardOpenOption.TRUNCATE_EXISTING)) {
-      jw.writeValue(os, j);
+  protected final void setup()
+  {
+    this.configureLogLevel();
+
+    if (this.wait_profiler) {
+      try {
+        System.in.read();
+      } catch (final IOException e) {
+        // Ignore
+      }
     }
   }
 
-  protected final void configureLogLevel()
+  private void configureLogLevel()
   {
     final Logger root = (Logger) LoggerFactory.getLogger(
       org.slf4j.Logger.ROOT_LOGGER_NAME);
