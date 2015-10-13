@@ -72,7 +72,8 @@ public final class Model
 
     final CatalogTableModel tm =
       new CatalogTableModel(this.catalog_history::getCurrentValue);
-    final CatalogDiskTableModel dtm = new CatalogDiskTableModel();
+    final CatalogDiskTableModel dtm =
+      new CatalogDiskTableModel(this.catalog_history::getCurrentValue);
     this.catalog_table_model = new CatalogMultiTableModel(
       this.catalog_history::getCurrentValue, tm, dtm);
     this.catalog_tree_model = new CatalogTreeModel();

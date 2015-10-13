@@ -21,6 +21,8 @@ import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.SortedMap;
@@ -33,10 +35,18 @@ import java.util.function.Supplier;
 
 final class CatalogMultiTableModel extends AbstractTableModel
 {
-  private final CatalogTableModel     catalog_model;
-  private final CatalogDiskTableModel disk_model;
+  private static final Logger LOG;
+
+  static {
+    LOG = LoggerFactory.getLogger(CatalogMultiTableModel.class);
+  }
+
+
+
+  private final CatalogTableModel      catalog_model;
+  private final CatalogDiskTableModel  disk_model;
   private final Supplier<CatalogState> state_get;
-  private       CatalogTarget               target;
+  private       CatalogTarget          target;
 
   CatalogMultiTableModel(
     final Supplier<CatalogState> in_state_get,
@@ -149,6 +159,12 @@ final class CatalogMultiTableModel extends AbstractTableModel
     if (t != old_target) {
       this.fireTableStructureChanged();
     }
+  }
+
+  @Override public void fireTableDataChanged()
+  {
+    this.disk_model.checkStillValid();
+    super.fireTableDataChanged();
   }
 
   public void reset()
