@@ -113,5 +113,7 @@ final class CatalogAddDiskDialog extends JDialog
     dg.row().grid(new JLabel("Root Directory")).add(disk_root).add(
       disk_root_open);
     dg.row().right().add(cancel).add(add);
+
+    this.getRootPane().setDefaultButton(add);
   }
 }
