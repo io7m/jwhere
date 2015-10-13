@@ -60,7 +60,7 @@ final class CatalogAddDiskDialog extends JDialog
     final BigIntegerTextField disk_id = new BigIntegerTextField();
     disk_id.setText(controller.catalogGetFreshDiskID().toString());
 
-    final JTextField disk_root = new JTextField();
+    final JTextField disk_root = new JTextField(32);
 
     final JButton disk_root_open = new JButton("Open...");
     disk_root_open.addActionListener(
@@ -110,7 +110,7 @@ final class CatalogAddDiskDialog extends JDialog
     final DesignGridLayout dg = new DesignGridLayout(this.getContentPane());
     dg.row().grid(new JLabel("Disk Name")).add(disk_name);
     dg.row().grid(new JLabel("Disk ID")).add(disk_id);
-    dg.row().grid(new JLabel("Root Directory")).add(disk_root).add(
+    dg.row().grid(new JLabel("Root Directory")).add(disk_root, 3).add(
       disk_root_open);
     dg.row().right().add(cancel).add(add);
 
