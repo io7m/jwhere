@@ -6,12 +6,12 @@
   </a:author>
   <a:id>http://github.com/io7m/jwhere/releases.atom</a:id>
   <a:title>io7m-jwhere Releases</a:title>
-  <a:updated>2000-01-01T00:00:00Z</a:updated>
+  <a:updated>2015-10-04T00:00:00Z</a:updated>
   <a:entry>
     <a:id>0</a:id>
-    <a:updated>2000-01-01T00:00:00Z</a:updated>
-    <a:published>2000-01-01T00:00:00Z</a:published>
-    <a:title>io7m-jwhere 1.0.0 released</a:title>
-    <a:content type="text"> io7m-jwhere 1.0.0 released </a:content>
+    <a:updated>2015-10-04T00:00:00Z</a:updated>
+    <a:published>2015-10-04T00:00:00Z</a:published>
+    <a:title>io7m-jwhere 0.1.0 released</a:title>
+    <a:content type="text"> io7m-jwhere 0.1.0 released </a:content>
   </a:entry>
 </a:feed>
