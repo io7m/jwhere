@@ -168,7 +168,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public Catalog parseCatalogFromPath(final Path p)
     throws
     CatalogJSONParseException,
-    CatalogNodeException, CatalogDiskDuplicateIDException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIDException,
     IOException
   {
     NullCheck.notNull(p);
@@ -196,7 +197,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     final CatalogSaveSpecification.Compress compression)
     throws
     CatalogJSONParseException,
-    CatalogNodeException, CatalogDiskDuplicateIDException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIDException,
     IOException
   {
     NullCheck.notNull(p);
@@ -223,7 +225,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public Catalog parseCatalogFromStream(final InputStream is)
     throws
     CatalogJSONParseException,
-    CatalogNodeException, CatalogDiskDuplicateIDException,
+    CatalogNodeException,
+    CatalogDiskDuplicateIDException,
     IOException
   {
     NullCheck.notNull(is);
@@ -237,16 +240,21 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public Catalog parseCatalog(final ObjectNode c)
     throws
     CatalogJSONParseException,
-    CatalogNodeException, CatalogDiskDuplicateIDException
+    CatalogNodeException,
+    CatalogDiskDuplicateIDException
   {
     NullCheck.notNull(c);
 
-    CatalogJSONParserUtilities.getStringWithValue(c, "type", "catalog");
+    CatalogJSONParserUtilities.getStringWithValue(
+      c, "schema", "http://schemas.io7m.com/jwhere");
+    CatalogJSONParserUtilities.getStringWithValue(c, "schema-version", "1.0.0");
+    final ObjectNode root = CatalogJSONParserUtilities.getObject(c, "catalog");
+    CatalogJSONParserUtilities.getStringWithValue(root, "type", "catalog");
 
     final SortedMap<CatalogDiskID, CatalogDisk> disks = new TreeMap<>();
 
     final ArrayNode jdisks =
-      CatalogJSONParserUtilities.getArray(c, "catalog-disks");
+      CatalogJSONParserUtilities.getArray(root, "catalog-disks");
 
     for (int index = 0; index < jdisks.size(); ++index) {
       final ObjectNode jd =

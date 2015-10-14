@@ -21,6 +21,7 @@
     <module>io7m-jwhere-documentation</module>
     <module>io7m-jwhere-gui</module>
     <module>io7m-jwhere-gwhere</module>
+    <module>io7m-jwhere-schema</module>
   </modules>
 
   <properties>

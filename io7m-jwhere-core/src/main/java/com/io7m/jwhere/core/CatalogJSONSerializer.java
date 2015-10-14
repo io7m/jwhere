@@ -194,10 +194,9 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     NullCheck.notNull(c);
 
     final ObjectMapper jom = new ObjectMapper();
-    final ObjectNode jd = jom.createObjectNode();
 
-    jd.put("type", "catalog");
-
+    final ObjectNode jcat = jom.createObjectNode();
+    jcat.put("type", "catalog");
     final ArrayNode jda = jom.createArrayNode();
     final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
     final Iterator<CatalogDiskID> iter = disks.keySet().iterator();
@@ -205,9 +204,14 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
       final CatalogDisk disk = disks.get(iter.next());
       jda.add(this.serializeDisk(disk));
     }
+    jcat.set("catalog-disks", jda);
 
-    jd.set("catalog-disks", jda);
-    return jd;
+    final ObjectNode jroot = jom.createObjectNode();
+    jroot.put("schema", "http://schemas.io7m.com/jwhere");
+    jroot.put("schema-version", "1.0.0");
+    jroot.set("catalog", jcat);
+
+    return jroot;
   }
 
   @Override public ObjectNode serializeDisk(final CatalogDisk d)

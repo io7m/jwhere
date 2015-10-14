@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.io7m.jwhere</groupId>
+    <artifactId>io7m-jwhere</artifactId>
+    <version>0.2.0</version>
+  </parent>
+  <artifactId>io7m-jwhere-schema</artifactId>
+
+  <packaging>jar</packaging>
+  <name>io7m-jwhere-schema</name>
+  <description>Disk catalog (Schema)</description>
+  <url>http://io7m.github.io/jwhere/</url>
+
+  <scm>
+    <url>${project.parent.scm.url}</url>
+    <connection>${project.parent.scm.connection}</connection>
+    <developerConnection>${project.parent.scm.developerConnection}</developerConnection>
+  </scm>
+
+  <dependencies>
+  </dependencies>
+
+  <build>
+  </build>
+
+</project>
