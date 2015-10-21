@@ -27,8 +27,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <com.io7m.siteReposDirectory>/com/io7m/jwhere</com.io7m.siteReposDirectory>
-    <com.io7m.siteDocumentationDirectory>/com/io7m/jwhere/io7m-jwhere-documentation</com.io7m.siteDocumentationDirectory>
+    <siteReposDirectory>/com/io7m/jwhere</siteReposDirectory>
+    <siteDocumentationDirectory>/com/io7m/jwhere/io7m-jwhere-documentation</siteDocumentationDirectory>
   </properties>
 
   <licenses>
