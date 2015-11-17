@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.jwhere</groupId>
     <artifactId>io7m-jwhere</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
   </parent>
   <artifactId>io7m-jwhere-checkstyle</artifactId>
 
