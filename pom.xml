@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.io7m.jwhere</groupId>
   <artifactId>io7m-jwhere</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 
   <packaging>pom</packaging>
   <name>io7m-jwhere</name>
@@ -21,13 +21,14 @@
     <module>io7m-jwhere-documentation</module>
     <module>io7m-jwhere-gui</module>
     <module>io7m-jwhere-gwhere</module>
+    <module>io7m-jwhere-schema</module>
   </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <com.io7m.siteReposDirectory>/com/io7m/jwhere</com.io7m.siteReposDirectory>
-    <com.io7m.siteDocumentationDirectory>/com/io7m/jwhere/io7m-jwhere-documentation</com.io7m.siteDocumentationDirectory>
+    <siteReposDirectory>/com/io7m/jwhere</siteReposDirectory>
+    <siteDocumentationDirectory>/com/io7m/jwhere/io7m-jwhere-documentation</siteDocumentationDirectory>
   </properties>
 
   <licenses>

@@ -10,11 +10,11 @@
     <artifactId>io7m-jwhere</artifactId>
     <version>0.3.0</version>
   </parent>
-  <artifactId>io7m-jwhere-checkstyle</artifactId>
+  <artifactId>io7m-jwhere-schema</artifactId>
 
   <packaging>jar</packaging>
-  <name>io7m-jwhere-checkstyle</name>
-  <description>Disk catalog (Checkstyle policy)</description>
+  <name>io7m-jwhere-schema</name>
+  <description>Disk catalog (Schema)</description>
   <url>http://io7m.github.io/jwhere/</url>
 
   <scm>
@@ -24,10 +24,9 @@
   </scm>
 
   <dependencies>
-    <dependency>
-      <groupId>com.io7m.jnull</groupId>
-      <artifactId>io7m-jnull-core</artifactId>
-    </dependency>
   </dependencies>
+
+  <build>
+  </build>
 
 </project>
