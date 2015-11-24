@@ -75,6 +75,8 @@ public final class CommandInit extends CommandBase
   {
     super.setup();
 
+    int status = 0;
+
     try {
       CommandInit.LOG.debug("Initializing {}", this.catalog);
 
@@ -94,11 +96,15 @@ public final class CommandInit extends CommandBase
       if (this.isDebug()) {
         CommandInit.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     } catch (final IOException e) {
       CommandInit.LOG.error("I/O error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandInit.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     }
+
+    System.exit(status);
   }
 }

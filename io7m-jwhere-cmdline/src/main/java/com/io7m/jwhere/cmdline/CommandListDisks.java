@@ -72,6 +72,8 @@ public final class CommandListDisks extends CommandBase
   {
     super.setup();
 
+    int status = 0;
+
     try {
       final CatalogJSONParserType p = CatalogJSONParser.newParser();
       final Path file = new File(this.catalog).toPath();
@@ -95,25 +97,29 @@ public final class CommandListDisks extends CommandBase
           meta.getFilesystemType());
       }
 
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException
-      e) {
+    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
       CommandListDisks.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandListDisks.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     } catch (final CatalogJSONParseException e) {
       CommandListDisks.LOG.error(
         "JSON parse error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandListDisks.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     } catch (final IOException e) {
       CommandListDisks.LOG.error(
         "I/O error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandListDisks.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     }
+
+    System.exit(status);
   }
 }
