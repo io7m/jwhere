@@ -120,6 +120,8 @@ public final class CommandAddDisk extends CommandBase
   {
     super.setup();
 
+    int status = 0;
+
     try {
       CommandAddDisk.LOG.debug("Disk {}", this.disk_name);
       CommandAddDisk.LOG.debug("Index {}", this.disk_index);
@@ -151,31 +153,36 @@ public final class CommandAddDisk extends CommandBase
         c, new CatalogSaveSpecification(
           this.catalog_compress, catalog_out_path));
 
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException
-      e) {
+    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
       CommandAddDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandAddDisk.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     } catch (final CatalogJSONParseException e) {
       CommandAddDisk.LOG.error(
         "JSON parse error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandAddDisk.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     } catch (final IOException e) {
       CommandAddDisk.LOG.error(
         "I/O error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandAddDisk.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     } catch (final CatalogException e) {
       CommandAddDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandAddDisk.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     }
+
+    System.exit(status);
   }
 }

@@ -89,6 +89,8 @@ public final class CommandImportGWhere extends CommandBase
   {
     super.setup();
 
+    int status = 0;
+
     try {
       CommandImportGWhere.LOG.debug("Catalog output {}", this.catalog_out);
       CommandImportGWhere.LOG.debug("GWhere {}", this.gwhere);
@@ -115,12 +117,16 @@ public final class CommandImportGWhere extends CommandBase
       if (this.isDebug()) {
         CommandImportGWhere.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     } catch (final CatalogException e) {
       CommandImportGWhere.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandImportGWhere.LOG.error("Exception trace: ", e);
       }
+      status = 1;
     }
+
+    System.exit(status);
   }
 }
