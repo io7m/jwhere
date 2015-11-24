@@ -42,6 +42,7 @@ import java.math.BigInteger;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A command to verify a disk in the catalog.
@@ -104,6 +105,8 @@ public final class CommandVerifyDisk extends CommandBase
   {
     super.setup();
 
+    final AtomicInteger status = new AtomicInteger(0);
+
     try {
       CommandVerifyDisk.LOG.debug("Index {}", this.disk_index);
       CommandVerifyDisk.LOG.debug("Root {}", this.root);
@@ -130,20 +133,23 @@ public final class CommandVerifyDisk extends CommandBase
         disk, settings, root_path, new CatalogVerificationListenerType()
         {
           @Override
-          public void onItemVerified(final
-          CatalogVerificationReportItemOKType ok)
+          public void onItemVerified(
+            final
+            CatalogVerificationReportItemOKType ok)
           {
             System.out.printf("%s | OK | %s\n", ok.getPath(), ok.show());
           }
 
           @Override
-          public void onItemError(final
-          CatalogVerificationReportItemErrorType error)
+          public void onItemError(
+            final
+            CatalogVerificationReportItemErrorType error)
           {
             System.out.printf(
               "%s | FAILED | %s\n",
               error.getPath(),
               error.show());
+            status.set(2);
           }
 
           @Override public void onCompleted()
@@ -158,31 +164,38 @@ public final class CommandVerifyDisk extends CommandBase
       if (this.isDebug()) {
         CommandVerifyDisk.LOG.error("Exception trace: ", e);
       }
+      status.set(1);
     } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
       CommandVerifyDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandVerifyDisk.LOG.error("Exception trace: ", e);
       }
+      status.set(1);
     } catch (final CatalogJSONParseException e) {
       CommandVerifyDisk.LOG.error(
         "JSON parse error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandVerifyDisk.LOG.error("Exception trace: ", e);
       }
+      status.set(1);
     } catch (final IOException e) {
       CommandVerifyDisk.LOG.error(
         "I/O error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandVerifyDisk.LOG.error("Exception trace: ", e);
       }
+      status.set(1);
     } catch (final CatalogException e) {
       CommandVerifyDisk.LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
         CommandVerifyDisk.LOG.error("Exception trace: ", e);
       }
+      status.set(1);
     }
+
+    System.exit(status.get());
   }
 
 }
