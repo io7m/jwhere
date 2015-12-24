@@ -116,7 +116,7 @@ public final class CommandRemoveDisk extends CommandBase
       final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
       final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
       final CatalogDiskID id = new CatalogDiskID(this.disk_index);
-      if (disks.containsKey(id)) {
+      if (!disks.containsKey(id)) {
         throw new CatalogDiskNonexistentException(
           String.format(
             "Catalog does not contain a disk with index %s", id));

@@ -4,6 +4,16 @@
 
   <c:release c:ticket-system="com.github.io7m.jwhere">
     <c:date>2015-12-24</c:date>
+    <c:version>0.5.1</c:version>
+    <c:item>
+      <c:date>2015-12-24</c:date>
+      <c:type-code-fix/>
+      <c:summary>Fix broken (and missing) remove command.</c:summary>
+    </c:item>
+  </c:release>
+
+  <c:release c:ticket-system="com.github.io7m.jwhere">
+    <c:date>2015-12-24</c:date>
     <c:version>0.5.0</c:version>
     <c:item>
       <c:date>2015-12-24</c:date>
