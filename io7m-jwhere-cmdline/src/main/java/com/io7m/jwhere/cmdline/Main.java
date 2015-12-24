@@ -62,6 +62,7 @@ public final class Main
     builder.withCommand(CommandInit.class);
     builder.withCommand(CommandListDisks.class);
     builder.withCommand(CommandAddDisk.class);
+    builder.withCommand(CommandRemoveDisk.class);
     builder.withCommand(CommandVerifyDisk.class);
     builder.withCommand(CommandImportGWhere.class);
     builder.withCommand(Help.class);
