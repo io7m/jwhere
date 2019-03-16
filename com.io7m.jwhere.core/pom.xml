@@ -7,21 +7,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.io7m.jwhere</groupId>
-    <artifactId>io7m-jwhere</artifactId>
+    <artifactId>com.io7m.jwhere</artifactId>
     <version>0.5.1</version>
   </parent>
-  <artifactId>io7m-jwhere-core</artifactId>
+  <artifactId>com.io7m.jwhere.core</artifactId>
 
   <packaging>jar</packaging>
-  <name>io7m-jwhere-core</name>
+  <name>com.io7m.jwhere.core</name>
   <description>Disk catalog (Core)</description>
   <url>http://io7m.github.io/jwhere/</url>
-
-  <scm>
-    <url>${project.parent.scm.url}</url>
-    <connection>${project.parent.scm.connection}</connection>
-    <developerConnection>${project.parent.scm.developerConnection}</developerConnection>
-  </scm>
 
   <dependencies>
     <dependency>
@@ -55,6 +49,10 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
     </dependency>
 
     <dependency>

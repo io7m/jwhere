@@ -7,53 +7,35 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.io7m.jwhere</groupId>
-    <artifactId>io7m-jwhere</artifactId>
+    <artifactId>com.io7m.jwhere</artifactId>
     <version>0.5.1</version>
   </parent>
-  <artifactId>io7m-jwhere-gui</artifactId>
+  <artifactId>com.io7m.jwhere.cmdline</artifactId>
 
   <packaging>jar</packaging>
-  <name>io7m-jwhere-gui</name>
-  <description>Disk catalog (GUI)</description>
+  <name>com.io7m.jwhere.cmdline</name>
+  <description>Disk catalog (Command line utility)</description>
   <url>http://io7m.github.io/jwhere/</url>
-
-  <scm>
-    <url>${project.parent.scm.url}</url>
-    <connection>${project.parent.scm.connection}</connection>
-    <developerConnection>${project.parent.scm.developerConnection}</developerConnection>
-  </scm>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>io7m-jwhere-core</artifactId>
+      <artifactId>com.io7m.jwhere.core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.java.dev.designgridlayout</groupId>
-      <artifactId>designgridlayout</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.jwhere.gwhere</artifactId>
+      <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>io7m-jwhere-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.java.quickcheck</groupId>
-      <artifactId>quickcheck</artifactId>
-      <scope>test</scope>
+      <groupId>io.airlift</groupId>
+      <artifactId>airline</artifactId>
     </dependency>
   </dependencies>
 
@@ -87,7 +69,7 @@
                   <Implementation-Vendor>io7m.com</Implementation-Vendor>
                   <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
                   <Built-By>io7m</Built-By>
-                  <Main-Class>com.io7m.jwhere.gui.GUIMain</Main-Class>
+                  <Main-Class>com.io7m.jwhere.cmdline.Main</Main-Class>
                 </manifestEntries>
               </archive>
               <descriptors>

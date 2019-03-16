@@ -7,27 +7,20 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.io7m.jwhere</groupId>
-    <artifactId>io7m-jwhere</artifactId>
+    <artifactId>com.io7m.jwhere</artifactId>
     <version>0.5.1</version>
   </parent>
-  <artifactId>io7m-jwhere-gwhere</artifactId>
+  <artifactId>com.io7m.jwhere.gwhere</artifactId>
 
   <packaging>jar</packaging>
-  <name>io7m-jwhere-gwhere</name>
+  <name>com.io7m.jwhere.gwhere</name>
   <description>Disk catalog (GWhere import handling)</description>
   <url>http://io7m.github.io/jwhere/</url>
-
-  <scm>
-    <url>${project.parent.scm.url}</url>
-    <connection>${project.parent.scm.connection}</connection>
-    <developerConnection>${project.parent.scm.developerConnection}
-    </developerConnection>
-  </scm>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>io7m-jwhere-core</artifactId>
+      <artifactId>com.io7m.jwhere.core</artifactId>
       <version>${project.version}</version>
     </dependency>
 

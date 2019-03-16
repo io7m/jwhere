@@ -19,8 +19,8 @@ package com.io7m.jwhere.core;
 import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
 import net.jcip.annotations.Immutable;
+import org.apache.commons.codec.binary.Hex;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -102,7 +102,7 @@ import java.security.NoSuchAlgorithmException;
       }
     }
 
-    final String hex = DatatypeConverter.printHexBinary(md.digest());
+    final String hex = Hex.encodeHexString(md.digest());
     return new CatalogFileHash(md.getAlgorithm(), hex);
   }
 

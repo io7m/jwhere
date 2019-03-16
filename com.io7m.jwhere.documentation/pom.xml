@@ -7,13 +7,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.io7m.jwhere</groupId>
-    <artifactId>io7m-jwhere</artifactId>
+    <artifactId>com.io7m.jwhere</artifactId>
     <version>0.5.1</version>
   </parent>
-  <artifactId>io7m-jwhere-documentation</artifactId>
+  <artifactId>com.io7m.jwhere.documentation</artifactId>
 
   <packaging>jar</packaging>
-  <name>io7m-jwhere-documentation</name>
+  <name>com.io7m.jwhere.documentation</name>
   <description>Disk catalog (Documentation)</description>
   <url>http://io7m.github.io/jwhere/</url>
 
