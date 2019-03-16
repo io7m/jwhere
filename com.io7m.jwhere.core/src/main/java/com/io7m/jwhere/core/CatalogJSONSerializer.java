@@ -51,7 +51,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   private static ObjectNode serializeFile(
     final ObjectMapper jom,
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
-    final CatalogFileNode node,
+    final CatalogFileNodeType node,
     final String name)
   {
     final Instant atime = node.accessTime();
@@ -61,7 +61,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     final ObjectNode jout = jom.createObjectNode();
     jout.put("type", "file");
     jout.put("name", name);
-    jout.set("size", new BigIntegerNode(node.getSize()));
+    jout.set("size", new BigIntegerNode(node.size()));
     jout.put("owner", node.owner());
     jout.put("group", node.group());
     jout.put("access-time", atime.toString());
@@ -71,7 +71,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     jout.put(
       "permissions", PosixFilePermissions.toString(node.permissions()));
 
-    final Optional<CatalogFileHash> hash_opt = node.getHash();
+    final Optional<CatalogFileHash> hash_opt = node.hash();
     if (hash_opt.isPresent()) {
       final ObjectNode jhash =
         CatalogJSONSerializer.serializeHash(jom, hash_opt.get());
@@ -101,7 +101,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     return node.matchNode(
       new CatalogNodeMatcherType<ObjectNode, UnreachableCodeException>()
       {
-        @Override public ObjectNode onFile(final CatalogFileNode f)
+        @Override public ObjectNode onFile(final CatalogFileNodeType f)
         {
           return CatalogJSONSerializer.serializeFile(jom, g, f, name);
         }

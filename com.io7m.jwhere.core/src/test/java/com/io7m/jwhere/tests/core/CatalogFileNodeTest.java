@@ -17,9 +17,9 @@
 package com.io7m.jwhere.tests.core;
 
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogFileNode;
+import com.io7m.jwhere.core.CatalogFileNodeType;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
@@ -53,7 +53,7 @@ public final class CatalogFileNodeTest
           final Boolean r = cd.matchNode(
             new CatalogNodeMatcherType<Boolean, RuntimeException>()
             {
-              @Override public Boolean onFile(final CatalogFileNode f)
+              @Override public Boolean onFile(final CatalogFileNodeType f)
                 throws RuntimeException
               {
                 return Boolean.TRUE;
@@ -82,26 +82,8 @@ public final class CatalogFileNodeTest
           throws Throwable
         {
           final CatalogFileNode ce = gen.next();
-          final CatalogFileNode cf = new CatalogFileNode(
-            cd.getSize(),
-            cd.permissions(),
-            cd.owner(),
-            cd.group(),
-            cd.id(),
-            cd.accessTime(),
-            cd.creationTime(),
-            cd.modificationTime(),
-            cd.getHash());
-          final CatalogFileNode cg = new CatalogFileNode(
-            cd.getSize(),
-            cd.permissions(),
-            cd.owner(),
-            cd.group(),
-            cd.id(),
-            cd.accessTime(),
-            cd.creationTime(),
-            cd.modificationTime(),
-            cd.getHash());
+          final CatalogFileNode cf = CatalogFileNode.copyOf(cd);
+          final CatalogFileNode cg = CatalogFileNode.copyOf(cd);
 
           // Reflexivity
           Assert.assertEquals(cd, cd);
@@ -132,9 +114,18 @@ public final class CatalogFileNodeTest
     this.expected.expectMessage("Owner name cannot be empty");
 
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
-    new CatalogFileNode(
-      BigInteger.TEN, new HashSet<>(1), "", "root", BigInteger.valueOf(
-      0L), c.instant(), c.instant(), c.instant(), Optional.empty());
+
+    CatalogFileNode.builder()
+      .setPermissions(new HashSet<>())
+      .setOwner("")
+      .setGroup("root")
+      .setId(BigInteger.valueOf(2L))
+      .setAccessTime(c.instant())
+      .setCreationTime(c.instant())
+      .setModificationTime(c.instant())
+      .setSize(BigInteger.valueOf(130L))
+      .setHash(Optional.empty())
+      .build();
   }
 
   @Test public void testGroupNameEmpty()
@@ -143,8 +134,17 @@ public final class CatalogFileNodeTest
     this.expected.expectMessage("Group name cannot be empty");
 
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
-    new CatalogFileNode(
-      BigInteger.TEN, new HashSet<>(1), "root", "", BigInteger.valueOf(
-      0L), c.instant(), c.instant(), c.instant(), Optional.empty());
+
+    CatalogFileNode.builder()
+      .setPermissions(new HashSet<>())
+      .setOwner("root")
+      .setGroup("")
+      .setId(BigInteger.valueOf(2L))
+      .setAccessTime(c.instant())
+      .setCreationTime(c.instant())
+      .setModificationTime(c.instant())
+      .setSize(BigInteger.valueOf(130L))
+      .setHash(Optional.empty())
+      .build();
   }
 }

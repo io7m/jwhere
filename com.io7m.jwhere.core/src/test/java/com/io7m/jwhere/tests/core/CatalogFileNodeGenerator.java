@@ -100,7 +100,16 @@ public final class CatalogFileNodeGenerator
     final BigInteger size = this.long_gen.next();
     final Optional<CatalogFileHash> hash = this.hash_gen.next();
 
-    return new CatalogFileNode(
-      size, perms, owner, group, inode, access, creation, modify, hash);
+    return CatalogFileNode.builder()
+      .setPermissions(perms)
+      .setOwner(owner)
+      .setGroup(group)
+      .setId(inode)
+      .setAccessTime(access)
+      .setCreationTime(creation)
+      .setModificationTime(modify)
+      .setSize(size)
+      .setHash(hash)
+      .build();
   }
 }

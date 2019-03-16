@@ -300,7 +300,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         final CatalogFileNode ffile = (CatalogFileNode) file;
         Assert.assertEquals("root", ffile.owner());
         Assert.assertEquals("root", ffile.group());
-        Assert.assertEquals(BigInteger.valueOf(417761L), ffile.getSize());
+        Assert.assertEquals(BigInteger.valueOf(417761L), ffile.size());
         Assert.assertEquals(BigInteger.valueOf(1474L), ffile.id());
       }
 
@@ -383,7 +383,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         final CatalogFileNode ffile = (CatalogFileNode) file;
         Assert.assertEquals("root", ffile.owner());
         Assert.assertEquals("root", ffile.group());
-        Assert.assertEquals(BigInteger.valueOf(417761L), ffile.getSize());
+        Assert.assertEquals(BigInteger.valueOf(417761L), ffile.size());
         Assert.assertEquals(BigInteger.valueOf(1474L), ffile.id());
       }
 

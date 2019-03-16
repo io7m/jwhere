@@ -35,7 +35,7 @@ public interface CatalogNodeMatcherType<A, E extends Exception>
    * @throws E If required
    */
 
-  A onFile(CatalogFileNode f)
+  A onFile(CatalogFileNodeType f)
     throws E;
 
   /**

@@ -58,7 +58,7 @@ public final class CatalogVerificationChangedType
     return node.matchNode(
       new CatalogNodeMatcherType<String, UnreachableCodeException>()
       {
-        @Override public String onFile(final CatalogFileNode f)
+        @Override public String onFile(final CatalogFileNodeType f)
         {
           return "file";
         }

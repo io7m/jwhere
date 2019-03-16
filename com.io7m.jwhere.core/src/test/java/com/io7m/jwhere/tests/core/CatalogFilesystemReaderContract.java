@@ -273,7 +273,7 @@ public abstract class CatalogFilesystemReaderContract
       for (final CatalogDirectoryEntry e : children) {
         Assert.assertEquals(CatalogFileNode.class, e.getTarget().getClass());
         final CatalogFileNode t = (CatalogFileNode) e.getTarget();
-        final Optional<CatalogFileHash> ho = t.getHash();
+        final Optional<CatalogFileHash> ho = t.hash();
         Assert.assertTrue(ho.isPresent());
         final CatalogFileHash h = ho.get();
 
@@ -364,8 +364,7 @@ public abstract class CatalogFilesystemReaderContract
               Assert.assertEquals(CatalogFileNode.class, node.getClass());
               final CatalogFileNode node_file = (CatalogFileNode) node;
 
-              final Optional<CatalogFileHash> node_file_hash_opt =
-                node_file.getHash();
+              final Optional<CatalogFileHash> node_file_hash_opt = node_file.hash();
               Assert.assertTrue(node_file_hash_opt.isPresent());
               final CatalogFileHash node_file_hash = node_file_hash_opt.get();
               Assert.assertEquals(hash, node_file_hash);

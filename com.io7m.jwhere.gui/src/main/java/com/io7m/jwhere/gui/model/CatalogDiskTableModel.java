@@ -28,6 +28,7 @@ import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogFileNode;
+import com.io7m.jwhere.core.CatalogFileNodeType;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
 import com.io7m.jwhere.core.CatalogNodeType;
 import org.jgrapht.graph.UnmodifiableGraph;
@@ -198,7 +199,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
               UnreachableCodeException>()
             {
               @Override
-              public DirectoryEntryType onFile(final CatalogFileNode f)
+              public DirectoryEntryType onFile(final CatalogFileNodeType f)
               {
                 Assertive.require(row > 0);
                 return new DirectoryEntryFile(entry.getName());
@@ -223,9 +224,9 @@ final class CatalogDiskTableModel extends AbstractTableModel
             new CatalogNodeMatcherType<SizeBytes, UnreachableCodeException>()
             {
               @Override public SizeBytes onFile(
-                final CatalogFileNode f)
+                final CatalogFileNodeType f)
               {
-                return new SizeBytes(f.getSize());
+                return new SizeBytes(f.size());
               }
 
               @Override public SizeBytes onDirectory(
@@ -253,9 +254,9 @@ final class CatalogDiskTableModel extends AbstractTableModel
             new CatalogNodeMatcherType<String, UnreachableCodeException>()
             {
               @Override public String onFile(
-                final CatalogFileNode f)
+                final CatalogFileNodeType f)
               {
-                final Optional<CatalogFileHash> h_opt = f.getHash();
+                final Optional<CatalogFileHash> h_opt = f.hash();
                 if (h_opt.isPresent()) {
                   return h_opt.get().toString();
                 } else {

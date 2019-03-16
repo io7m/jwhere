@@ -306,19 +306,19 @@ public final class GWhereParser implements GWhereParserType
             .setAccessTime(access)
             .setCreationTime(creation)
             .build();
-
         return Pair.pair(name, cdn);
       case FILE:
-        final CatalogFileNode cfn = new CatalogFileNode(
-          size,
-          p,
-          owner,
-          group,
-          inode,
-          access,
-          creation,
-          modification,
-          Optional.empty());
+        final CatalogFileNode cfn =
+          CatalogFileNode.builder()
+            .setPermissions(p)
+            .setGroup(owner)
+            .setOwner(group)
+            .setId(inode)
+            .setModificationTime(modification)
+            .setAccessTime(access)
+            .setCreationTime(creation)
+            .setSize(size)
+            .build();
         return Pair.pair(name, cfn);
       case SYMBOLIC_LINK:
         throw new UnimplementedCodeException();

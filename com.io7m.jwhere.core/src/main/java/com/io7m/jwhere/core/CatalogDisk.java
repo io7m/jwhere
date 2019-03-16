@@ -138,7 +138,7 @@ import java.util.stream.Stream;
             NotDirectoryException>()
           {
             @Override
-            public Optional<CatalogNodeType> onFile(final CatalogFileNode f)
+            public Optional<CatalogNodeType> onFile(final CatalogFileNodeType f)
               throws NotDirectoryException
             {
               if (iter.hasNext()) {

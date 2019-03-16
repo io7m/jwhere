@@ -20,6 +20,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogFileNode;
+import com.io7m.jwhere.core.CatalogFileNodeType;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
@@ -51,7 +52,7 @@ public final class CatalogDirectoryNodeTest
           final Boolean r = cd.matchNode(
             new CatalogNodeMatcherType<Boolean, RuntimeException>()
             {
-              @Override public Boolean onFile(final CatalogFileNode f)
+              @Override public Boolean onFile(final CatalogFileNodeType f)
                 throws RuntimeException
               {
                 throw new UnreachableCodeException();

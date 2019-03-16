@@ -374,12 +374,12 @@ public final class CatalogFilesystemReader
     node.matchNode(
       new CatalogNodeMatcherType<Unit, UnreachableCodeException>()
       {
-        @Override public Unit onFile(final CatalogFileNode file_then)
+        @Override public Unit onFile(final CatalogFileNodeType file_then)
         {
           if (node_now instanceof CatalogFileNode) {
             final CatalogFileNode file_now = (CatalogFileNode) node_now;
-            final Optional<CatalogFileHash> then_opt = file_then.getHash();
-            final Optional<CatalogFileHash> now_opt = file_now.getHash();
+            final Optional<CatalogFileHash> then_opt = file_then.hash();
+            final Optional<CatalogFileHash> now_opt = file_now.hash();
 
             if (then_opt.isPresent()) {
               final CatalogFileHash hash_then = then_opt.get();
@@ -548,16 +548,18 @@ public final class CatalogFilesystemReader
 
     CatalogFilesystemReader.LOG.debug("hashing {}", file);
     final CatalogFileHash hash = CatalogFileHashes.fromFile(file);
-    return new CatalogFileNode(
-      size,
-      perms,
-      owner,
-      group,
-      id_pool.updateAndGet(x -> x.add(BigInteger.ONE)),
-      a_time,
-      c_time,
-      m_time,
-      Optional.of(hash));
+
+    return CatalogFileNode.builder()
+      .setPermissions(perms)
+      .setOwner(owner)
+      .setGroup(group)
+      .setId(id_pool.updateAndGet(x -> x.add(BigInteger.ONE)))
+      .setAccessTime(a_time)
+      .setCreationTime(c_time)
+      .setModificationTime(m_time)
+      .setSize(size)
+      .setHash(hash)
+      .build();
   }
 
   private static CatalogDirectoryNode onDirectory(

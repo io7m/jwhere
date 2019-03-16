@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -117,8 +117,18 @@ public final class CatalogJSONParser implements CatalogJSONParserType
       opt_hash = Optional.empty();
     }
 
-    final CatalogFileNode file = new CatalogFileNode(
-      size, perms, owner, group, inode, access, create, modify, opt_hash);
+    final var file =
+      CatalogFileNode.builder()
+        .setPermissions(perms)
+        .setOwner(owner)
+        .setGroup(group)
+        .setId(inode)
+        .setAccessTime(access)
+        .setCreationTime(create)
+        .setModificationTime(modify)
+        .setSize(size)
+        .setHash(opt_hash)
+        .build();
 
     db.addNode(dir, name, file);
   }
@@ -173,7 +183,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     return new CatalogJSONParser();
   }
 
-  @Override public Catalog parseCatalogFromPath(final Path p)
+  @Override
+  public Catalog parseCatalogFromPath(final Path p)
     throws
     CatalogJSONParseException,
     CatalogNodeException,
@@ -200,7 +211,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     }
   }
 
-  @Override public Catalog parseCatalogFromPathWithCompression(
+  @Override
+  public Catalog parseCatalogFromPathWithCompression(
     final Path p,
     final CatalogSaveSpecification.Compress compression)
     throws
@@ -230,7 +242,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     throw new UnreachableCodeException();
   }
 
-  @Override public Catalog parseCatalogFromStream(final InputStream is)
+  @Override
+  public Catalog parseCatalogFromStream(final InputStream is)
     throws
     CatalogJSONParseException,
     CatalogNodeException,
@@ -245,7 +258,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
       CatalogJSONParserUtilities.checkObject(null, node));
   }
 
-  @Override public Catalog parseCatalog(final ObjectNode c)
+  @Override
+  public Catalog parseCatalog(final ObjectNode c)
     throws
     CatalogJSONParseException,
     CatalogNodeException,
@@ -284,7 +298,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     return new Catalog(disks);
   }
 
-  @Override public CatalogDisk parseDisk(final ObjectNode c)
+  @Override
+  public CatalogDisk parseDisk(final ObjectNode c)
     throws CatalogJSONParseException, CatalogNodeException
   {
     Objects.requireNonNull(c, "c");

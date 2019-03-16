@@ -109,27 +109,31 @@ public final class CatalogDiskTest
 
     final CatalogDirectoryNode root = this.getRoot(c);
 
-    final CatalogFileNode file0 = new CatalogFileNode(
-      BigInteger.valueOf(120L),
-      new HashSet<>(1),
-      "root",
-      "root",
-      BigInteger.valueOf(1L),
-      c.instant(),
-      c.instant(),
-      c.instant(),
-      Optional.empty());
+    final CatalogFileNode file0 =
+      CatalogFileNode.builder()
+        .setPermissions(new HashSet<>())
+        .setOwner("root")
+        .setGroup("root")
+        .setId(BigInteger.valueOf(1L))
+        .setAccessTime(c.instant())
+        .setCreationTime(c.instant())
+        .setModificationTime(c.instant())
+        .setSize(BigInteger.valueOf(120L))
+        .setHash(Optional.empty())
+        .build();
 
-    final CatalogFileNode file1 = new CatalogFileNode(
-      BigInteger.valueOf(130L),
-      new HashSet<>(1),
-      "root",
-      "root",
-      BigInteger.valueOf(2L),
-      c.instant(),
-      c.instant(),
-      c.instant(),
-      Optional.empty());
+    final CatalogFileNode file1 =
+      CatalogFileNode.builder()
+        .setPermissions(new HashSet<>())
+        .setOwner("root")
+        .setGroup("root")
+        .setId(BigInteger.valueOf(2L))
+        .setAccessTime(c.instant())
+        .setCreationTime(c.instant())
+        .setModificationTime(c.instant())
+        .setSize(BigInteger.valueOf(130L))
+        .setHash(Optional.empty())
+        .build();
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
