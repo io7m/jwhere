@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gwhere;
 
-import com.io7m.jfunctional.Pair;
 import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.Catalog;
@@ -85,6 +84,20 @@ public final class GWhereParser implements GWhereParserType
     return new GWhereParser(r);
   }
 
+  static final class Pair<A, B>
+  {
+    private final A left;
+    private final B right;
+
+    Pair(
+      final A in_left,
+      final B in_right)
+    {
+      this.left = in_left;
+      this.right = in_right;
+    }
+  }
+
   @Override
   public CatalogDisk parseDisk()
     throws IOException, GWhereParserException, CatalogNodeException
@@ -104,8 +117,8 @@ public final class GWhereParser implements GWhereParserType
       new BigInteger(Objects.requireNonNull(header_segments[6], "header_segments[6]"));
 
     final var root = this.parseDiskDirectory();
-    final var root_node = root.getRight();
-    final var root_name = root.getLeft();
+    final var root_node = root.right;
+    final var root_name = root.left;
     if (!".".equals(root_name)) {
       final var sb = new StringBuilder(128);
       sb.append("Expected a directory named '.'");
@@ -221,8 +234,8 @@ public final class GWhereParser implements GWhereParserType
       }
       if ("/".equals(line)) {
         final var p = this.parseDiskDirectory();
-        final var name = p.getLeft();
-        final var new_dir = p.getRight();
+        final var name = p.left;
+        final var new_dir = p.right;
         db.addNode(dir, name, new_dir);
         if (this.parseDirectory(db, new_dir)) {
           continue;
@@ -235,14 +248,14 @@ public final class GWhereParser implements GWhereParserType
       }
 
       final var p = this.parseDiskFileFromLine(line);
-      final var name = p.getLeft();
+      final var name = p.left;
       if (".".equals(name)) {
         continue;
       }
       if ("..".equals(name)) {
         continue;
       }
-      final var node = p.getRight();
+      final var node = p.right;
       db.addNode(dir, name, node);
     }
   }
@@ -252,8 +265,8 @@ public final class GWhereParser implements GWhereParserType
     throws IOException, GWhereParserException
   {
     final var dp = this.parseDiskFileFromLine(line);
-    final var name = dp.getLeft();
-    final var node = dp.getRight();
+    final var name = dp.left;
+    final var node = dp.right;
     if (!(node instanceof CatalogDirectoryNode)) {
       final var sb = new StringBuilder(128);
       sb.append("Expected a directory.");
@@ -267,7 +280,7 @@ public final class GWhereParser implements GWhereParserType
       throw new GWhereExpectedDirectoryException(
         this.pos_line, this.pos_column, m);
     }
-    return Pair.pair(name, (CatalogDirectoryNode) node);
+    return new Pair<>(name, (CatalogDirectoryNode) node);
   }
 
   private Pair<String, CatalogNodeType> parseDiskFileFromLine(final String line)
@@ -305,7 +318,7 @@ public final class GWhereParser implements GWhereParserType
             .setAccessTime(access)
             .setCreationTime(creation)
             .build();
-        return Pair.pair(name, cdn);
+        return new Pair<>(name, cdn);
       case FILE:
         final var cfn =
           CatalogFileNode.builder()
@@ -318,7 +331,7 @@ public final class GWhereParser implements GWhereParserType
             .setCreationTime(creation)
             .setSize(size)
             .build();
-        return Pair.pair(name, cfn);
+        return new Pair<>(name, cfn);
       case SYMBOLIC_LINK:
         throw new UnimplementedCodeException();
     }

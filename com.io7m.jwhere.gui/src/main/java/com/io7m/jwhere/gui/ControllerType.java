@@ -16,9 +16,6 @@
 
 package com.io7m.jwhere.gui;
 
-import com.io7m.jfunctional.FunctionType;
-import com.io7m.jfunctional.ProcedureType;
-import com.io7m.jfunctional.Unit;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
@@ -36,6 +33,7 @@ import javax.swing.tree.TreeModel;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * The main controller.
@@ -73,11 +71,11 @@ public interface ControllerType
    */
 
   void catalogOpen(
-    FunctionType<Unit, UnsavedChangesChoice> on_unsaved,
-    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_no_save_file_name,
-    FunctionType<Unit, Optional<Path>> on_open_file,
+    Supplier<UnsavedChangesChoice> on_unsaved,
+    Supplier<Optional<CatalogSaveSpecification>> on_no_save_file_name,
+    Supplier<Optional<Path>> on_open_file,
     Runnable on_start_io,
-    ProcedureType<Optional<Throwable>> on_finish_io);
+    Consumer<Optional<Throwable>> on_finish_io);
 
   /**
    * Close the current catalog.
@@ -95,10 +93,10 @@ public interface ControllerType
    */
 
   void catalogClose(
-    FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_want_save_file,
+    Supplier<UnsavedChangesChoice> on_unsaved_changes,
+    Supplier<Optional<CatalogSaveSpecification>> on_want_save_file,
     Runnable on_start_io,
-    ProcedureType<Optional<Throwable>> on_finish_io);
+    Consumer<Optional<Throwable>> on_finish_io);
 
   /**
    * The user has explicitly told the program to exit.
@@ -122,9 +120,9 @@ public interface ControllerType
    */
 
   void catalogSave(
-    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_want_save_file,
+    Supplier<Optional<CatalogSaveSpecification>> on_want_save_file,
     Runnable on_start_io,
-    ProcedureType<Optional<Throwable>> on_finish_io);
+    Consumer<Optional<Throwable>> on_finish_io);
 
   /**
    * Save the current catalog under a different name to the one that it is currently using.
@@ -139,9 +137,9 @@ public interface ControllerType
    */
 
   void catalogSaveAs(
-    FunctionType<Unit, Optional<CatalogSaveSpecification>> on_want_save_file,
+    Supplier<Optional<CatalogSaveSpecification>> on_want_save_file,
     Runnable on_start_io,
-    ProcedureType<Optional<Throwable>> on_finish_io);
+    Consumer<Optional<Throwable>> on_finish_io);
 
   /**
    * @return The currrent catalog disk tree model
@@ -237,7 +235,7 @@ public interface ControllerType
     CatalogDiskID disk_id,
     Path path,
     Runnable on_start_io,
-    ProcedureType<Optional<Throwable>> on_finish_io);
+    Consumer<Optional<Throwable>> on_finish_io);
 
   /**
    * @return A new disk ID that is guaranteed not to be equal to any other disk ID in the catalog at
@@ -261,7 +259,7 @@ public interface ControllerType
     CatalogDiskID id,
     Path path,
     Runnable on_start_io,
-    ProcedureType<Optional<Throwable>> on_finish_io);
+    Consumer<Optional<Throwable>> on_finish_io);
 
   /**
    * @return The combo box model for the catalog

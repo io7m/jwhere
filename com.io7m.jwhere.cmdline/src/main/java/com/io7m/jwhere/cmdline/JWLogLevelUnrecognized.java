@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,33 +14,12 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.tests.core;
+package com.io7m.jwhere.cmdline;
 
-import net.java.quickcheck.Generator;
-import net.java.quickcheck.QuickCheck;
-import net.java.quickcheck.characteristic.AbstractCharacteristic;
-import org.junit.jupiter.api.Test;
-
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.Set;
-
-public final class PosixFilePermissionSetGeneratorTest
+final class JWLogLevelUnrecognized extends RuntimeException
 {
-  @Test
-  public void testSet()
+  JWLogLevelUnrecognized(final String message)
   {
-    final Generator<Set<PosixFilePermission>> gen =
-      new PosixFilePermissionSetGenerator();
-
-    QuickCheck.forAllVerbose(
-      gen, new AbstractCharacteristic<>()
-      {
-        @Override
-        protected void doSpecify(final Set<PosixFilePermission> any)
-          throws Throwable
-        {
-
-        }
-      });
+    super(message);
   }
 }

@@ -16,61 +16,47 @@
 
 package com.io7m.jwhere.cmdline;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import com.io7m.jwhere.core.CatalogCompress;
-import com.io7m.jwhere.core.CatalogException;
-import com.io7m.jwhere.core.CatalogJSONSerializer;
-import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gwhere.GWhereParser;
-import io.airlift.airline.Command;
-import io.airlift.airline.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 
 /**
- * A command to add a disk to a catalog.
+ * A command to import a GWhere catalog.
  */
 
-@Command(name = "import-gwhere",
-  description = "Import a GWhere catalog")
-public final class CommandImportGWhere extends CommandBase
+@Parameters(commandDescription = "Initialize a catalog")
+public final class CommandImportGWhere extends CommandRoot
 {
-  private static final Logger LOG;
+  private static final Logger LOG = LoggerFactory.getLogger(CommandImportGWhere.class);
 
-  static {
-    LOG = LoggerFactory.getLogger(CommandImportGWhere.class);
-  }
+  // CHECKSTYLE:OFF
 
-  /**
-   * The compression scheme to use for the catalog
-   */
+  @Parameter(
+    names = "--catalog",
+    required = true,
+    description = "The path to a catalog file")
+  Path path;
 
-  @Option(name = "--catalog-compress",
-    arity = 1,
+  @Parameter(
+    names = "--compress",
+    required = false,
     description = "The compression scheme to use for the catalog")
-  private final CatalogCompress catalog_compress =
-    CatalogCompress.COMPRESS_GZIP;
+  CatalogCompress catalog_compress = CatalogCompress.COMPRESS_GZIP;
 
-  /**
-   * The path to the output catalog.
-   */
+  @Parameter(
+    names = "--gwhere-catalog",
+    description = "The path to a GWhere catalog",
+    required = true)
+  Path gwhere;
 
-  @Option(name = "--catalog-output",
-    arity = 1,
-    description = "The path to the output catalog file",
-    required = true) private String catalog_out;
-  /**
-   * The filesystem root.
-   */
-
-  @Option(name = "--gwhere-catalog",
-    arity = 1,
-    description = "The path to a GWhere root",
-    required = true) private String gwhere;
+  // CHECKSTYLE:ON
 
   /**
    * Construct a command.
@@ -82,51 +68,20 @@ public final class CommandImportGWhere extends CommandBase
   }
 
   @Override
-  public void run()
+  public Void call()
+    throws Exception
   {
-    super.setup();
+    super.call();
 
-    var status = 0;
-
-    try {
-      LOG.debug("Catalog output {}", this.catalog_out);
-      LOG.debug("GWhere {}", this.gwhere);
-
-      final var catalog_gw_path = new File(this.gwhere).toPath();
-      final var catalog_out_path = new File(this.catalog_out).toPath();
-
-      final var gp = catalog_gw_path;
-      try (var is = Files.newInputStream(gp)) {
-        try (var z = new GZIPInputStream(is)) {
-          final var gwp = GWhereParser.newParser(z);
-          final var c = gwp.parseCatalog();
-          final var s =
-            CatalogJSONSerializer.newSerializer();
-          s.serializeCatalogToPath(
-            c,
-            CatalogSaveSpecification.builder()
-              .setCompress(this.catalog_compress)
-              .setPath(catalog_out_path)
-              .build());
-        }
+    try (var stream = Files.newInputStream(this.gwhere)) {
+      try (var gzip_stream = new GZIPInputStream(stream)) {
+        final var gwhere_parser = GWhereParser.newParser(gzip_stream);
+        final var catalog = gwhere_parser.parseCatalog();
+        Catalogs.saveCatalog(catalog, this.catalog_compress, this.path);
       }
-
-    } catch (final IOException e) {
-      LOG.error(
-        "I/O error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
-    } catch (final CatalogException e) {
-      LOG.error(
-        "Catalog error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
     }
 
-    System.exit(status);
+    return null;
   }
+
 }

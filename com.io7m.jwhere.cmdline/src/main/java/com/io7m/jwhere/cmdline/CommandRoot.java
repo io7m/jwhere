@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,33 +14,33 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.tests.core;
+package com.io7m.jwhere.cmdline;
 
-import net.java.quickcheck.Generator;
-import net.java.quickcheck.QuickCheck;
-import net.java.quickcheck.characteristic.AbstractCharacteristic;
-import org.junit.jupiter.api.Test;
+import com.beust.jcommander.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.Set;
-
-public final class PosixFilePermissionSetGeneratorTest
+class CommandRoot implements CommandType
 {
-  @Test
-  public void testSet()
+  @Parameter(
+    names = "--verbose",
+    converter = JWLogLevelConverter.class,
+    description = "Set the minimum logging verbosity level")
+  private JWLogLevel verbose = JWLogLevel.LOG_INFO;
+
+  CommandRoot()
   {
-    final Generator<Set<PosixFilePermission>> gen =
-      new PosixFilePermissionSetGenerator();
 
-    QuickCheck.forAllVerbose(
-      gen, new AbstractCharacteristic<>()
-      {
-        @Override
-        protected void doSpecify(final Set<PosixFilePermission> any)
-          throws Throwable
-        {
+  }
 
-        }
-      });
+  @Override
+  public Void call()
+    throws Exception
+  {
+    final var root =
+      (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
+        Logger.ROOT_LOGGER_NAME);
+    root.setLevel(this.verbose.toLevel());
+    return null;
   }
 }

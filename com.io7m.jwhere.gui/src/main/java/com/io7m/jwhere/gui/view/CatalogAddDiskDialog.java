@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.gui.ControllerType;
@@ -33,6 +32,7 @@ import javax.swing.JTextField;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 final class CatalogAddDiskDialog extends JDialog
 {
@@ -84,7 +84,7 @@ final class CatalogAddDiskDialog extends JDialog
             CatalogDiskName.of(disk_name.getText());
           final var new_path = Paths.get(disk_root.getText());
 
-          final ProcedureType<Optional<Throwable>> on_finish_io = ex_opt -> {
+          final Consumer<Optional<Throwable>> on_finish_io = ex_opt -> {
             if (ex_opt.isPresent()) {
               final var ex = ex_opt.get();
               status.onErrorLater("Adding disk failed!");

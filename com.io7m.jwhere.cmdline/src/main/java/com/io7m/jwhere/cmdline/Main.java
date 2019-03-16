@@ -16,68 +16,111 @@
 
 package com.io7m.jwhere.cmdline;
 
-import io.airlift.airline.Cli;
-import io.airlift.airline.Help;
-import io.airlift.airline.ParseArgumentsMissingException;
-import io.airlift.airline.ParseArgumentsUnexpectedException;
-import io.airlift.airline.ParseOptionMissingException;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Main command line frontend.
  */
 
-public final class Main
+public final class Main implements Runnable
 {
-  private static final Logger LOG;
+  private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
-  static {
-    LOG = LoggerFactory.getLogger(Main.class);
-  }
+  private final Map<String, CommandType> commands;
+  private final JCommander commander;
+  private final String[] args;
+  private int exit_code;
 
-  private Main()
+  /**
+   * Construct a new main program.
+   *
+   * @param in_args Command-line arguments
+   */
+
+  public Main(final String[] in_args)
   {
+    this.args = Objects.requireNonNull(in_args, "args");
 
+    final var r = new CommandRoot();
+    final var cmd_init = new CommandInit();
+    final var cmd_list_disks = new CommandListDisks();
+    final var cmd_verify_disk = new CommandVerifyDisk();
+    final var cmd_import_gwhere = new CommandImportGWhere();
+    final var cmd_add_disk = new CommandAddDisk();
+    final var cmd_remove_disk = new CommandRemoveDisk();
+
+    this.commands = new HashMap<>(8);
+    this.commands.put("init", cmd_init);
+    this.commands.put("list-disks", cmd_list_disks);
+    this.commands.put("verify-disk", cmd_verify_disk);
+    this.commands.put("import-gwhere", cmd_import_gwhere);
+    this.commands.put("add-disk", cmd_add_disk);
+    this.commands.put("remove-disk", cmd_remove_disk);
+
+    this.commander = new JCommander(r);
+    this.commander.setProgramName("jwhere");
+    this.commander.addCommand("init", cmd_init);
+    this.commander.addCommand("list-disks", cmd_list_disks);
+    this.commander.addCommand("verify-disk", cmd_verify_disk);
+    this.commander.addCommand("import-gwhere", cmd_import_gwhere);
+    this.commander.addCommand("add-disk", cmd_add_disk);
+    this.commander.addCommand("remove-disk", cmd_remove_disk);
   }
 
   /**
-   * Run the program.
+   * The main entry point.
    *
-   * @param args Command line arguments.
+   * @param args Command line arguments
    */
 
   public static void main(final String[] args)
   {
-    run(args);
+    final var cm = new Main(args);
+    cm.run();
+    System.exit(cm.exitCode());
   }
 
-  private static int run(final String[] args)
-  {
-    final Cli.CliBuilder<Runnable> builder = Cli.builder("jwhere");
-    builder.withDescription("Disk cataloguing tool");
-    builder.withDefaultCommand(Help.class);
-    builder.withCommand(CommandInit.class);
-    builder.withCommand(CommandListDisks.class);
-    builder.withCommand(CommandAddDisk.class);
-    builder.withCommand(CommandRemoveDisk.class);
-    builder.withCommand(CommandVerifyDisk.class);
-    builder.withCommand(CommandImportGWhere.class);
-    builder.withCommand(Help.class);
-    final var parser = builder.build();
+  /**
+   * @return The program exit code
+   */
 
+  public int exitCode()
+  {
+    return this.exit_code;
+  }
+
+  @Override
+  public void run()
+  {
     try {
-      parser.parse(args).run();
-      return 0;
-    } catch (final ParseArgumentsMissingException
-      | ParseOptionMissingException
-      | ParseArgumentsUnexpectedException e) {
-      LOG.error("Parse error: {}", e.getMessage());
-      Help.help(parser.getMetadata(), Collections.emptyList());
-      return 1;
+      this.commander.parse(this.args);
+
+      final var cmd = this.commander.getParsedCommand();
+      if (cmd == null) {
+        final var sb = new StringBuilder(128);
+        this.commander.usage(sb);
+        LOG.info("Arguments required.\n{}", sb.toString());
+        this.exit_code = 1;
+        return;
+      }
+
+      final var command = this.commands.get(cmd);
+      command.call();
+    } catch (final ParameterException e) {
+      final var sb = new StringBuilder(128);
+      this.commander.usage(sb);
+      LOG.error("{}\n{}", e.getMessage(), sb.toString());
+      this.exit_code = 1;
+    } catch (final Exception e) {
+      LOG.error("{}", e.getMessage(), e);
+      this.exit_code = 1;
     }
   }
-
 }

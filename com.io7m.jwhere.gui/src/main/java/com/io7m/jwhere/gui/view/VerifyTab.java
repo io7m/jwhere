@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.ControllerType;
 import net.java.dev.designgridlayout.DesignGridLayout;
@@ -35,6 +34,7 @@ import java.awt.Component;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 final class VerifyTab extends JPanel
 {
@@ -92,7 +92,7 @@ final class VerifyTab extends JPanel
           status.onInfoLater("Verifying disk...");
         };
 
-        final ProcedureType<Optional<Throwable>> on_finish_io = ex_opt -> {
+        final Consumer<Optional<Throwable>> on_finish_io = ex_opt -> {
           if (ex_opt.isPresent()) {
             final var ex = ex_opt.get();
             LOG.error("verification failed: ", ex);

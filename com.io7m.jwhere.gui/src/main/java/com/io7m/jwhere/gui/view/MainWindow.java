@@ -16,9 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jfunctional.FunctionType;
-import com.io7m.jfunctional.ProcedureType;
-import com.io7m.jfunctional.Unit;
 import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gui.ControllerType;
@@ -50,6 +47,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * The application's main window.
@@ -230,10 +229,10 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
-      (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> onWantSaveFile(window);
+    final Supplier<UnsavedChangesChoice> on_unsaved_changes =
+      () -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
+    final Supplier<Optional<CatalogSaveSpecification>>
+      on_want_save_file = () -> onWantSaveFile(window);
 
     /*
      * Evaluated when saving starts.
@@ -248,7 +247,7 @@ public final class MainWindow extends JFrame
      * Evaluated when closing/saving is finished.
      */
 
-    final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
+    final Consumer<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
         final var ex = ex_opt.get();
         LOG.error("closing/saving failed: ", ex);
@@ -270,12 +269,12 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
-      (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> onWantSaveFile(window);
-    final FunctionType<Unit, Optional<Path>> on_want_open_file =
-      (x) -> onWantOpenFile(window);
+    final Supplier<UnsavedChangesChoice> on_unsaved_changes =
+      () -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file =
+      () -> onWantSaveFile(window);
+    final Supplier<Optional<Path>> on_want_open_file =
+      () -> onWantOpenFile(window);
 
     /*
      * Evaluated when saving/loading starts.
@@ -290,7 +289,7 @@ public final class MainWindow extends JFrame
      * Evaluated when saving/loading is finished.
      */
 
-    final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
+    final Consumer<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
         final var ex = ex_opt.get();
         LOG.error("loading/saving failed: ", ex);
@@ -316,8 +315,8 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> onWantSaveFile(window);
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file =
+      () -> onWantSaveFile(window);
 
     /*
      * Evaluated when closing/saving starts.
@@ -332,7 +331,7 @@ public final class MainWindow extends JFrame
      * Evaluated when closing/saving is finished.
      */
 
-    final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
+    final Consumer<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
         final var ex = ex_opt.get();
         LOG.error("saving failed: ", ex);
@@ -354,8 +353,8 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> onWantSaveFile(window);
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file =
+      () -> onWantSaveFile(window);
 
     /*
      * Evaluated when closing/saving starts.
@@ -370,7 +369,7 @@ public final class MainWindow extends JFrame
      * Evaluated when closing/saving is finished.
      */
 
-    final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
+    final Consumer<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
         final var ex = ex_opt.get();
         LOG.error("saving failed: ", ex);
@@ -392,10 +391,10 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
-      (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> onWantSaveFile(window);
+    final Supplier<UnsavedChangesChoice> on_unsaved_changes =
+      () -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file =
+      () -> onWantSaveFile(window);
 
     /*
      * Evaluated when closing/saving starts.
@@ -410,7 +409,7 @@ public final class MainWindow extends JFrame
      * Evaluated when closing/saving is finished.
      */
 
-    final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
+    final Consumer<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
         final var ex = ex_opt.get();
         LOG.error("closing/saving failed: ", ex);

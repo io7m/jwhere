@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,33 +14,30 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jwhere.tests.core;
+package com.io7m.jwhere.cmdline;
 
-import net.java.quickcheck.Generator;
-import net.java.quickcheck.QuickCheck;
-import net.java.quickcheck.characteristic.AbstractCharacteristic;
-import org.junit.jupiter.api.Test;
+import com.beust.jcommander.IStringConverter;
 
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.Set;
+import java.math.BigInteger;
 
-public final class PosixFilePermissionSetGeneratorTest
+/**
+ * A converter for {@link java.math.BigInteger} values.
+ */
+
+public final class BigIntegerConverter implements IStringConverter<BigInteger>
 {
-  @Test
-  public void testSet()
+  /**
+   * Construct a new converter.
+   */
+
+  public BigIntegerConverter()
   {
-    final Generator<Set<PosixFilePermission>> gen =
-      new PosixFilePermissionSetGenerator();
 
-    QuickCheck.forAllVerbose(
-      gen, new AbstractCharacteristic<>()
-      {
-        @Override
-        protected void doSpecify(final Set<PosixFilePermission> any)
-          throws Throwable
-        {
+  }
 
-        }
-      });
+  @Override
+  public BigInteger convert(final String value)
+  {
+    return new BigInteger(value);
   }
 }

@@ -16,71 +16,69 @@
 
 package com.io7m.jwhere.cmdline;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskNonexistentException;
-import com.io7m.jwhere.core.CatalogException;
-import com.io7m.jwhere.core.CatalogJSONParseException;
-import com.io7m.jwhere.core.CatalogJSONParser;
-import com.io7m.jwhere.core.CatalogSaveSpecification;
-import io.airlift.airline.Command;
-import io.airlift.airline.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Path;
 
 /**
  * A command to remove a disk from a catalog.
  */
 
-@Command(name = "remove-disk",
-  description = "Remove an existing disk from a catalog")
-public final class CommandRemoveDisk extends CommandBase
+@Parameters(commandDescription = "Remove a disk from a catalog")
+public final class CommandRemoveDisk extends CommandRoot
 {
-  private static final Logger LOG;
+  private static final Logger LOG = LoggerFactory.getLogger(CommandRemoveDisk.class);
 
-  static {
-    LOG = LoggerFactory.getLogger(CommandRemoveDisk.class);
-  }
+  // CHECKSTYLE:OFF
 
   /**
    * The compression scheme to use for the catalog
    */
 
-  @Option(name = "--catalog-compress",
-    arity = 1,
+  @Parameter(
+    names = "--catalog-compress",
     description = "The compression scheme to use for the catalog")
-  private final CatalogCompress catalog_compress =
-    CatalogCompress.COMPRESS_GZIP;
+  CatalogCompress catalog_compress = CatalogCompress.COMPRESS_GZIP;
 
   /**
    * The path to the input catalog.
    */
 
-  @Option(name = "--catalog-input",
-    arity = 1,
+  @Parameter(
+    names = "--catalog-input",
     description = "The path to the input catalog file",
-    required = true) private String catalog_in;
+    required = true)
+  Path catalog_in;
+
   /**
    * The path to the output catalog.
    */
 
-  @Option(name = "--catalog-output",
-    arity = 1,
+  @Parameter(
+    names = "--catalog-output",
     description = "The path to the output catalog file",
-    required = true) private String catalog_out;
+    required = true)
+  Path catalog_out;
 
   /**
-   * The ID of the disk to be removed.
+   * The ID of the disk to be created.
    */
 
-  @Option(name = "--disk-id",
-    arity = 1,
+  @Parameter(
+    names = "--disk-id",
     description = "The ID of the disk",
-    required = true) private BigInteger disk_index;
+    converter = BigIntegerConverter.class,
+    required = true)
+  BigInteger disk_index;
+
+  // CHECKSTYLE:ON
 
   /**
    * Construct a command.
@@ -92,61 +90,22 @@ public final class CommandRemoveDisk extends CommandBase
   }
 
   @Override
-  public void run()
+  public Void call()
+    throws Exception
   {
-    super.setup();
+    super.call();
 
-    var status = 0;
+    final var catalog = Catalogs.loadCatalog(this.catalog_in);
 
-    try {
-      LOG.debug("Index {}", this.disk_index);
-      LOG.debug("Catalog input {}", this.catalog_in);
-      LOG.debug("Catalog output {}", this.catalog_out);
-
-      final var p = CatalogJSONParser.newParser();
-      final var catalog_in_path = new File(this.catalog_in).toPath();
-      final var catalog_out_path = new File(this.catalog_out).toPath();
-
-      LOG.debug("Opening {}", catalog_in_path);
-      final var c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final var disks = c.getDisks();
-      final var id = CatalogDiskID.of(this.disk_index);
-      if (!disks.containsKey(id)) {
-        throw new CatalogDiskNonexistentException(
-          String.format(
-            "Catalog does not contain a disk with index %s", id));
-      }
-
-      disks.remove(id);
-      CommandBase.writeCatalogToDisk(
-        c, CatalogSaveSpecification.builder()
-          .setCompress(this.catalog_compress)
-          .setPath(catalog_out_path)
-          .build());
-
-    } catch (final CatalogJSONParseException e) {
-      LOG.error(
-        "JSON parse error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
-    } catch (final CatalogException e) {
-      LOG.error(
-        "Catalog error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
-    } catch (final IOException e) {
-      LOG.error(
-        "I/O error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
+    final var disks = catalog.getDisks();
+    final var id = CatalogDiskID.of(this.disk_index);
+    if (!disks.containsKey(id)) {
+      throw new CatalogDiskNonexistentException(
+        String.format("Catalog does not contain a disk with index %s", id));
     }
 
-    System.exit(status);
+    disks.remove(id);
+    Catalogs.saveCatalog(catalog, this.catalog_compress, this.catalog_out);
+    return null;
   }
 }

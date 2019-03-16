@@ -16,75 +16,71 @@
 
 package com.io7m.jwhere.cmdline;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
 import com.io7m.jwhere.core.CatalogIgnoreAccessTime;
-import com.io7m.jwhere.core.CatalogJSONParseException;
-import com.io7m.jwhere.core.CatalogJSONParser;
 import com.io7m.jwhere.core.CatalogVerificationListenerType;
 import com.io7m.jwhere.core.CatalogVerificationReportItemErrorType;
 import com.io7m.jwhere.core.CatalogVerificationReportItemOKType;
 import com.io7m.jwhere.core.CatalogVerificationReportSettings;
-import io.airlift.airline.Command;
-import io.airlift.airline.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.nio.file.Path;
 
 /**
- * A command to verify a disk in the catalog.
+ * A command to list disks in a catalog.
  */
 
-@Command(name = "verify-disk",
-  description = "Verify a disk in a catalog")
-public final class CommandVerifyDisk extends CommandBase
+@Parameters(commandDescription = "Verify a disk within a catalog")
+public final class CommandVerifyDisk extends CommandRoot
 {
-  private static final Logger LOG;
+  private static final Logger LOG = LoggerFactory.getLogger(CommandVerifyDisk.class);
 
-  static {
-    LOG = LoggerFactory.getLogger(CommandVerifyDisk.class);
-  }
+  // CHECKSTYLE:OFF
 
-  /**
-   * The path to the input catalog.
-   */
-
-  @Option(name = "--catalog",
-    arity = 1,
-    description = "The path to the input catalog file",
-    required = true) private String catalog_in;
+  @Parameter(
+    names = "--catalog",
+    required = true,
+    description = "The path to a catalog file")
+  Path path;
 
   /**
    * The filesystem root.
    */
 
-  @Option(name = "--disk-root",
-    arity = 1,
+  @Parameter(
+    names = "--disk-root",
     description = "The path to a filesystem root",
-    required = true) private String root;
+    required = true)
+  private Path root;
 
   /**
    * The ID of the disk to be verified.
    */
 
-  @Option(name = "--disk-id",
-    arity = 1,
+  @Parameter(
+    names = "--disk-id",
     description = "The ID of the disk",
-    required = true) private BigInteger disk_index;
+    converter = BigIntegerConverter.class,
+    required = true)
+  private BigInteger disk_index;
 
   /**
    * Only show errors.
    */
 
-  @Option(name = "--errors-only",
-    description = "Only show errors") private boolean only_errors;
+  @Parameter(
+    names = "--errors-only",
+    description = "Only show errors")
+  private boolean only_errors;
+
+  // CHECKSTYLE:ON
 
   /**
    * Construct a command.
@@ -96,98 +92,59 @@ public final class CommandVerifyDisk extends CommandBase
   }
 
   @Override
-  public void run()
+  public Void call()
+    throws Exception
   {
-    super.setup();
+    super.call();
 
-    final var status = new AtomicInteger(0);
-
-    try {
-      LOG.debug("Index {}", this.disk_index);
-      LOG.debug("Root {}", this.root);
-      LOG.debug("Catalog input {}", this.catalog_in);
-
-      final var p = CatalogJSONParser.newParser();
-      final var catalog_in_path = new File(this.catalog_in).toPath();
-      final var root_path = new File(this.root).toPath();
-
-      LOG.debug("Opening {}", catalog_in_path);
-      final var c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final var id = CatalogDiskID.of(this.disk_index);
-      final var disks = c.getDisks();
-      if (!disks.containsKey(id)) {
-        throw new NoSuchElementException(this.disk_index.toString());
-      }
-
-      final var disk = disks.get(id);
-      final var settings =
-        CatalogVerificationReportSettings.builder()
-          .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
-          .build();
-
-      CatalogFilesystemReader.verifyDisk(
-        disk, settings, root_path, new VerificationListener(status));
-
-    } catch (final NoSuchElementException e) {
-      LOG.error(
-        "No such disk with index: {}", e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status.set(1);
-    } catch (final CatalogJSONParseException e) {
-      LOG.error(
-        "JSON parse error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status.set(1);
-    } catch (final CatalogException e) {
-      LOG.error(
-        "Catalog error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status.set(1);
-    } catch (final IOException e) {
-      LOG.error(
-        "I/O error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status.set(1);
+    final var catalog = Catalogs.loadCatalog(this.path);
+    final var id = CatalogDiskID.of(this.disk_index);
+    final var disks = catalog.getDisks();
+    if (!disks.containsKey(id)) {
+      throw new FileNotFoundException("No such disk: " + this.disk_index.toString());
     }
 
-    System.exit(status.get());
+    final var disk = disks.get(id);
+    final var settings =
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
+
+    final var verifier = new VerificationListener();
+    CatalogFilesystemReader.verifyDisk(disk, settings, this.root, verifier);
+
+    if (verifier.failed) {
+      throw new IOException("One or more files failed verification");
+    }
+
+    return null;
   }
 
   private static final class VerificationListener implements CatalogVerificationListenerType
   {
-    private final AtomicInteger status;
+    private boolean failed;
 
-    VerificationListener(final AtomicInteger in_status)
+    VerificationListener()
     {
-      this.status = Objects.requireNonNull(in_status, "status");
+
     }
 
     @Override
     public void onItemVerified(
-      final
-      CatalogVerificationReportItemOKType ok)
+      final CatalogVerificationReportItemOKType ok)
     {
       System.out.printf("%s | OK | %s\n", ok.path(), ok.show());
     }
 
     @Override
     public void onItemError(
-      final
-      CatalogVerificationReportItemErrorType error)
+      final CatalogVerificationReportItemErrorType error)
     {
       System.out.printf(
         "%s | FAILED | %s\n",
         error.path(),
         error.show());
-      this.status.set(2);
+      this.failed = true;
     }
 
     @Override

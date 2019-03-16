@@ -187,21 +187,19 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   {
     Objects.requireNonNull(p, "p");
 
-    final var guess_type = Files.probeContentType(p);
+    var guess_type = Files.probeContentType(p);
+    if (guess_type == null) {
+      if (p.toString().endsWith(".jcz")) {
+        guess_type = "application/gzip";
+      }
+    }
+
     if ("application/gzip".equals(guess_type)) {
-      LOG.debug(
-        "path {} appears to be of type {}, opening as compressed stream",
-        p,
-        guess_type);
-      return this.parseCatalogFromPathWithCompression(
-        p, CatalogCompress.COMPRESS_GZIP);
+      LOG.debug("path {} appears to be of type {}, opening as compressed stream", p, guess_type);
+      return this.parseCatalogFromPathWithCompression(p, CatalogCompress.COMPRESS_GZIP);
     } else {
-      LOG.debug(
-        "path {} appears to be of type {}, opening as uncompressed stream",
-        p,
-        guess_type);
-      return this.parseCatalogFromPathWithCompression(
-        p, CatalogCompress.COMPRESS_NONE);
+      LOG.debug("path {} appears to be of type {}, opening as uncompressed stream", p, guess_type);
+      return this.parseCatalogFromPathWithCompression(p, CatalogCompress.COMPRESS_NONE);
     }
   }
 

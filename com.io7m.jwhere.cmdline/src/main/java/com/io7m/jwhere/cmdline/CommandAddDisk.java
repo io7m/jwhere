@@ -16,90 +16,91 @@
 
 package com.io7m.jwhere.cmdline;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
-import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
-import com.io7m.jwhere.core.CatalogJSONParseException;
-import com.io7m.jwhere.core.CatalogJSONParser;
-import com.io7m.jwhere.core.CatalogSaveSpecification;
-import io.airlift.airline.Command;
-import io.airlift.airline.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Path;
 
 /**
  * A command to add a disk to a catalog.
  */
 
-@Command(name = "add-disk",
-  description = "Catalog a disk and add it to a catalog")
-public final class CommandAddDisk extends CommandBase
+@Parameters(commandDescription = "Add a disk to a catalog")
+public final class CommandAddDisk extends CommandRoot
 {
-  private static final Logger LOG;
+  private static final Logger LOG = LoggerFactory.getLogger(CommandAddDisk.class);
 
-  static {
-    LOG = LoggerFactory.getLogger(CommandAddDisk.class);
-  }
+  // CHECKSTYLE:OFF
 
   /**
    * The compression scheme to use for the catalog
    */
 
-  @Option(name = "--catalog-compress",
-    arity = 1,
+  @Parameter(
+    names = "--catalog-compress",
     description = "The compression scheme to use for the catalog")
-  private final CatalogCompress catalog_compress =
-    CatalogCompress.COMPRESS_GZIP;
+  CatalogCompress catalog_compress = CatalogCompress.COMPRESS_GZIP;
 
   /**
    * The path to the input catalog.
    */
 
-  @Option(name = "--catalog-input",
-    arity = 1,
+  @Parameter(
+    names = "--catalog-input",
     description = "The path to the input catalog file",
-    required = true) private String catalog_in;
+    required = true)
+  Path catalog_in;
+
   /**
    * The path to the output catalog.
    */
 
-  @Option(name = "--catalog-output",
-    arity = 1,
+  @Parameter(
+    names = "--catalog-output",
     description = "The path to the output catalog file",
-    required = true) private String catalog_out;
+    required = true)
+  Path catalog_out;
+
   /**
    * The filesystem root.
    */
 
-  @Option(name = "--disk-root",
-    arity = 1,
+  @Parameter(
+    names = "--disk-root",
     description = "The path to a filesystem root",
-    required = true) private String root;
+    required = true)
+  Path root;
 
   /**
    * The name of a disk.
    */
 
-  @Option(name = "--disk-name",
-    arity = 1,
+  @Parameter(
+    names = "--disk-name",
     description = "The name of the disk",
-    required = true) private String disk_name;
+    required = true)
+  String disk_name;
 
   /**
    * The ID of the disk to be created.
    */
 
-  @Option(name = "--disk-id",
-    arity = 1,
+  @Parameter(
+    names = "--disk-id",
     description = "The ID of the disk",
-    required = true) private BigInteger disk_index;
+    converter = BigIntegerConverter.class,
+    required = true)
+  BigInteger disk_index;
+
+  // CHECKSTYLE:ON
 
   /**
    * Construct a command.
@@ -111,69 +112,26 @@ public final class CommandAddDisk extends CommandBase
   }
 
   @Override
-  public void run()
+  public Void call()
+    throws Exception
   {
-    super.setup();
+    super.call();
 
-    var status = 0;
+    final var catalog = Catalogs.loadCatalog(this.catalog_in);
 
-    try {
-      LOG.debug("Disk {}", this.disk_name);
-      LOG.debug("Index {}", this.disk_index);
-      LOG.debug("Root {}", this.root);
-      LOG.debug("Catalog input {}", this.catalog_in);
-      LOG.debug("Catalog output {}", this.catalog_out);
-
-      final var p = CatalogJSONParser.newParser();
-      final var catalog_in_path = new File(this.catalog_in).toPath();
-      final var catalog_out_path = new File(this.catalog_out).toPath();
-      final var root_path = new File(this.root).toPath();
-
-      LOG.debug("Opening {}", catalog_in_path);
-      final var c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final var disks = c.getDisks();
-      final var id = CatalogDiskID.of(this.disk_index);
-      if (disks.containsKey(id)) {
-        throw new CatalogDiskDuplicateIDException(
-          String.format(
-            "Catalog already contains a disk with index %s", id));
-      }
-
-      final var disk = CatalogFilesystemReader.newDisk(
-        CatalogDiskName.of(this.disk_name), id, root_path);
-      final var meta = disk.getMeta();
-
-      disks.put(meta.getDiskID(), disk);
-      CommandBase.writeCatalogToDisk(
-        c,
-        CatalogSaveSpecification.builder()
-          .setCompress(this.catalog_compress)
-          .setPath(catalog_out_path)
-          .build());
-
-    } catch (final CatalogJSONParseException e) {
-      LOG.error(
-        "JSON parse error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
-    } catch (final CatalogException e) {
-      LOG.error(
-        "Catalog error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
-    } catch (final IOException e) {
-      LOG.error(
-        "I/O error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        LOG.error("Exception trace: ", e);
-      }
-      status = 1;
+    final var disks = catalog.getDisks();
+    final var id = CatalogDiskID.of(this.disk_index);
+    if (disks.containsKey(id)) {
+      throw new CatalogDiskDuplicateIDException(
+        String.format("Catalog already contains a disk with index %s", id));
     }
 
-    System.exit(status);
+    final var disk =
+      CatalogFilesystemReader.newDisk(CatalogDiskName.of(this.disk_name), id, this.root);
+    final var meta = disk.getMeta();
+    disks.put(meta.getDiskID(), disk);
+
+    Catalogs.saveCatalog(catalog, this.catalog_compress, this.catalog_out);
+    return null;
   }
 }

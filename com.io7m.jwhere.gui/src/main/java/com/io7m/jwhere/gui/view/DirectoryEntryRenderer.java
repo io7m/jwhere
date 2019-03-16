@@ -17,7 +17,6 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jaffirm.core.Preconditions;
-import com.io7m.jfunctional.Unit;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.gui.model.DirectoryEntryDirectory;
 import com.io7m.jwhere.gui.model.DirectoryEntryFile;
@@ -60,7 +59,7 @@ final class DirectoryEntryRenderer extends DefaultTableCellRenderer
   }
 
   private final class IconSetter
-    implements DirectoryEntryMatcherType<Unit, UnreachableCodeException>
+    implements DirectoryEntryMatcherType<Void, UnreachableCodeException>
   {
     IconSetter()
     {
@@ -68,24 +67,24 @@ final class DirectoryEntryRenderer extends DefaultTableCellRenderer
     }
 
     @Override
-    public Unit onFile(final DirectoryEntryFile n)
+    public Void onFile(final DirectoryEntryFile n)
     {
       DirectoryEntryRenderer.this.setIcon(Icons.getFile16());
-      return Unit.unit();
+      return null;
     }
 
     @Override
-    public Unit onDirectory(final DirectoryEntryDirectory n)
+    public Void onDirectory(final DirectoryEntryDirectory n)
     {
       DirectoryEntryRenderer.this.setIcon(Icons.getFolder16());
-      return Unit.unit();
+      return null;
     }
 
     @Override
-    public Unit onUp(final DirectoryEntryUp n)
+    public Void onUp(final DirectoryEntryUp n)
     {
       DirectoryEntryRenderer.this.setIcon(Icons.getFolderUp16());
-      return Unit.unit();
+      return null;
     }
   }
 }

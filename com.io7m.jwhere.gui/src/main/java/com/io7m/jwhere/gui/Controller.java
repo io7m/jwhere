@@ -16,9 +16,6 @@
 
 package com.io7m.jwhere.gui;
 
-import com.io7m.jfunctional.FunctionType;
-import com.io7m.jfunctional.ProcedureType;
-import com.io7m.jfunctional.Unit;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -52,6 +49,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * The default implementation of the {@link ControllerType}
@@ -113,12 +111,11 @@ public final class Controller implements ControllerType
 
   @Override
   public void catalogOpen(
-    final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file,
-    final FunctionType<Unit, Optional<Path>> on_open_file,
+    final Supplier<UnsavedChangesChoice> on_unsaved_changes,
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file,
+    final Supplier<Optional<Path>> on_open_file,
     final Runnable on_start_io,
-    final ProcedureType<Optional<Throwable>> on_finish_io)
+    final Consumer<Optional<Throwable>> on_finish_io)
   {
     /*
      * Check to see if saving is desired, or if the whole thing should be
@@ -138,7 +135,7 @@ public final class Controller implements ControllerType
     final var save_file_last = save_file;
 
     if (!cancel) {
-      final var open_file = on_open_file.call(Unit.unit());
+      final var open_file = on_open_file.get();
       if (open_file.isPresent()) {
         this.taskSubmit(
           "Open catalog", CompletableFuture.supplyAsync(
@@ -149,12 +146,12 @@ public final class Controller implements ControllerType
                   this.model.catalogSave(save_file_last.get());
                 }
                 this.model.catalogOpen(open_file.get());
-                return Unit.unit();
+                return null;
               } catch (IOException | CatalogException e) {
                 throw new IOError(e);
               }
             }, this.exec).whenComplete(
-            (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+            (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
       } else {
         LOG.debug("cancelled open explicitly");
       }
@@ -169,16 +166,15 @@ public final class Controller implements ControllerType
    */
 
   private Optional<CatalogSaveSpecification> getSaveFileForUnsavedChanges(
-    final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file)
+    final Supplier<UnsavedChangesChoice> on_unsaved_changes,
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file)
     throws CancellationException
   {
     switch (this.catalogIsUnsaved()) {
       case NO_UNSAVED_CHANGES:
         return Optional.empty();
       case UNSAVED_CHANGES:
-        switch (on_unsaved_changes.call(Unit.unit())) {
+        switch (on_unsaved_changes.get()) {
           case UNSAVED_CHANGES_DISCARD: {
             LOG.debug("discarding unsaved changes");
             return Optional.empty();
@@ -203,8 +199,7 @@ public final class Controller implements ControllerType
    */
 
   private Optional<CatalogSaveSpecification> getSaveFile(
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file)
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file)
     throws CancellationException
   {
     final var file_opt =
@@ -214,8 +209,7 @@ public final class Controller implements ControllerType
       return file_opt;
     } else {
       LOG.debug("no save file specified, asking user");
-      final var save_opt =
-        on_want_save_file.call(Unit.unit());
+      final var save_opt = on_want_save_file.get();
       if (save_opt.isPresent()) {
         LOG.debug("provided save file");
         return save_opt;
@@ -228,11 +222,10 @@ public final class Controller implements ControllerType
 
   @Override
   public void catalogClose(
-    final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file,
+    final Supplier<UnsavedChangesChoice> on_unsaved_changes,
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file,
     final Runnable on_start_io,
-    final ProcedureType<Optional<Throwable>> on_finish_io)
+    final Consumer<Optional<Throwable>> on_finish_io)
   {
     /*
      * Check to see if saving is desired, or if the whole thing should be
@@ -260,12 +253,12 @@ public final class Controller implements ControllerType
                 this.model.catalogSave(save_file_opt.get());
               }
               this.model.catalogClose();
-              return Unit.unit();
+              return null;
             } catch (IOException e) {
               throw new IOError(e);
             }
           }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+          (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
     } else {
       LOG.debug("aborting close");
     }
@@ -280,10 +273,9 @@ public final class Controller implements ControllerType
 
   @Override
   public void catalogSave(
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file,
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file,
     final Runnable on_start_io,
-    final ProcedureType<Optional<Throwable>> on_finish_io)
+    final Consumer<Optional<Throwable>> on_finish_io)
   {
     try {
       final var save_file =
@@ -296,12 +288,12 @@ public final class Controller implements ControllerType
               if (save_file.isPresent()) {
                 this.model.catalogSave(save_file.get());
               }
-              return Unit.unit();
+              return null;
             } catch (IOException e) {
               throw new IOError(e);
             }
           }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+          (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
     } catch (final CancellationException ex) {
       LOG.debug("aborting save");
     }
@@ -309,26 +301,25 @@ public final class Controller implements ControllerType
 
   @Override
   public void catalogSaveAs(
-    final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file,
+    final Supplier<Optional<CatalogSaveSpecification>> on_want_save_file,
     final Runnable on_start_io,
-    final ProcedureType<Optional<Throwable>> on_finish_io)
+    final Consumer<Optional<Throwable>> on_finish_io)
   {
     try {
       final var save_file =
-        on_want_save_file.call(Unit.unit());
+        on_want_save_file.get();
       save_file.ifPresent(catalogSaveSpecification -> this.taskSubmit(
         "Save catalog", CompletableFuture.supplyAsync(
           () -> {
             try {
               on_start_io.run();
               this.model.catalogSave(catalogSaveSpecification);
-              return Unit.unit();
+              return null;
             } catch (IOException e) {
               throw new IOError(e);
             }
           }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex)))));
+          (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex)))));
     } catch (final CancellationException ex) {
       LOG.debug("aborting save");
     }
@@ -405,7 +396,7 @@ public final class Controller implements ControllerType
     final CatalogDiskID disk_id,
     final Path path,
     final Runnable on_start_io,
-    final ProcedureType<Optional<Throwable>> on_finish_io)
+    final Consumer<Optional<Throwable>> on_finish_io)
   {
     this.taskSubmit(
       "Add disk", CompletableFuture.supplyAsync(
@@ -413,12 +404,12 @@ public final class Controller implements ControllerType
           try {
             on_start_io.run();
             this.model.catalogAddDisk(disk_name, disk_id, path);
-            return Unit.unit();
+            return null;
           } catch (IOException | CatalogException e) {
             throw new IOError(e);
           }
         }, this.exec).whenComplete(
-        (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+        (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
   }
 
   @Override
@@ -432,7 +423,7 @@ public final class Controller implements ControllerType
     final CatalogDiskID id,
     final Path path,
     final Runnable on_start_io,
-    final ProcedureType<Optional<Throwable>> on_finish_io)
+    final Consumer<Optional<Throwable>> on_finish_io)
   {
     this.taskSubmit(
       "Verify disk", CompletableFuture.supplyAsync(
@@ -440,12 +431,12 @@ public final class Controller implements ControllerType
           try {
             on_start_io.run();
             this.model.catalogVerifyDisk(id, path);
-            return Unit.unit();
+            return null;
           } catch (IOException | CatalogException e) {
             throw new IOError(e);
           }
         }, this.exec).whenComplete(
-        (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
+        (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
   }
 
   @Override

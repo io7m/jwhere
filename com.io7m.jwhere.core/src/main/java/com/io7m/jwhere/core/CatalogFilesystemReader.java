@@ -17,7 +17,6 @@
 package com.io7m.jwhere.core;
 
 import com.io7m.jaffirm.core.Preconditions;
-import com.io7m.jfunctional.Unit;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -467,7 +466,7 @@ public final class CatalogFilesystemReader
   }
 
   private static final class CompareNodeHashesMatcher
-    implements CatalogNodeMatcherType<Unit, UnreachableCodeException>
+    implements CatalogNodeMatcherType<Void, UnreachableCodeException>
   {
     private final CatalogNodeType node_now;
     private final LoggingListener listener;
@@ -484,7 +483,7 @@ public final class CatalogFilesystemReader
     }
 
     @Override
-    public Unit onFile(final CatalogFileNodeType file_then)
+    public Void onFile(final CatalogFileNodeType file_then)
     {
       if (this.node_now instanceof CatalogFileNode) {
         final var file_now = (CatalogFileNode) this.node_now;
@@ -505,13 +504,13 @@ public final class CatalogFilesystemReader
         }
       }
 
-      return Unit.unit();
+      return null;
     }
 
     @Override
-    public Unit onDirectory(final CatalogDirectoryNodeType d)
+    public Void onDirectory(final CatalogDirectoryNodeType d)
     {
-      return Unit.unit();
+      return null;
     }
   }
 
