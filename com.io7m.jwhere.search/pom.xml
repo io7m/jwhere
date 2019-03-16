@@ -9,11 +9,11 @@
     <artifactId>com.io7m.jwhere</artifactId>
     <version>0.6.0</version>
   </parent>
-  <artifactId>com.io7m.jwhere.gwhere</artifactId>
+  <artifactId>com.io7m.jwhere.search</artifactId>
 
   <packaging>jar</packaging>
-  <name>com.io7m.jwhere.gwhere</name>
-  <description>Disk catalog (GWhere import handling)</description>
+  <name>com.io7m.jwhere.search</name>
+  <description>Disk catalog (Searching)</description>
   <url>http://io7m.github.io/jwhere/</url>
 
   <dependencies>
@@ -24,12 +24,23 @@
     </dependency>
 
     <dependency>
-      <groupId>com.io7m.junreachable</groupId>
-      <artifactId>com.io7m.junreachable.core</artifactId>
+      <groupId>org.jgrapht</groupId>
+      <artifactId>jgrapht-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>org.immutables</groupId>
+      <artifactId>value</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.immutables.style</groupId>
+      <artifactId>com.io7m.immutables.style</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.annotation.bundle</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
