@@ -161,7 +161,8 @@ public abstract class CatalogFilesystemReaderContract
 
   protected abstract CatalogFilesystemProfile getFilesystemProfile();
 
-  @Test public final void testEmpty()
+  @Test
+  public final void testEmpty()
     throws Exception
   {
     try (final FileSystem fs = this.getFileSystem()) {
@@ -184,7 +185,8 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testNotDirectory()
+  @Test
+  public final void testNotDirectory()
     throws Exception
   {
     try (final FileSystem fs = this.getFileSystem()) {
@@ -203,7 +205,8 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testNonexistent0()
+  @Test
+  public final void testNonexistent0()
     throws Exception
   {
     try (final FileSystem fs = this.getFileSystem()) {
@@ -218,7 +221,8 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testNonexistent1()
+  @Test
+  public final void testNonexistent1()
     throws Exception
   {
     try (final FileSystem fs = this.getFileSystem()) {
@@ -236,7 +240,8 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testFiles0()
+  @Test
+  public final void testFiles0()
     throws Exception
   {
     try (final FileSystem fs = this.getFileSystem()) {
@@ -284,7 +289,7 @@ public abstract class CatalogFilesystemReaderContract
           Assert.assertEquals(
             h.value(),
             ("c3f64406d73acc591c90b5f4616175ce26c96f1f15cba9ef57de05b2e77526f0"
-             + "").toUpperCase());
+              + "").toUpperCase());
         }
 
         if ("file1.txt".equals(e.getName())) {
@@ -292,7 +297,7 @@ public abstract class CatalogFilesystemReaderContract
           Assert.assertEquals(
             h.value(),
             ("610c2c8120e3c8c6ed71714853d4d1b1add2ec1e1e8b85477049324f9d0d855e"
-             + "").toUpperCase());
+              + "").toUpperCase());
         }
 
         if ("file2.txt".equals(e.getName())) {
@@ -300,7 +305,7 @@ public abstract class CatalogFilesystemReaderContract
           Assert.assertEquals(
             h.value(),
             ("e0fe5b86a8eafeab4ead9f8ca5c7aae07e6ad10cffbdd63228df4d4beb2db15d"
-             + "").toUpperCase());
+              + "").toUpperCase());
         }
       }
 
@@ -331,7 +336,8 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testHashes()
+  @Test
+  public final void testHashes()
     throws Exception
   {
     final CatalogTestFilesystemGenerator fs_gen =
@@ -340,7 +346,8 @@ public abstract class CatalogFilesystemReaderContract
     QuickCheck.forAll(
       10, fs_gen, new AbstractCharacteristic<CatalogTestFilesystem>()
       {
-        @Override protected void doSpecify(final CatalogTestFilesystem tfs)
+        @Override
+        protected void doSpecify(final CatalogTestFilesystem tfs)
           throws Throwable
         {
           try {
@@ -376,7 +383,8 @@ public abstract class CatalogFilesystemReaderContract
       });
   }
 
-  @Test public final void testNodePaths()
+  @Test
+  public final void testNodePaths()
     throws Exception
   {
     final CatalogTestFilesystemGenerator fs_gen =
@@ -385,7 +393,8 @@ public abstract class CatalogFilesystemReaderContract
     QuickCheck.forAll(
       10, fs_gen, new AbstractCharacteristic<CatalogTestFilesystem>()
       {
-        @Override protected void doSpecify(final CatalogTestFilesystem tfs)
+        @Override
+        protected void doSpecify(final CatalogTestFilesystem tfs)
           throws Throwable
         {
           try {
@@ -416,20 +425,23 @@ public abstract class CatalogFilesystemReaderContract
       });
   }
 
-  @Test public final void testVerification()
+  @Test
+  public final void testVerification()
     throws Exception
   {
     final CatalogTestFilesystemGenerator fs_gen =
       new CatalogTestFilesystemGenerator(this.getFilesystemProfile());
 
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     QuickCheck.forAll(
       100, fs_gen, new AbstractCharacteristic<CatalogTestFilesystem>()
       {
-        @Override protected void doSpecify(final CatalogTestFilesystem tfs)
+        @Override
+        protected void doSpecify(final CatalogTestFilesystem tfs)
           throws Throwable
         {
           try {
@@ -460,12 +472,14 @@ public abstract class CatalogFilesystemReaderContract
       });
   }
 
-  @Test public final void testVerificationEmpty()
+  @Test
+  public final void testVerificationEmpty()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -482,12 +496,14 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testVerificationTimeAccessChanged()
+  @Test
+  public final void testVerificationTimeAccessChanged()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -520,12 +536,14 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testVerificationTimeModificationChanged()
+  @Test
+  public final void testVerificationTimeModificationChanged()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -557,12 +575,14 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testVerificationFileTypeChanged()
+  @Test
+  public final void testVerificationFileTypeChanged()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -596,12 +616,14 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testVerificationFileVanished()
+  @Test
+  public final void testVerificationFileVanished()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -635,12 +657,14 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testVerificationFileUncatalogued()
+  @Test
+  public final void testVerificationFileUncatalogued()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -675,12 +699,14 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testVerificationTimeCreationChanged()
+  @Test
+  public final void testVerificationTimeCreationChanged()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -713,12 +739,14 @@ public abstract class CatalogFilesystemReaderContract
     }
   }
 
-  @Test public final void testVerificationHashChanged()
+  @Test
+  public final void testVerificationHashChanged()
     throws Exception
   {
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME)
+        .build();
 
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
@@ -754,7 +782,7 @@ public abstract class CatalogFilesystemReaderContract
     implements CatalogVerificationListenerType
   {
     final MutableMultimap<Path, CatalogVerificationReportItemErrorType> errors;
-    final MutableMultimap<Path, CatalogVerificationReportItemOKType>    valids;
+    final MutableMultimap<Path, CatalogVerificationReportItemOKType> valids;
     boolean completed;
 
     CheckedListener()
@@ -771,7 +799,8 @@ public abstract class CatalogFilesystemReaderContract
       this.valids.put(ok.path(), ok);
     }
 
-    @Override public void onItemError(
+    @Override
+    public void onItemError(
       final CatalogVerificationReportItemErrorType error)
     {
       CatalogFilesystemReaderContract.LOG.error(
@@ -779,7 +808,8 @@ public abstract class CatalogFilesystemReaderContract
       this.errors.put(error.path(), error);
     }
 
-    @Override public void onCompleted()
+    @Override
+    public void onCompleted()
     {
       this.completed = true;
     }

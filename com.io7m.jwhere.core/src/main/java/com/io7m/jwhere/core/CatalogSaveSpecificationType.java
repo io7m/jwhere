@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,34 +16,28 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
+import com.io7m.immutables.styles.ImmutablesStyleType;
+import org.immutables.value.Value;
+
+import java.nio.file.Path;
 
 /**
- * Report settings.
+ * Where to save a catalog and how.
  */
 
-public final class CatalogVerificationReportSettings
+@ImmutablesStyleType
+@Value.Immutable
+public interface CatalogSaveSpecificationType
 {
-  private final CatalogIgnoreAccessTime atime;
-
   /**
-   * Construct report settings.
-   *
-   * @param in_atime Whether or not to ignore access time changes
+   * @return The path to which the catalog will be saved
    */
 
-  public CatalogVerificationReportSettings(
-    final CatalogIgnoreAccessTime in_atime)
-  {
-    this.atime = Objects.requireNonNull(in_atime, "in_atime");
-  }
+  Path path();
 
   /**
-   * @return The current access time setting
+   * @return The compression setting
    */
 
-  public CatalogIgnoreAccessTime getIgnoreAccessTime()
-  {
-    return this.atime;
-  }
+  CatalogCompress compress();
 }

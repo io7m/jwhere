@@ -18,6 +18,7 @@ package com.io7m.jwhere.tests.core;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.jwhere.core.Catalog;
+import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
@@ -111,18 +112,24 @@ public abstract class CatalogJSONSerializationContract<S extends
             throws Throwable
           {
             s.serializeCatalogToPath(
-              c0, new CatalogSaveSpecification(
-                CatalogSaveSpecification.Compress.COMPRESS_GZIP, file));
+              c0,
+              CatalogSaveSpecification.builder()
+                .setCompress(CatalogCompress.COMPRESS_GZIP)
+                .setPath(file)
+                .build());
 
             final Catalog c1 = p.parseCatalogFromPathWithCompression(
-              file, CatalogSaveSpecification.Compress.COMPRESS_GZIP);
+              file, CatalogCompress.COMPRESS_GZIP);
 
             s.serializeCatalogToPath(
-              c1, new CatalogSaveSpecification(
-                CatalogSaveSpecification.Compress.COMPRESS_GZIP, file));
+              c1,
+              CatalogSaveSpecification.builder()
+                .setCompress(CatalogCompress.COMPRESS_GZIP)
+                .setPath(file)
+                .build());
 
             final Catalog c2 = p.parseCatalogFromPathWithCompression(
-              file, CatalogSaveSpecification.Compress.COMPRESS_GZIP);
+              file, CatalogCompress.COMPRESS_GZIP);
 
             Assert.assertEquals(c0, c1);
             Assert.assertEquals(c0, c2);
@@ -151,18 +158,22 @@ public abstract class CatalogJSONSerializationContract<S extends
             throws Throwable
           {
             s.serializeCatalogToPath(
-              c0, new CatalogSaveSpecification(
-                CatalogSaveSpecification.Compress.COMPRESS_NONE, file));
+              c0, CatalogSaveSpecification.builder()
+                .setCompress(CatalogCompress.COMPRESS_NONE)
+                .setPath(file)
+                .build());
 
             final Catalog c1 = p.parseCatalogFromPathWithCompression(
-              file, CatalogSaveSpecification.Compress.COMPRESS_NONE);
+              file, CatalogCompress.COMPRESS_NONE);
 
             s.serializeCatalogToPath(
-              c1, new CatalogSaveSpecification(
-                CatalogSaveSpecification.Compress.COMPRESS_NONE, file));
+              c1, CatalogSaveSpecification.builder()
+                .setCompress(CatalogCompress.COMPRESS_NONE)
+                .setPath(file)
+                .build());
 
             final Catalog c2 = p.parseCatalogFromPathWithCompression(
-              file, CatalogSaveSpecification.Compress.COMPRESS_NONE);
+              file, CatalogCompress.COMPRESS_NONE);
 
             Assert.assertEquals(c0, c1);
             Assert.assertEquals(c0, c2);

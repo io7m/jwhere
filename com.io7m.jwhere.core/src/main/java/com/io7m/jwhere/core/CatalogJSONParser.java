@@ -200,21 +200,21 @@ public final class CatalogJSONParser implements CatalogJSONParserType
         p,
         guess_type);
       return this.parseCatalogFromPathWithCompression(
-        p, CatalogSaveSpecification.Compress.COMPRESS_GZIP);
+        p, CatalogCompress.COMPRESS_GZIP);
     } else {
       CatalogJSONParser.LOG.debug(
         "path {} appears to be of type {}, opening as uncompressed stream",
         p,
         guess_type);
       return this.parseCatalogFromPathWithCompression(
-        p, CatalogSaveSpecification.Compress.COMPRESS_NONE);
+        p, CatalogCompress.COMPRESS_NONE);
     }
   }
 
   @Override
   public Catalog parseCatalogFromPathWithCompression(
     final Path p,
-    final CatalogSaveSpecification.Compress compression)
+    final CatalogCompress compression)
     throws
     CatalogJSONParseException,
     CatalogNodeException,

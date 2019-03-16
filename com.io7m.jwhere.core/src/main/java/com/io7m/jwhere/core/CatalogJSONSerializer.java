@@ -161,15 +161,15 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     final CatalogSaveSpecification s)
     throws IOException
   {
-    switch (s.getCompression()) {
+    switch (s.compress()) {
       case COMPRESS_NONE:
-        try (final OutputStream os = Files.newOutputStream(s.getPath())) {
+        try (final OutputStream os = Files.newOutputStream(s.path())) {
           this.serializeCatalogToStream(c, os);
         }
         break;
       case COMPRESS_GZIP:
         try (final OutputStream os = new GZIPOutputStream(
-          Files.newOutputStream(s.getPath()))) {
+          Files.newOutputStream(s.path()))) {
           this.serializeCatalogToStream(c, os);
         }
         break;

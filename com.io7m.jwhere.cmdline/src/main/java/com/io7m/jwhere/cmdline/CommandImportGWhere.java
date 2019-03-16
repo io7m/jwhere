@@ -17,6 +17,7 @@
 package com.io7m.jwhere.cmdline;
 
 import com.io7m.jwhere.core.Catalog;
+import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
 import com.io7m.jwhere.core.CatalogJSONSerializerType;
@@ -56,8 +57,8 @@ public final class CommandImportGWhere extends CommandBase
   @Option(name = "--catalog-compress",
           arity = 1,
           description = "The compression scheme to use for the catalog")
-  private final CatalogSaveSpecification.Compress catalog_compress =
-    CatalogSaveSpecification.Compress.COMPRESS_GZIP;
+  private final CatalogCompress catalog_compress =
+    CatalogCompress.COMPRESS_GZIP;
 
   /**
    * The path to the output catalog.
@@ -106,8 +107,11 @@ public final class CommandImportGWhere extends CommandBase
           final CatalogJSONSerializerType s =
             CatalogJSONSerializer.newSerializer();
           s.serializeCatalogToPath(
-            c, new CatalogSaveSpecification(
-              this.catalog_compress, catalog_out_path));
+            c,
+            CatalogSaveSpecification.builder()
+              .setCompress(this.catalog_compress)
+              .setPath(catalog_out_path)
+              .build());
         }
       }
 

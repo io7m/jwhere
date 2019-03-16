@@ -17,6 +17,7 @@
 package com.io7m.jwhere.cmdline;
 
 import com.io7m.jwhere.core.Catalog;
+import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -61,8 +62,8 @@ public final class CommandAddDisk extends CommandBase
   @Option(name = "--catalog-compress",
           arity = 1,
           description = "The compression scheme to use for the catalog")
-  private final CatalogSaveSpecification.Compress catalog_compress =
-    CatalogSaveSpecification.Compress.COMPRESS_GZIP;
+  private final CatalogCompress catalog_compress =
+    CatalogCompress.COMPRESS_GZIP;
 
   /**
    * The path to the input catalog.
@@ -150,8 +151,11 @@ public final class CommandAddDisk extends CommandBase
 
       disks.put(meta.getDiskID(), disk);
       CommandBase.writeCatalogToDisk(
-        c, new CatalogSaveSpecification(
-          this.catalog_compress, catalog_out_path));
+        c,
+        CatalogSaveSpecification.builder()
+          .setCompress(this.catalog_compress)
+          .setPath(catalog_out_path)
+          .build());
 
     } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
       CommandAddDisk.LOG.error(

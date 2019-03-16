@@ -418,7 +418,7 @@ public final class CatalogFilesystemReader
     final CatalogNodeType node_now,
     final LoggingListener rb)
   {
-    if (settings.getIgnoreAccessTime() == CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME) {
+    if (settings.ignoreAccessTime() == CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME) {
       final Instant then_atime = node.accessTime();
       final Instant curr_atime = node_now.accessTime();
       if (!then_atime.equals(curr_atime)) {

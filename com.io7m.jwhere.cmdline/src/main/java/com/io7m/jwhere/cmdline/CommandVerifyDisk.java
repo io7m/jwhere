@@ -126,8 +126,9 @@ public final class CommandVerifyDisk extends CommandBase
 
       final CatalogDisk disk = disks.get(id);
       final CatalogVerificationReportSettings settings =
-        new CatalogVerificationReportSettings(
-          CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+        CatalogVerificationReportSettings.builder()
+          .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+          .build();
 
       CatalogFilesystemReader.verifyDisk(
         disk, settings, root_path, new CatalogVerificationListenerType()

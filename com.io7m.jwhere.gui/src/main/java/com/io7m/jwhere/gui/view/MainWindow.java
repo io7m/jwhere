@@ -19,7 +19,7 @@ package com.io7m.jwhere.gui.view;
 import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
-import java.util.Objects;
+import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gui.ControllerType;
 import com.io7m.jwhere.gui.model.UnsavedChanges;
@@ -49,6 +49,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -64,11 +65,11 @@ public final class MainWindow extends JFrame
   }
 
   private final ControllerType controller;
-  private final StatusBar      status;
-  private final CatalogTab     tab_catalog;
-  private final SearchTab      tab_search;
-  private final TasksTab       tab_tasks;
-  private final VerifyTab      tab_verify;
+  private final StatusBar status;
+  private final CatalogTab tab_catalog;
+  private final SearchTab tab_search;
+  private final TasksTab tab_tasks;
+  private final VerifyTab tab_verify;
 
   /**
    * Construct the main window.
@@ -120,7 +121,8 @@ public final class MainWindow extends JFrame
     this.addWindowListener(
       new WindowAdapter()
       {
-        @Override public void windowClosing(final WindowEvent e)
+        @Override
+        public void windowClosing(final WindowEvent e)
         {
           MainWindow.onActionExit(
             MainWindow.this,
@@ -427,8 +429,8 @@ public final class MainWindow extends JFrame
   }
 
   /**
-   * Evaluated when a filename is required to open a new catalog. Returning
-   * nothing indicates that the whole process should be aborted.
+   * Evaluated when a filename is required to open a new catalog. Returning nothing indicates that
+   * the whole process should be aborted.
    */
 
   private static Optional<Path> onWantOpenFile(final JFrame window)
@@ -450,8 +452,8 @@ public final class MainWindow extends JFrame
   }
 
   /**
-   * Evaluated when a filename is required to save changes. Returning nothing
-   * indicates that the whole process should be aborted.
+   * Evaluated when a filename is required to save changes. Returning nothing indicates that the
+   * whole process should be aborted.
    */
 
   private static Optional<CatalogSaveSpecification> onWantSaveFile(
@@ -471,11 +473,17 @@ public final class MainWindow extends JFrame
       final boolean compress = spec_panel.isCompressSelected();
       final CatalogSaveSpecification spec;
       if (compress) {
-        spec = new CatalogSaveSpecification(
-          CatalogSaveSpecification.Compress.COMPRESS_GZIP, file.toPath());
+        spec =
+          CatalogSaveSpecification.builder()
+            .setCompress(CatalogCompress.COMPRESS_GZIP)
+            .setPath(file.toPath())
+            .build();
       } else {
-        spec = new CatalogSaveSpecification(
-          CatalogSaveSpecification.Compress.COMPRESS_NONE, file.toPath());
+        spec =
+          CatalogSaveSpecification.builder()
+            .setCompress(CatalogCompress.COMPRESS_NONE)
+            .setPath(file.toPath())
+            .build();
       }
 
       MainWindow.LOG.debug("save: selected {}", spec);
@@ -530,7 +538,8 @@ public final class MainWindow extends JFrame
 
     }
 
-    @Override public boolean accept(final File f)
+    @Override
+    public boolean accept(final File f)
     {
       final String name = f.getName();
       final boolean likely_file =
@@ -538,7 +547,8 @@ public final class MainWindow extends JFrame
       return f.isDirectory() || likely_file;
     }
 
-    @Override public String getDescription()
+    @Override
+    public String getDescription()
     {
       return "Catalogs (*.jc, *.jcz)";
     }

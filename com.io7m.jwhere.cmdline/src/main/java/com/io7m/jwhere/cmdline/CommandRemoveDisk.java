@@ -17,6 +17,7 @@
 package com.io7m.jwhere.cmdline;
 
 import com.io7m.jwhere.core.Catalog;
+import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -43,7 +44,7 @@ import java.util.SortedMap;
  */
 
 @Command(name = "remove-disk",
-         description = "Remove an existing disk from a catalog")
+  description = "Remove an existing disk from a catalog")
 public final class CommandRemoveDisk extends CommandBase
 {
   private static final Logger LOG;
@@ -57,36 +58,36 @@ public final class CommandRemoveDisk extends CommandBase
    */
 
   @Option(name = "--catalog-compress",
-          arity = 1,
-          description = "The compression scheme to use for the catalog")
-  private final CatalogSaveSpecification.Compress catalog_compress =
-    CatalogSaveSpecification.Compress.COMPRESS_GZIP;
+    arity = 1,
+    description = "The compression scheme to use for the catalog")
+  private final CatalogCompress catalog_compress =
+    CatalogCompress.COMPRESS_GZIP;
 
   /**
    * The path to the input catalog.
    */
 
   @Option(name = "--catalog-input",
-          arity = 1,
-          description = "The path to the input catalog file",
-          required = true) private String catalog_in;
+    arity = 1,
+    description = "The path to the input catalog file",
+    required = true) private String catalog_in;
   /**
    * The path to the output catalog.
    */
 
   @Option(name = "--catalog-output",
-          arity = 1,
-          description = "The path to the output catalog file",
-          required = true) private String catalog_out;
+    arity = 1,
+    description = "The path to the output catalog file",
+    required = true) private String catalog_out;
 
   /**
    * The ID of the disk to be removed.
    */
 
   @Option(name = "--disk-id",
-          arity = 1,
-          description = "The ID of the disk",
-          required = true) private BigInteger disk_index;
+    arity = 1,
+    description = "The ID of the disk",
+    required = true) private BigInteger disk_index;
 
   /**
    * Construct a command.
@@ -97,7 +98,8 @@ public final class CommandRemoveDisk extends CommandBase
 
   }
 
-  @Override public void run()
+  @Override
+  public void run()
   {
     super.setup();
 
@@ -124,8 +126,10 @@ public final class CommandRemoveDisk extends CommandBase
 
       disks.remove(id);
       CommandBase.writeCatalogToDisk(
-        c, new CatalogSaveSpecification(
-          this.catalog_compress, catalog_out_path));
+        c, CatalogSaveSpecification.builder()
+          .setCompress(this.catalog_compress)
+          .setPath(catalog_out_path)
+          .build());
 
     } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
       CommandRemoveDisk.LOG.error(

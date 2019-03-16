@@ -68,7 +68,7 @@ public interface CatalogJSONParserType
 
   Catalog parseCatalogFromPathWithCompression(
     Path p,
-    CatalogSaveSpecification.Compress compression)
+    CatalogCompress compression)
     throws
     CatalogJSONParseException,
     CatalogNodeException, CatalogDiskDuplicateIDException,

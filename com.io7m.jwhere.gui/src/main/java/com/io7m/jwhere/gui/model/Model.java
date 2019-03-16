@@ -18,7 +18,7 @@ package com.io7m.jwhere.gui.model;
 
 import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
-import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
@@ -160,9 +160,12 @@ public final class Model
     final CatalogJSONParserType parser = CatalogJSONParser.newParser();
     final Catalog c = parser.parseCatalogFromPath(path);
     this.catalog_history.reset(CatalogState.newWithCatalog(c));
-    this.catalog_save_spec = Optional.of(
-      new CatalogSaveSpecification(
-        CatalogSaveSpecification.Compress.COMPRESS_GZIP, path));
+    this.catalog_save_spec =
+      Optional.of(
+        CatalogSaveSpecification.builder()
+          .setCompress(CatalogCompress.COMPRESS_GZIP)
+          .setPath(path)
+          .build());
     this.catalog_table_model.reset();
     this.catalog_tree_model.update(c);
     this.catalog_combo_box_model.update();
@@ -377,8 +380,9 @@ public final class Model
     Objects.requireNonNull(path, "path");
 
     final CatalogVerificationReportSettings settings =
-      new CatalogVerificationReportSettings(
-        CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME);
+      CatalogVerificationReportSettings.builder()
+        .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
+        .build();
 
     final Catalog current = this.catalog_history.getCurrentValue().getCatalog();
     final SortedMap<CatalogDiskID, CatalogDisk> disks = current.getDisks();
