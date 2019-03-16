@@ -767,16 +767,16 @@ public abstract class CatalogFilesystemReaderContract
     public void onItemVerified(final CatalogVerificationReportItemOKType ok)
     {
       CatalogFilesystemReaderContract.LOG.info(
-        "ok: {} | {}", ok.getPath(), ok.show());
-      this.valids.put(ok.getPath(), ok);
+        "ok: {} | {}", ok.path(), ok.show());
+      this.valids.put(ok.path(), ok);
     }
 
     @Override public void onItemError(
       final CatalogVerificationReportItemErrorType error)
     {
       CatalogFilesystemReaderContract.LOG.error(
-        "error: {} | {}", error.getPath(), error.show());
-      this.errors.put(error.getPath(), error);
+        "error: {} | {}", error.path(), error.show());
+      this.errors.put(error.path(), error);
     }
 
     @Override public void onCompleted()

@@ -41,7 +41,7 @@ public final class CatalogVerificationUncataloguedItem
     this.path = Objects.requireNonNull(in_path, "in_path");
   }
 
-  @Override public Path getPath()
+  @Override public Path path()
   {
     return this.path;
   }

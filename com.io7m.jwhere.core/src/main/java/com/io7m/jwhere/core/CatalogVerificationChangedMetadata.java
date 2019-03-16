@@ -53,7 +53,7 @@ public final class CatalogVerificationChangedMetadata
     this.value_now = Objects.requireNonNull(in_value_now, "in_value_now");
   }
 
-  @Override public Path getPath()
+  @Override public Path path()
   {
     return this.path;
   }

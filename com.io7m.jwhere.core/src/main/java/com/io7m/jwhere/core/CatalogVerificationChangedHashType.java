@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,37 +16,40 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
+import com.io7m.immutables.styles.ImmutablesStyleType;
+import org.immutables.value.Value;
 
 import java.nio.file.Path;
 
 /**
- * An item that was verified.
+ * An error indicating that the hash of a file has changed.
  */
 
-public final class CatalogVerificationOKItem
-  implements CatalogVerificationReportItemOKType
+@ImmutablesStyleType
+@Value.Immutable
+public interface CatalogVerificationChangedHashType extends CatalogVerificationReportItemErrorType
 {
-  private final Path path;
-
   /**
-   * Construct an item.
-   *
-   * @param in_path The path
+   * @return The path of the file
    */
 
-  public CatalogVerificationOKItem(final Path in_path)
-  {
-    this.path = Objects.requireNonNull(in_path, "in_path");
-  }
+  Path path();
 
-  @Override public Path path()
-  {
-    return this.path;
-  }
+  /**
+   * @return The old hash value
+   */
 
-  @Override public String show()
+  CatalogFileHash hashThen();
+
+  /**
+   * @return The new hash value
+   */
+
+  CatalogFileHash hashNow();
+
+  @Override
+  default String show()
   {
-    return "Verified";
+    return String.format("Hash value was %s but is now %s", this.hashThen(), this.hashNow());
   }
 }

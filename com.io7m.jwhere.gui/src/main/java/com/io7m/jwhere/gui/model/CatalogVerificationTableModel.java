@@ -101,7 +101,7 @@ final class CatalogVerificationTableModel extends AbstractTableModel
     switch (CatalogVerificationTableModelField.values()[col]) {
       case NAME:
         return CatalogVerificationTableModel.check(
-          col, this.data.get(row).getPath());
+          col, this.data.get(row).path());
       case RESULT:
         return CatalogVerificationTableModel.check(
           col, this.data.get(row).show());

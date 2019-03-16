@@ -32,7 +32,7 @@ public interface CatalogVerificationReportItemType
    * @return The path of the file in question
    */
 
-  Path getPath();
+  Path path();
 
   /**
    * @return A humanly-readable description of the problem
@@ -43,6 +43,6 @@ public interface CatalogVerificationReportItemType
   @Override
   default int compareTo(final @Nullable CatalogVerificationReportItemType o)
   {
-    return this.getPath().compareTo(Objects.requireNonNull(o, "o").getPath());
+    return this.path().compareTo(Objects.requireNonNull(o, "o").path());
   }
 }

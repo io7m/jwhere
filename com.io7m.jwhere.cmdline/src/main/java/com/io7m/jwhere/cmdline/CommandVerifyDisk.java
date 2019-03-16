@@ -137,7 +137,7 @@ public final class CommandVerifyDisk extends CommandBase
             final
             CatalogVerificationReportItemOKType ok)
           {
-            System.out.printf("%s | OK | %s\n", ok.getPath(), ok.show());
+            System.out.printf("%s | OK | %s\n", ok.path(), ok.show());
           }
 
           @Override
@@ -147,7 +147,7 @@ public final class CommandVerifyDisk extends CommandBase
           {
             System.out.printf(
               "%s | FAILED | %s\n",
-              error.getPath(),
+              error.path(),
               error.show());
             status.set(2);
           }

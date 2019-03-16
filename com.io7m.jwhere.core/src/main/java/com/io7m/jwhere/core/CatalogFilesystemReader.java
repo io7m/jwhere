@@ -386,8 +386,11 @@ public final class CatalogFilesystemReader
               final CatalogFileHash hash_now = now_opt.get();
               if (!hash_then.equals(hash_now)) {
                 rb.onItemError(
-                  new CatalogVerificationChangedHash(
-                    path, hash_then, hash_now));
+                  CatalogVerificationChangedHash.builder()
+                    .setPath(path)
+                    .setHashNow(hash_now)
+                    .setHashThen(hash_then)
+                    .build());
               }
             }
           }
@@ -632,14 +635,14 @@ public final class CatalogFilesystemReader
     @Override
     public void onItemVerified(final CatalogVerificationReportItemOKType ok)
     {
-      this.reported_paths.add(ok.getPath());
+      this.reported_paths.add(ok.path());
       this.delegate.onItemVerified(ok);
     }
 
     @Override
     public void onItemError(final CatalogVerificationReportItemErrorType error)
     {
-      this.reported_paths.add(error.getPath());
+      this.reported_paths.add(error.path());
       this.delegate.onItemError(error);
     }
 

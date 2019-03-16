@@ -70,7 +70,7 @@ public final class CatalogVerificationChangedType
       });
   }
 
-  @Override public Path getPath()
+  @Override public Path path()
   {
     return this.path;
   }
