@@ -38,6 +38,7 @@ import com.io7m.jwhere.core.CatalogVerificationChangedHash;
 import com.io7m.jwhere.core.CatalogVerificationChangedMetadata;
 import com.io7m.jwhere.core.CatalogVerificationChangedType;
 import com.io7m.jwhere.core.CatalogVerificationListenerType;
+import com.io7m.jwhere.core.CatalogVerificationMetadataField;
 import com.io7m.jwhere.core.CatalogVerificationReportItemErrorType;
 import com.io7m.jwhere.core.CatalogVerificationReportItemOKType;
 import com.io7m.jwhere.core.CatalogVerificationReportSettings;
@@ -123,20 +124,19 @@ public abstract class CatalogFilesystemReaderContract
   private static boolean isCreationTimeError(
     final CatalogVerificationReportItemErrorType x)
   {
-    final CatalogVerificationChangedMetadata.Field v =
-      CatalogVerificationChangedMetadata.Field.CREATION_TIME;
+    final CatalogVerificationMetadataField v =
+      CatalogVerificationMetadataField.CREATION_TIME;
     return CatalogFilesystemReaderContract.isErrorWithField(x, v);
   }
 
   private static boolean isErrorWithField(
     final CatalogVerificationReportItemErrorType x,
-    final CatalogVerificationChangedMetadata.Field v)
+    final CatalogVerificationMetadataField v)
   {
     if (x instanceof CatalogVerificationChangedMetadata) {
       final CatalogVerificationChangedMetadata xc =
         (CatalogVerificationChangedMetadata) x;
-      return v.equals(
-        xc.getField());
+      return v.equals(xc.field());
     } else {
       return false;
     }
@@ -145,8 +145,8 @@ public abstract class CatalogFilesystemReaderContract
   private static boolean isModificationTimeError(
     final CatalogVerificationReportItemErrorType x)
   {
-    final CatalogVerificationChangedMetadata.Field v =
-      CatalogVerificationChangedMetadata.Field.MODIFICATION_TIME;
+    final CatalogVerificationMetadataField v =
+      CatalogVerificationMetadataField.MODIFICATION_TIME;
     return CatalogFilesystemReaderContract.isErrorWithField(x, v);
   }
 
@@ -154,7 +154,7 @@ public abstract class CatalogFilesystemReaderContract
     final CatalogVerificationReportItemErrorType x)
   {
     return CatalogFilesystemReaderContract.isErrorWithField(
-      x, CatalogVerificationChangedMetadata.Field.ACCESS_TIME);
+      x, CatalogVerificationMetadataField.ACCESS_TIME);
   }
 
   protected abstract FileSystem getFileSystem();

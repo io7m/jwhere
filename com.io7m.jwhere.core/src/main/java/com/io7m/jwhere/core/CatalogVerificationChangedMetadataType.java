@@ -22,12 +22,12 @@ import org.immutables.value.Value;
 import java.nio.file.Path;
 
 /**
- * An error indicating that the hash of a file has changed.
+ * An error indicating that a metadata field has changed.
  */
 
 @ImmutablesStyleType
 @Value.Immutable
-public interface CatalogVerificationChangedHashType extends CatalogVerificationReportItemErrorType
+public interface CatalogVerificationChangedMetadataType extends CatalogVerificationReportItemErrorType
 {
   /**
    * @return The path of the file
@@ -37,20 +37,30 @@ public interface CatalogVerificationChangedHashType extends CatalogVerificationR
   Path path();
 
   /**
-   * @return The old hash value
+   * @return The field that changed
    */
 
-  CatalogFileHash hashThen();
+  CatalogVerificationMetadataField field();
 
   /**
-   * @return The new hash value
+   * @return The new field value
    */
 
-  CatalogFileHash hashNow();
+  String valueNow();
+
+  /**
+   * @return The old field value
+   */
+
+  String valueThen();
 
   @Override
   default String show()
   {
-    return String.format("Hash value was %s but is now %s", this.hashThen(), this.hashNow());
+    return String.format(
+      "%s value was %s but is now %s",
+      this.field(),
+      this.valueThen(),
+      this.valueNow());
   }
 }

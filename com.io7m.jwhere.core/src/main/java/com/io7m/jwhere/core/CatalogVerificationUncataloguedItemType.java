@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,37 +16,30 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
+import com.io7m.immutables.styles.ImmutablesStyleType;
+import org.immutables.value.Value;
 
 import java.nio.file.Path;
 
 /**
- * An error that indicates that a file or directory has been created more
- * recently than the catalog was created.
+ * An error that indicates that a file or directory has been created more recently than the catalog
+ * was created.
  */
 
-public final class CatalogVerificationUncataloguedItem
-  implements CatalogVerificationReportItemErrorType
+@ImmutablesStyleType
+@Value.Immutable
+public interface CatalogVerificationUncataloguedItemType
+  extends CatalogVerificationReportItemErrorType
 {
-  private final Path path;
-
   /**
-   * Construct an error.
-   *
-   * @param in_path The path
+   * @return The path of the file
    */
 
-  public CatalogVerificationUncataloguedItem(final Path in_path)
-  {
-    this.path = Objects.requireNonNull(in_path, "in_path");
-  }
+  @Override
+  Path path();
 
-  @Override public Path path()
-  {
-    return this.path;
-  }
-
-  @Override public String show()
+  @Override
+  default String show()
   {
     return "New item; did not exist when the catalog was created";
   }

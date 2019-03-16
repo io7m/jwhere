@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,12 +16,31 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.immutables.styles.ImmutablesStyleType;
+import org.immutables.value.Value;
+
+import java.nio.file.Path;
+
 /**
- * An item that was verified.
+ * An error that indicates that a file or directory has disappeared more recently than the catalog
+ * was created.
  */
 
-public interface CatalogVerificationReportItemOKType
-  extends CatalogVerificationReportItemType
+@ImmutablesStyleType
+@Value.Immutable
+public interface CatalogVerificationOKItemType
+  extends CatalogVerificationReportItemOKType
 {
-  // No extra functions
+  /**
+   * @return The path of the file
+   */
+
+  @Override
+  Path path();
+
+  @Override
+  default String show()
+  {
+    return "Verified";
+  }
 }

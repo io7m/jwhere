@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,39 +14,64 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
-
-import java.nio.file.Path;
-
 /**
- * An item that was verified.
+ * The possible metadata fields.
  */
 
-public final class CatalogVerificationOKItem
-  implements CatalogVerificationReportItemOKType
+public enum CatalogVerificationMetadataField
 {
-  private final Path path;
-
   /**
-   * Construct an item.
-   *
-   * @param in_path The path
+   * The modification time.
    */
 
-  public CatalogVerificationOKItem(final Path in_path)
+  MODIFICATION_TIME("Modification time"),
+
+  /**
+   * The access time.
+   */
+
+  ACCESS_TIME("Access time"),
+
+  /**
+   * The creation time.
+   */
+
+  CREATION_TIME("Creation time"),
+
+  /**
+   * The file owner.
+   */
+
+  OWNER("Owner"),
+
+  /**
+   * The file group.
+   */
+
+  GROUP("Group"),
+
+  /**
+   * The file permissions.
+   */
+
+  PERMISSIONS("Permissions");
+
+  private final String name;
+
+  CatalogVerificationMetadataField(final String in_name)
   {
-    this.path = Objects.requireNonNull(in_path, "in_path");
+    this.name = in_name;
   }
 
-  @Override public Path path()
-  {
-    return this.path;
-  }
+  /**
+   * @return The name of the field
+   */
 
-  @Override public String show()
+  public String getName()
   {
-    return "Verified";
+    return this.name;
   }
 }
