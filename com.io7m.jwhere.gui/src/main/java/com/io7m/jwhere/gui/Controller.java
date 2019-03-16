@@ -126,8 +126,7 @@ public final class Controller implements ControllerType
     var cancel = false;
 
     try {
-      save_file = this.getSaveFileForUnsavedChanges(
-        on_unsaved_changes, on_want_save_file);
+      save_file = this.getSaveFileForUnsavedChanges(on_unsaved_changes, on_want_save_file);
     } catch (final CancellationException ex) {
       cancel = true;
     }
@@ -138,7 +137,8 @@ public final class Controller implements ControllerType
       final var open_file = on_open_file.get();
       if (open_file.isPresent()) {
         this.taskSubmit(
-          "Open catalog", CompletableFuture.supplyAsync(
+          "Open catalog",
+          CompletableFuture.supplyAsync(
             () -> {
               try {
                 on_start_io.run();
@@ -150,8 +150,7 @@ public final class Controller implements ControllerType
               } catch (IOException | CatalogException e) {
                 throw new IOError(e);
               }
-            }, this.exec).whenComplete(
-            (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
+            }, this.exec).whenComplete((ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
       } else {
         LOG.debug("cancelled open explicitly");
       }
@@ -257,8 +256,7 @@ public final class Controller implements ControllerType
             } catch (IOException e) {
               throw new IOError(e);
             }
-          }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
+          }, this.exec).whenComplete((ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
     } else {
       LOG.debug("aborting close");
     }
@@ -292,8 +290,7 @@ public final class Controller implements ControllerType
             } catch (IOException e) {
               throw new IOError(e);
             }
-          }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
+          }, this.exec).whenComplete((ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
     } catch (final CancellationException ex) {
       LOG.debug("aborting save");
     }
@@ -318,8 +315,7 @@ public final class Controller implements ControllerType
             } catch (IOException e) {
               throw new IOError(e);
             }
-          }, this.exec).whenComplete(
-          (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex)))));
+          }, this.exec).whenComplete((ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex)))));
     } catch (final CancellationException ex) {
       LOG.debug("aborting save");
     }
@@ -408,8 +404,7 @@ public final class Controller implements ControllerType
           } catch (IOException | CatalogException e) {
             throw new IOError(e);
           }
-        }, this.exec).whenComplete(
-        (ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
+        }, this.exec).whenComplete((ok, ex) -> on_finish_io.accept(Optional.ofNullable(ex))));
   }
 
   @Override

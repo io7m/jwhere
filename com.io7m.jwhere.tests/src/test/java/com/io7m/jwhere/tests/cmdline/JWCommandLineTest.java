@@ -396,7 +396,8 @@ public final class JWCommandLineTest
 
     try (var output = Files.newOutputStream(file1, WRITE, CREATE, TRUNCATE_EXISTING)) {
       try (var gzip = new GZIPOutputStream(output)) {
-        try (var input = JWCommandLineTest.class.getResourceAsStream("/com/io7m/jwhere/tests/gwhere/archive-real-0.ctg")) {
+        try (var input = JWCommandLineTest.class.getResourceAsStream(
+          "/com/io7m/jwhere/tests/gwhere/archive-real-0.ctg")) {
           input.transferTo(gzip);
         }
         gzip.finish();
@@ -410,6 +411,72 @@ public final class JWCommandLineTest
         file0.toString(),
         "--gwhere-catalog",
         file1.toString()
+      });
+      main.run();
+      Assertions.assertEquals(0, main.exitCode());
+    }
+  }
+
+  @Test
+  public void testSearchNonexistent()
+    throws Exception
+  {
+    final var file0 =
+      Files.createTempFile("jwcmd", ".jcz");
+    Files.delete(file0);
+
+    {
+      final var main = new Main(new String[]{
+        "search",
+        "--catalog",
+        file0.toString(),
+        "--pattern",
+        ".*"
+      });
+      main.run();
+      Assertions.assertEquals(1, main.exitCode());
+    }
+  }
+
+  @Test
+  public void testSearchBadPattern()
+    throws Exception
+  {
+    final var file0 =
+      Files.createTempFile("jwcmd", ".jcz");
+    Files.delete(file0);
+
+    {
+      final var main = new Main(new String[]{
+        "search",
+        "--catalog",
+        file0.toString(),
+        "--pattern",
+        "("
+      });
+      main.run();
+      Assertions.assertEquals(1, main.exitCode());
+    }
+  }
+
+  @Test
+  public void testSearchOK()
+    throws Exception
+  {
+    final var file0 =
+      Files.createTempFile("jwcmd", ".jcz");
+    Files.delete(file0);
+
+    final var catalog0 = new Catalog(new TreeMap<>());
+    Catalogs.saveCatalog(catalog0, CatalogCompress.COMPRESS_GZIP, file0);
+
+    {
+      final var main = new Main(new String[]{
+        "search",
+        "--catalog",
+        file0.toString(),
+        "--pattern",
+        ".*"
       });
       main.run();
       Assertions.assertEquals(0, main.exitCode());

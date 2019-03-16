@@ -55,6 +55,7 @@ public final class Main implements Runnable
     final var cmd_import_gwhere = new CommandImportGWhere();
     final var cmd_add_disk = new CommandAddDisk();
     final var cmd_remove_disk = new CommandRemoveDisk();
+    final var cmd_search = new CommandSearch();
 
     this.commands = new HashMap<>(8);
     this.commands.put("init", cmd_init);
@@ -63,6 +64,7 @@ public final class Main implements Runnable
     this.commands.put("import-gwhere", cmd_import_gwhere);
     this.commands.put("add-disk", cmd_add_disk);
     this.commands.put("remove-disk", cmd_remove_disk);
+    this.commands.put("search", cmd_search);
 
     this.commander = new JCommander(r);
     this.commander.setProgramName("jwhere");
@@ -72,6 +74,7 @@ public final class Main implements Runnable
     this.commander.addCommand("import-gwhere", cmd_import_gwhere);
     this.commander.addCommand("add-disk", cmd_add_disk);
     this.commander.addCommand("remove-disk", cmd_remove_disk);
+    this.commander.addCommand("search", cmd_search);
   }
 
   /**

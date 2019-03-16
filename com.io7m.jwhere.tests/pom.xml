@@ -43,6 +43,11 @@
       <artifactId>com.io7m.jwhere.cmdline</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.jwhere.search</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>com.beust</groupId>

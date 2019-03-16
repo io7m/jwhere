@@ -50,33 +50,30 @@ final class TasksTab extends JPanel
      * Task list.
      */
 
-    final var tasks =
-      new JList<>(in_controller.catalogGetTasksListModel());
+    final var tasks = new JList<>(in_controller.catalogGetTasksListModel());
     final var cancel = new JButton("Cancel");
     cancel.setEnabled(false);
-    cancel.addActionListener(
-      (e) -> {
-        final var task = tasks.getSelectedValue();
-        if (task != null) {
-          LOG.debug("cancelling: {}");
-          task.getFuture().cancel(true);
-        }
-      });
+    cancel.addActionListener((e) -> {
+      final var task = tasks.getSelectedValue();
+      if (task != null) {
+        LOG.debug("cancelling: {}");
+        task.getFuture().cancel(true);
+      }
+    });
 
     tasks.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tasks.setCellRenderer(new TasksCellRenderer());
-    tasks.addListSelectionListener(
-      e -> {
-        if (!e.getValueIsAdjusting()) {
-          final var task = tasks.getSelectedValue();
-          if (task != null) {
-            LOG.debug("selected: {}");
-            cancel.setEnabled(true);
-          } else {
-            cancel.setEnabled(false);
-          }
+    tasks.addListSelectionListener(e -> {
+      if (!e.getValueIsAdjusting()) {
+        final var task = tasks.getSelectedValue();
+        if (task != null) {
+          LOG.debug("selected: {}");
+          cancel.setEnabled(true);
+        } else {
+          cancel.setEnabled(false);
         }
-      });
+      }
+    });
     final var tasks_pane = new JScrollPane(tasks);
 
     final var dg = new DesignGridLayout(this);
@@ -100,8 +97,7 @@ final class TasksTab extends JPanel
       final boolean is_selected,
       final boolean has_focus)
     {
-      super.getListCellRendererComponent(
-        list, value, index, is_selected, has_focus);
+      super.getListCellRendererComponent(list, value, index, is_selected, has_focus);
 
       Preconditions.checkPreconditionV(
         value instanceof CatalogTask,
