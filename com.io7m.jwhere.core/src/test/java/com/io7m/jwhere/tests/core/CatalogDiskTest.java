@@ -56,7 +56,7 @@ public final class CatalogDiskTest
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
-      new CatalogDiskName("example"),
+      CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
@@ -89,7 +89,7 @@ public final class CatalogDiskTest
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
-      new CatalogDiskName("example"),
+      CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
@@ -132,7 +132,7 @@ public final class CatalogDiskTest
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
-      new CatalogDiskName("example"),
+      CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
@@ -161,7 +161,7 @@ public final class CatalogDiskTest
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
-      new CatalogDiskName("example"),
+      CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
@@ -199,7 +199,7 @@ public final class CatalogDiskTest
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
-      new CatalogDiskName("example"),
+      CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
@@ -230,7 +230,7 @@ public final class CatalogDiskTest
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
-      new CatalogDiskName("example"),
+      CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);

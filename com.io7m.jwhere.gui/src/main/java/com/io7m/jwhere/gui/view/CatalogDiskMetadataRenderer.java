@@ -45,7 +45,7 @@ final class CatalogDiskMetadataRenderer extends DefaultTableCellRenderer
     final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
 
     this.setIcon(CatalogDiskIcons.getIconForDisk(meta));
-    this.setText(meta.getDiskName().getValue());
+    this.setText(meta.getDiskName().value());
     return this;
   }
 }

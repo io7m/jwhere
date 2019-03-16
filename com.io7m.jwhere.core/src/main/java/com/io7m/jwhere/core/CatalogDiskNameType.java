@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,56 +16,30 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.immutables.styles.ImmutablesStyleType;
+import org.immutables.value.Value;
+
+import java.math.BigInteger;
 import java.util.Objects;
 
 /**
  * The name of a disk.
  */
 
-public final class CatalogDiskName
+@ImmutablesStyleType
+@Value.Immutable
+public interface CatalogDiskNameType extends Comparable<CatalogDiskNameType>
 {
-  private final String value;
-
   /**
-   * Construct a value.
-   *
-   * @param in_value The value
+   * @return The raw disk name
    */
 
-  public CatalogDiskName(final String in_value)
+  @Value.Parameter
+  String value();
+
+  @Override
+  default int compareTo(final CatalogDiskNameType other)
   {
-    this.value = Objects.requireNonNull(in_value, "in_value");
-  }
-
-  /**
-   * @return The actual value
-   */
-
-  public String getValue()
-  {
-    return this.value;
-  }
-
-  @Override public boolean equals(final Object o)
-  {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || this.getClass() != o.getClass()) {
-      return false;
-    }
-
-    final CatalogDiskName other = (CatalogDiskName) o;
-    return this.value.equals(other.value);
-  }
-
-  @Override public String toString()
-  {
-    return this.value;
-  }
-
-  @Override public int hashCode()
-  {
-    return this.value.hashCode();
+    return this.value().compareTo(Objects.requireNonNull(other, "other").value());
   }
 }

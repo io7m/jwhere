@@ -122,7 +122,7 @@ public final class GWhereParser implements GWhereParserType
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root_node,
-      new CatalogDiskName(disk_name),
+      CatalogDiskName.of(disk_name),
       disk_type,
       disk_index,
       disk_size);

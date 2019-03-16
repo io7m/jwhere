@@ -81,7 +81,7 @@ final class VerifyTab extends JPanel
           if (value instanceof CatalogDiskMetadata) {
             final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
             this.setIcon(CatalogDiskIcons.getIconForDisk(meta));
-            this.setText(meta.getDiskName().getValue());
+            this.setText(meta.getDiskName().value());
           }
 
           return this;

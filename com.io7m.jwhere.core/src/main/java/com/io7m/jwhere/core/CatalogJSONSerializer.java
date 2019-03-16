@@ -228,7 +228,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
 
     final CatalogDiskMetadata meta = d.getMeta();
 
-    jd.put("disk-name", meta.getDiskName().getValue());
+    jd.put("disk-name", meta.getDiskName().value());
     jd.set("disk-size", new BigIntegerNode(meta.getSize()));
     jd.set("disk-id", new BigIntegerNode(meta.getDiskID().value()));
     jd.put("disk-filesystem-type", meta.getFilesystemType());

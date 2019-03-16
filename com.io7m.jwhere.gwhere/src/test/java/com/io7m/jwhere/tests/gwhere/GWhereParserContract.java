@@ -169,7 +169,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDisk d = p.parseDisk();
 
     final CatalogDiskMetadata meta = d.getMeta();
-    Assert.assertEquals(new CatalogDiskName("soma"), meta.getDiskName());
+    Assert.assertEquals(CatalogDiskName.of("soma"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(25L)), meta.getDiskID());
@@ -205,7 +205,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDisk d = p.parseDisk();
 
     final CatalogDiskMetadata meta = d.getMeta();
-    Assert.assertEquals(new CatalogDiskName("data2"), meta.getDiskName());
+    Assert.assertEquals(CatalogDiskName.of("data2"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(179L)), meta.getDiskID());
@@ -253,7 +253,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDisk d = p.parseDisk();
 
     final CatalogDiskMetadata meta = d.getMeta();
-    Assert.assertEquals(new CatalogDiskName("archite_2"), meta.getDiskName());
+    Assert.assertEquals(CatalogDiskName.of("archite_2"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(174L)), meta.getDiskID());
@@ -336,7 +336,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     final CatalogDisk d = p.parseDisk();
 
     final CatalogDiskMetadata meta = d.getMeta();
-    Assert.assertEquals(new CatalogDiskName("dk"), meta.getDiskName());
+    Assert.assertEquals(CatalogDiskName.of("dk"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(10L)), meta.getDiskID());

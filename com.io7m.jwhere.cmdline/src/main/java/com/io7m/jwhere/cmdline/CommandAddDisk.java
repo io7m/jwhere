@@ -145,7 +145,7 @@ public final class CommandAddDisk extends CommandBase
       }
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName(this.disk_name), id, root_path);
+        CatalogDiskName.of(this.disk_name), id, root_path);
       final CatalogDiskMetadata meta = disk.getMeta();
 
       disks.put(meta.getDiskID(), disk);

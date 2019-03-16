@@ -73,7 +73,7 @@ public final class CatalogDiskGenerator implements Generator<CatalogDisk>
     final CatalogDiskID index = CatalogDiskID.of(this.long_gen.next());
     final BigInteger size = this.long_gen.next();
     final CatalogDiskName disk_name =
-      new CatalogDiskName(this.string_gen.next());
+      CatalogDiskName.of(this.string_gen.next());
     final String fs_type = this.string_gen.next();
     final CatalogDirectoryNode root = this.dir_gen.next();
 

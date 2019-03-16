@@ -168,10 +168,10 @@ public abstract class CatalogFilesystemReaderContract
       final Path root = fs.getRootDirectories().iterator().next();
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       final CatalogDiskMetadata meta = disk.getMeta();
-      Assert.assertEquals(new CatalogDiskName("test"), meta.getDiskName());
+      Assert.assertEquals(CatalogDiskName.of("test"), meta.getDiskName());
       Assert.assertEquals(CatalogDiskID.of(BigInteger.ZERO), meta.getDiskID());
 
       final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry>
@@ -195,7 +195,7 @@ public abstract class CatalogFilesystemReaderContract
         "Hello file0".getBytes(StandardCharsets.UTF_8));
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       this.expected.expect(NotDirectoryException.class);
 
@@ -210,7 +210,7 @@ public abstract class CatalogFilesystemReaderContract
       final Path root = fs.getRootDirectories().iterator().next();
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       final Optional<CatalogNodeType> r =
         disk.getNodeForPath(Arrays.asList("nonexistent", "other"));
@@ -228,7 +228,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createDirectory(base);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       final Optional<CatalogNodeType> r =
         disk.getNodeForPath(Arrays.asList("subdir", "nonexistent"));
@@ -253,10 +253,10 @@ public abstract class CatalogFilesystemReaderContract
         "Hello file2".getBytes(StandardCharsets.UTF_8));
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       final CatalogDiskMetadata meta = disk.getMeta();
-      Assert.assertEquals(new CatalogDiskName("test"), meta.getDiskName());
+      Assert.assertEquals(CatalogDiskName.of("test"), meta.getDiskName());
       Assert.assertEquals(CatalogDiskID.of(BigInteger.ZERO), meta.getDiskID());
 
       final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry>
@@ -349,7 +349,7 @@ public abstract class CatalogFilesystemReaderContract
 
             final Path root = fs.getRootDirectories().iterator().next();
             final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-              new CatalogDiskName("test"),
+              CatalogDiskName.of("test"),
               CatalogDiskID.of(BigInteger.ZERO),
               root);
 
@@ -395,7 +395,7 @@ public abstract class CatalogFilesystemReaderContract
 
             final Path root = fs.getRootDirectories().iterator().next();
             final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-              new CatalogDiskName("test"),
+              CatalogDiskName.of("test"),
               CatalogDiskID.of(BigInteger.ZERO),
               root);
 
@@ -440,7 +440,7 @@ public abstract class CatalogFilesystemReaderContract
 
             final Path root = fs.getRootDirectories().iterator().next();
             final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-              new CatalogDiskName("test"),
+              CatalogDiskName.of("test"),
               CatalogDiskID.of(BigInteger.ZERO),
               root);
 
@@ -471,7 +471,7 @@ public abstract class CatalogFilesystemReaderContract
     try (final FileSystem fs = this.getFileSystem()) {
       final Path root = fs.getRootDirectories().iterator().next();
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       final CheckedListener listener = new CheckedListener();
 
@@ -496,7 +496,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.readAllBytes(file);
@@ -534,7 +534,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       Files.setLastModifiedTime(file, FileTime.from(Instant.ofEpochMilli(1L)));
 
@@ -571,7 +571,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.delete(file);
@@ -610,7 +610,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.delete(file);
@@ -650,7 +650,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.createFile(file_more);
@@ -689,7 +689,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       Thread.sleep(1000L);
       Files.delete(file);
@@ -727,7 +727,7 @@ public abstract class CatalogFilesystemReaderContract
       Files.createFile(file);
 
       final CatalogDisk disk = CatalogFilesystemReader.newDisk(
-        new CatalogDiskName("test"), CatalogDiskID.of(BigInteger.ZERO), root);
+        CatalogDiskName.of("test"), CatalogDiskID.of(BigInteger.ZERO), root);
 
       Files.write(file, "Hello".getBytes(StandardCharsets.UTF_8));
       Files.setLastModifiedTime(file, FileTime.from(Instant.ofEpochSecond(1L)));

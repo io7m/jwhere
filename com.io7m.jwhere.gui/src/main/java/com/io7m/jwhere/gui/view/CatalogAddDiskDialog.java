@@ -84,7 +84,7 @@ final class CatalogAddDiskDialog extends JDialog
         if (id_opt.isPresent()) {
           final CatalogDiskID new_id = CatalogDiskID.of(id_opt.get());
           final CatalogDiskName new_name =
-            new CatalogDiskName(disk_name.getText());
+            CatalogDiskName.of(disk_name.getText());
           final Path new_path = Paths.get(disk_root.getText());
 
           final ProcedureType<Optional<Throwable>> on_finish_io = ex_opt -> {

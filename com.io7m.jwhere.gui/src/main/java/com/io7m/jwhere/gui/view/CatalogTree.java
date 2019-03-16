@@ -80,7 +80,7 @@ final class CatalogTree extends JTree
       if (node_value instanceof CatalogDiskMetadata) {
         final CatalogDiskMetadata disk_meta = (CatalogDiskMetadata) node_value;
         this.setIcon(CatalogDiskIcons.getIconForDisk(disk_meta));
-        this.setText(disk_meta.getDiskName().getValue());
+        this.setText(disk_meta.getDiskName().value());
       }
 
       return this;
