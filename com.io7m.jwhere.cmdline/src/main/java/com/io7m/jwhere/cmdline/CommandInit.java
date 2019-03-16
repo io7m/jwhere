@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.nio.file.Path;
 import java.util.TreeMap;
 
 /**
@@ -77,13 +76,13 @@ public final class CommandInit extends CommandBase
   {
     super.setup();
 
-    int status = 0;
+    var status = 0;
 
     try {
-      CommandInit.LOG.debug("Initializing {}", this.catalog);
+      LOG.debug("Initializing {}", this.catalog);
 
-      final Catalog c = new Catalog(new TreeMap<>());
-      final Path p = new File(this.catalog).toPath();
+      final var c = new Catalog(new TreeMap<>());
+      final var p = new File(this.catalog).toPath();
 
       if (Files.notExists(p, LinkOption.NOFOLLOW_LINKS)) {
         CommandBase.writeCatalogToDisk(
@@ -96,16 +95,16 @@ public final class CommandInit extends CommandBase
       }
 
     } catch (final FileAlreadyExistsException e) {
-      CommandInit.LOG.error(
+      LOG.error(
         "File already exists: {}", e.getMessage());
       if (this.isDebug()) {
-        CommandInit.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     } catch (final IOException e) {
-      CommandInit.LOG.error("I/O error: {}: {}", e.getClass(), e.getMessage());
+      LOG.error("I/O error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandInit.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     }

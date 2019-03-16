@@ -25,7 +25,6 @@ import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskBuilderType;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogNodeException;
@@ -82,7 +81,7 @@ public final class GWhereParser implements GWhereParserType
   {
     Objects.requireNonNull(is, "is");
 
-    final BufferedReader r = new BufferedReader(new InputStreamReader(is));
+    final var r = new BufferedReader(new InputStreamReader(is));
     return new GWhereParser(r);
   }
 
@@ -90,25 +89,25 @@ public final class GWhereParser implements GWhereParserType
   public CatalogDisk parseDisk()
     throws IOException, GWhereParserException, CatalogNodeException
   {
-    GWhereParser.LOG.debug("parsing disk");
+    LOG.debug("parsing disk");
 
-    final String header_line = this.getLineNotEOF();
-    final String[] header_segments = header_line.split(":");
+    final var header_line = this.getLineNotEOF();
+    final var header_segments = header_line.split(":");
 
-    final String disk_name = Objects.requireNonNull(header_segments[0], "header_segments[0]");
-    final CatalogDiskID disk_index =
+    final var disk_name = Objects.requireNonNull(header_segments[0], "header_segments[0]");
+    final var disk_index =
       CatalogDiskID.of(new BigInteger(Objects.requireNonNull(
         header_segments[1],
         "header_segments[1]")));
-    final String disk_type = Objects.requireNonNull(header_segments[4], "header_segments[4]");
-    final BigInteger disk_size =
+    final var disk_type = Objects.requireNonNull(header_segments[4], "header_segments[4]");
+    final var disk_size =
       new BigInteger(Objects.requireNonNull(header_segments[6], "header_segments[6]"));
 
-    final Pair<String, CatalogDirectoryNode> root = this.parseDiskDirectory();
-    final CatalogDirectoryNode root_node = root.getRight();
-    final String root_name = root.getLeft();
+    final var root = this.parseDiskDirectory();
+    final var root_node = root.getRight();
+    final var root_name = root.getLeft();
     if (!".".equals(root_name)) {
-      final StringBuilder sb = new StringBuilder(128);
+      final var sb = new StringBuilder(128);
       sb.append("Expected a directory named '.'");
       sb.append(System.lineSeparator());
       sb.append("Got: A ");
@@ -116,12 +115,12 @@ public final class GWhereParser implements GWhereParserType
       sb.append(" named ");
       sb.append(root_name);
       sb.append(System.lineSeparator());
-      final String m = sb.toString();
+      final var m = sb.toString();
       throw new GWhereUnreadableRootDirectoryException(
         this.pos_line, this.pos_column, m);
     }
 
-    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+    final var db = CatalogDisk.newDiskBuilder(
       root_node,
       CatalogDiskName.of(disk_name),
       disk_type,
@@ -145,15 +144,15 @@ public final class GWhereParser implements GWhereParserType
 
     final SortedMap<CatalogDiskID, CatalogDisk> disks = new TreeMap<>();
     while (this.reader.ready()) {
-      final String line = this.getLineOrEOF();
+      final var line = this.getLineOrEOF();
       if (line == null) {
         break;
       }
 
       if ("//".equals(line)) {
-        final CatalogDisk disk = this.parseDisk();
-        final CatalogDiskMetadata meta = disk.getMeta();
-        final CatalogDiskID disk_id = meta.getDiskID();
+        final var disk = this.parseDisk();
+        final var meta = disk.getMeta();
+        final var disk_id = meta.getDiskID();
         if (disks.containsKey(disk_id)) {
           throw new CatalogDiskDuplicateIDException(disk_id.toString());
         }
@@ -170,15 +169,15 @@ public final class GWhereParser implements GWhereParserType
     GWhereUnexpectedEOFException,
     GWhereExpectedArchiveLineException
   {
-    final String line = this.getLineNotEOF();
+    final var line = this.getLineNotEOF();
     if (!line.startsWith("archive:")) {
-      final StringBuilder sb = new StringBuilder(128);
+      final var sb = new StringBuilder(128);
       sb.append("Expected a line starting with 'archive:'");
       sb.append(System.lineSeparator());
       sb.append("Got: ");
       sb.append(line);
       sb.append(System.lineSeparator());
-      final String m = sb.toString();
+      final var m = sb.toString();
       throw new GWhereExpectedArchiveLineException(
         this.pos_line, this.pos_column, m);
     }
@@ -190,15 +189,15 @@ public final class GWhereParser implements GWhereParserType
     GWhereUnexpectedEOFException,
     GWhereExpectedArchiveLineException
   {
-    final String line = this.getLineNotEOF();
+    final var line = this.getLineNotEOF();
     if (!line.startsWith("GWhere")) {
-      final StringBuilder sb = new StringBuilder(128);
+      final var sb = new StringBuilder(128);
       sb.append("Expected a line starting with 'GWhere'");
       sb.append(System.lineSeparator());
       sb.append("Got: ");
       sb.append(line);
       sb.append(System.lineSeparator());
-      final String m = sb.toString();
+      final var m = sb.toString();
       throw new GWhereExpectedArchiveLineException(
         this.pos_line, this.pos_column, m);
     }
@@ -216,14 +215,14 @@ public final class GWhereParser implements GWhereParserType
     throws IOException, GWhereParserException, CatalogNodeException
   {
     while (true) {
-      final String line = this.getLineNotEOF();
+      final var line = this.getLineNotEOF();
       if ("//".equals(line)) {
         return false;
       }
       if ("/".equals(line)) {
-        final Pair<String, CatalogDirectoryNode> p = this.parseDiskDirectory();
-        final String name = p.getLeft();
-        final CatalogDirectoryNode new_dir = p.getRight();
+        final var p = this.parseDiskDirectory();
+        final var name = p.getLeft();
+        final var new_dir = p.getRight();
         db.addNode(dir, name, new_dir);
         if (this.parseDirectory(db, new_dir)) {
           continue;
@@ -235,15 +234,15 @@ public final class GWhereParser implements GWhereParserType
         return true;
       }
 
-      final Pair<String, CatalogNodeType> p = this.parseDiskFileFromLine(line);
-      final String name = p.getLeft();
+      final var p = this.parseDiskFileFromLine(line);
+      final var name = p.getLeft();
       if (".".equals(name)) {
         continue;
       }
       if ("..".equals(name)) {
         continue;
       }
-      final CatalogNodeType node = p.getRight();
+      final var node = p.getRight();
       db.addNode(dir, name, node);
     }
   }
@@ -252,11 +251,11 @@ public final class GWhereParser implements GWhereParserType
     final String line)
     throws IOException, GWhereParserException
   {
-    final Pair<String, CatalogNodeType> dp = this.parseDiskFileFromLine(line);
-    final String name = dp.getLeft();
-    final CatalogNodeType node = dp.getRight();
+    final var dp = this.parseDiskFileFromLine(line);
+    final var name = dp.getLeft();
+    final var node = dp.getRight();
     if (!(node instanceof CatalogDirectoryNode)) {
-      final StringBuilder sb = new StringBuilder(128);
+      final var sb = new StringBuilder(128);
       sb.append("Expected a directory.");
       sb.append(System.lineSeparator());
       sb.append("Got: A ");
@@ -264,7 +263,7 @@ public final class GWhereParser implements GWhereParserType
       sb.append(" named ");
       sb.append(name);
       sb.append(System.lineSeparator());
-      final String m = sb.toString();
+      final var m = sb.toString();
       throw new GWhereExpectedDirectoryException(
         this.pos_line, this.pos_column, m);
     }
@@ -274,29 +273,29 @@ public final class GWhereParser implements GWhereParserType
   private Pair<String, CatalogNodeType> parseDiskFileFromLine(final String line)
     throws GWhereUnreadablePermissionsException
   {
-    final String[] segments = line.split(":");
+    final var segments = line.split(":");
 
-    final String name = Objects.requireNonNull(segments[0], "segments[0]");
+    final var name = Objects.requireNonNull(segments[0], "segments[0]");
 
-    final EnumSet<PosixFilePermission> p =
+    final var p =
       EnumSet.noneOf(PosixFilePermission.class);
-    final FileType type = this.parsePermissions(
+    final var type = this.parsePermissions(
       Objects.requireNonNull(segments[1], "segments[1]"), p);
-    final String owner = Objects.requireNonNull(segments[2], "segments[2]");
-    final String group = Objects.requireNonNull(segments[3], "segments[3]");
-    final BigInteger inode = new BigInteger(Objects.requireNonNull(segments[4], "segments[4]"));
-    final BigInteger size = new BigInteger(Objects.requireNonNull(segments[5], "segments[5]"));
+    final var owner = Objects.requireNonNull(segments[2], "segments[2]");
+    final var group = Objects.requireNonNull(segments[3], "segments[3]");
+    final var inode = new BigInteger(Objects.requireNonNull(segments[4], "segments[4]"));
+    final var size = new BigInteger(Objects.requireNonNull(segments[5], "segments[5]"));
 
-    final Instant creation = Instant.ofEpochSecond(
+    final var creation = Instant.ofEpochSecond(
       Long.valueOf(Objects.requireNonNull(segments[6], "segments[6]")).longValue());
-    final Instant access = Instant.ofEpochSecond(
+    final var access = Instant.ofEpochSecond(
       Long.valueOf(Objects.requireNonNull(segments[7], "segments[7]")).longValue());
-    final Instant modification = Instant.ofEpochSecond(
+    final var modification = Instant.ofEpochSecond(
       Long.valueOf(Objects.requireNonNull(segments[8], "segments[8]")).longValue());
 
     switch (type) {
       case DIRECTORY:
-        final CatalogDirectoryNode cdn =
+        final var cdn =
           CatalogDirectoryNode.builder()
             .setPermissions(p)
             .setGroup(owner)
@@ -308,7 +307,7 @@ public final class GWhereParser implements GWhereParserType
             .build();
         return Pair.pair(name, cdn);
       case FILE:
-        final CatalogFileNode cfn =
+        final var cfn =
           CatalogFileNode.builder()
             .setPermissions(p)
             .setGroup(owner)
@@ -338,7 +337,7 @@ public final class GWhereParser implements GWhereParserType
         "Expected a ten-character permissions string, got '%s'", text));
     }
 
-    final String mode_text = text.substring(1);
+    final var mode_text = text.substring(1);
     final Set<PosixFilePermission> parsed;
 
     try {
@@ -349,7 +348,7 @@ public final class GWhereParser implements GWhereParserType
     }
     perms.addAll(parsed);
 
-    final int type_char = text.codePointAt(0);
+    final var type_char = text.codePointAt(0);
     switch (type_char) {
       case 'd':
         return FileType.DIRECTORY;
@@ -367,7 +366,7 @@ public final class GWhereParser implements GWhereParserType
   private String getLineNotEOF()
     throws IOException, GWhereUnexpectedEOFException
   {
-    final String line = this.getLineOrEOF();
+    final var line = this.getLineOrEOF();
 
     if (line == null) {
       throw new GWhereUnexpectedEOFException(
@@ -379,10 +378,10 @@ public final class GWhereParser implements GWhereParserType
   private String getLineOrEOF()
     throws IOException
   {
-    final String line = this.reader.readLine();
+    final var line = this.reader.readLine();
     this.pos_line = this.pos_line.add(BigInteger.ONE);
     this.pos_column = BigInteger.ZERO;
-    GWhereParser.LOG.debug("read: {}", line);
+    LOG.debug("read: {}", line);
     return line;
   }
 

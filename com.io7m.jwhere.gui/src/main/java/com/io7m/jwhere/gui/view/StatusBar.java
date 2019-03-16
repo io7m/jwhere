@@ -49,7 +49,7 @@ final class StatusBar extends JPanel
     this.text.setHorizontalAlignment(SwingConstants.LEFT);
     this.text.setText("");
 
-    final BorderLayout layout = new BorderLayout(4, 4);
+    final var layout = new BorderLayout(4, 4);
     this.setLayout(layout);
 
     this.error_icon.setBorder(new EmptyBorder(0, 4, 0, 4));
@@ -76,12 +76,12 @@ final class StatusBar extends JPanel
 
   public void onProgressIndeterminateStartLater()
   {
-    SwingUtilities.invokeLater(() -> this.onProgressIndeterminateStart());
+    SwingUtilities.invokeLater(this::onProgressIndeterminateStart);
   }
 
   public void onProgressIndeterminateFinishLater()
   {
-    SwingUtilities.invokeLater(() -> this.onProgressIndeterminateFinish());
+    SwingUtilities.invokeLater(this::onProgressIndeterminateFinish);
   }
 
   private void onProgressIndeterminateFinish()

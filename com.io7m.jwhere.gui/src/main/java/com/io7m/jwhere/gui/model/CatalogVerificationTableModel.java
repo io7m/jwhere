@@ -46,7 +46,7 @@ final class CatalogVerificationTableModel extends AbstractTableModel
     final int col,
     final Object c)
   {
-    final Class<?> type =
+    final var type =
       CatalogVerificationTableModelField.values()[col].getType();
     Preconditions.checkPreconditionV(
       type.isInstance(c), "%s must be an instance of %s", c.getClass(), type);
@@ -111,10 +111,10 @@ final class CatalogVerificationTableModel extends AbstractTableModel
 
     switch (CatalogVerificationTableModelField.values()[col]) {
       case NAME:
-        return CatalogVerificationTableModel.check(
+        return check(
           col, this.data.get(row).path());
       case RESULT:
-        return CatalogVerificationTableModel.check(
+        return check(
           col, this.data.get(row).show());
     }
 

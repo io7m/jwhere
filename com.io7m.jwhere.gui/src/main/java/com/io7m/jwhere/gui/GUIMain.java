@@ -53,7 +53,7 @@ public final class GUIMain
   public static void main(final String[] args)
   {
     Thread.setDefaultUncaughtExceptionHandler(
-      (t, e) -> GUIMain.LOG.error("uncaught exception: thread [{}]: ", t, e));
+      (t, e) -> LOG.error("uncaught exception: thread [{}]: ", t, e));
 
     try {
       UIManager.setLookAndFeel(
@@ -61,15 +61,15 @@ public final class GUIMain
 
     } catch (final ClassNotFoundException | UnsupportedLookAndFeelException
       | IllegalAccessException | InstantiationException e) {
-      GUIMain.LOG.error("unable to set look and feel: ", e);
+      LOG.error("unable to set look and feel: ", e);
     }
 
-    final Model model = new Model();
-    final ControllerType controller = Controller.newController(model);
+    final var model = new Model();
+    final var controller = Controller.newController(model);
 
     SwingUtilities.invokeLater(
       () -> {
-        final MainWindow w = new MainWindow(controller);
+        final var w = new MainWindow(controller);
         w.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         w.pack();
         w.setVisible(true);

@@ -68,7 +68,7 @@ public final class CatalogJSONParserUtilities
       case NUMBER:
       case POJO:
       case STRING: {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         if (key != null) {
           sb.append("Expected: A key '");
           sb.append(key);
@@ -85,7 +85,7 @@ public final class CatalogJSONParserUtilities
           sb.append(System.lineSeparator());
         }
 
-        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+        final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case OBJECT: {
@@ -113,7 +113,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(s, "s");
     Objects.requireNonNull(key, "key");
 
-    final JsonNode n = CatalogJSONParserUtilities.getNode(
+    final var n = getNode(
       s, key);
     switch (n.getNodeType()) {
       case ARRAY: {
@@ -127,7 +127,7 @@ public final class CatalogJSONParserUtilities
       case POJO:
       case STRING:
       case OBJECT: {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         sb.append("Expected: A key '");
         sb.append(key);
         sb.append("' with a value of type Array");
@@ -135,7 +135,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(n.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+        final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
     }
@@ -160,7 +160,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(o, "o");
     Objects.requireNonNull(key, "key");
 
-    final JsonNode v = CatalogJSONParserUtilities.getNode(
+    final var v = getNode(
       o, key);
     switch (v.getNodeType()) {
       case ARRAY:
@@ -171,7 +171,7 @@ public final class CatalogJSONParserUtilities
       case POJO:
       case STRING:
       case NUMBER: {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         sb.append("Expected: A key '");
         sb.append(key);
         sb.append("' with a value of type Boolean");
@@ -179,7 +179,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+        final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case BOOLEAN: {
@@ -207,7 +207,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(n, "n");
     Objects.requireNonNull(key, "key");
 
-    final JsonNode v = CatalogJSONParserUtilities.getNode(
+    final var v = getNode(
       n, key);
     switch (v.getNodeType()) {
       case ARRAY:
@@ -218,7 +218,7 @@ public final class CatalogJSONParserUtilities
       case OBJECT:
       case POJO:
       case STRING: {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         sb.append("Expected: A key '");
         sb.append(key);
         sb.append("' with a value of type Integer");
@@ -226,7 +226,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+        final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case NUMBER: {
@@ -258,13 +258,13 @@ public final class CatalogJSONParserUtilities
       return Objects.requireNonNull(s.get(key), "s.get(key)");
     }
 
-    final StringBuilder sb = new StringBuilder(128);
+    final var sb = new StringBuilder(128);
     sb.append("Expected: A key '");
     sb.append(key);
     sb.append("'");
     sb.append(System.lineSeparator());
     sb.append("Got: nothing");
-    final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+    final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
     throw new CatalogJSONParseException(m);
   }
 
@@ -285,9 +285,9 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(s, "s");
     Objects.requireNonNull(key, "key");
 
-    final JsonNode n = CatalogJSONParserUtilities.getNode(
+    final var n = getNode(
       s, key);
-    return CatalogJSONParserUtilities.checkObject(
+    return checkObject(
       key, n);
   }
 
@@ -309,7 +309,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(key, "key");
 
     if (s.has(key)) {
-      return Optional.of(CatalogJSONParserUtilities.getObject(s, key));
+      return Optional.of(getObject(s, key));
     }
     return Optional.empty();
   }
@@ -330,9 +330,9 @@ public final class CatalogJSONParserUtilities
     final String value)
     throws CatalogJSONParseException
   {
-    final String r = CatalogJSONParserUtilities.getString(s, key);
+    final var r = getString(s, key);
     if (!value.equals(r)) {
-      final StringBuilder sb = new StringBuilder(128);
+      final var sb = new StringBuilder(128);
       sb.append("Expected: A key '");
       sb.append(key);
       sb.append("' with a value '");
@@ -343,7 +343,7 @@ public final class CatalogJSONParserUtilities
       sb.append(r);
       sb.append("'");
       sb.append(System.lineSeparator());
-      final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+      final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
       throw new CatalogJSONParseException(m);
     }
     return r;
@@ -366,7 +366,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(s, "s");
     Objects.requireNonNull(key, "key");
 
-    final JsonNode v = CatalogJSONParserUtilities.getNode(
+    final var v = getNode(
       s, key);
     switch (v.getNodeType()) {
       case ARRAY:
@@ -377,7 +377,7 @@ public final class CatalogJSONParserUtilities
       case NUMBER:
       case OBJECT:
       case POJO: {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         sb.append("Expected: A key '");
         sb.append(key);
         sb.append("' with a value of type String");
@@ -385,7 +385,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+        final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case STRING: {
@@ -415,7 +415,7 @@ public final class CatalogJSONParserUtilities
 
     if (n.has(key)) {
       return Optional.of(
-        Integer.valueOf(CatalogJSONParserUtilities.getInteger(n, key)));
+        Integer.valueOf(getInteger(n, key)));
     }
     return Optional.empty();
   }
@@ -438,7 +438,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(key, "key");
 
     if (n.has(key)) {
-      return Optional.of(CatalogJSONParserUtilities.getString(n, key));
+      return Optional.of(getString(n, key));
     }
     return Optional.empty();
   }
@@ -463,7 +463,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(key, "key");
 
     if (n.has(key)) {
-      return CatalogJSONParserUtilities.getBoolean(n, key);
+      return getBoolean(n, key);
     }
     return v;
   }
@@ -486,7 +486,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(key, "key");
 
     if (n.has(key)) {
-      return Optional.of(CatalogJSONParserUtilities.getBigInteger(n, key));
+      return Optional.of(getBigInteger(n, key));
     }
     return Optional.empty();
   }
@@ -508,7 +508,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(n, "n");
     Objects.requireNonNull(key, "key");
 
-    final JsonNode v = CatalogJSONParserUtilities.getNode(n, key);
+    final var v = getNode(n, key);
     switch (v.getNodeType()) {
       case ARRAY:
       case BINARY:
@@ -518,7 +518,7 @@ public final class CatalogJSONParserUtilities
       case OBJECT:
       case POJO:
       case STRING: {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         sb.append("Expected: A key '");
         sb.append(key);
         sb.append("' with a value of type Integer");
@@ -526,7 +526,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+        final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case NUMBER: {
@@ -558,7 +558,7 @@ public final class CatalogJSONParserUtilities
     Objects.requireNonNull(s, "s");
     Objects.requireNonNull(key, "key");
 
-    final JsonNode v = CatalogJSONParserUtilities.getNode(s, key);
+    final var v = getNode(s, key);
     switch (v.getNodeType()) {
       case ARRAY:
       case BINARY:
@@ -568,7 +568,7 @@ public final class CatalogJSONParserUtilities
       case NUMBER:
       case OBJECT:
       case POJO: {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         sb.append("Expected: A key '");
         sb.append(key);
         sb.append("' with a value of type String");
@@ -576,12 +576,12 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
+        final var m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case STRING: {
         try {
-          final String text = v.asText();
+          final var text = v.asText();
           return Instant.parse(text);
         } catch (final DateTimeParseException e) {
           throw new CatalogJSONParseException(e);

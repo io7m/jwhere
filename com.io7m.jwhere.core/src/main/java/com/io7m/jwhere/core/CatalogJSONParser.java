@@ -16,9 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.slf4j.Logger;
@@ -26,15 +24,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
@@ -62,17 +56,17 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     final ObjectNode eo)
     throws CatalogJSONParseException, CatalogNodeException
   {
-    final String type = CatalogJSONParserUtilities.getString(eo, "type");
+    final var type = CatalogJSONParserUtilities.getString(eo, "type");
     if ("directory".equals(type)) {
-      CatalogJSONParser.parseFilesystemDirectory(db, dir, eo);
+      parseFilesystemDirectory(db, dir, eo);
       return;
     }
     if ("file".equals(type)) {
-      CatalogJSONParser.parseFilesystemFile(db, dir, eo);
+      parseFilesystemFile(db, dir, eo);
       return;
     }
 
-    final StringBuilder sb = new StringBuilder(128);
+    final var sb = new StringBuilder(128);
     sb.append("Unrecognized filesystem object type.");
     sb.append(System.lineSeparator());
     sb.append("Expected: 'file' or 'directory'");
@@ -88,30 +82,30 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     final ObjectNode o)
     throws CatalogJSONParseException, CatalogNodeException
   {
-    final Set<PosixFilePermission> perms = PosixFilePermissions.fromString(
+    final var perms = PosixFilePermissions.fromString(
       CatalogJSONParserUtilities.getString(
         o, "permissions"));
-    final String name = CatalogJSONParserUtilities.getString(o, "name");
-    final String owner = CatalogJSONParserUtilities.getString(o, "owner");
-    final String group = CatalogJSONParserUtilities.getString(o, "group");
-    final BigInteger size = CatalogJSONParserUtilities.getBigInteger(o, "size");
-    final BigInteger inode =
+    final var name = CatalogJSONParserUtilities.getString(o, "name");
+    final var owner = CatalogJSONParserUtilities.getString(o, "owner");
+    final var group = CatalogJSONParserUtilities.getString(o, "group");
+    final var size = CatalogJSONParserUtilities.getBigInteger(o, "size");
+    final var inode =
       CatalogJSONParserUtilities.getBigInteger(o, "inode");
-    final Instant access =
+    final var access =
       CatalogJSONParserUtilities.getInstant(o, "access-time");
-    final Instant modify =
+    final var modify =
       CatalogJSONParserUtilities.getInstant(o, "modification-time");
-    final Instant create =
+    final var create =
       CatalogJSONParserUtilities.getInstant(o, "creation-time");
 
-    final Optional<ObjectNode> opt_hash_raw =
+    final var opt_hash_raw =
       CatalogJSONParserUtilities.getObjectOptional(o, "hash");
 
     final Optional<CatalogFileHash> opt_hash;
     if (opt_hash_raw.isPresent()) {
-      final ObjectNode ho = opt_hash_raw.get();
-      final String algo = CatalogJSONParserUtilities.getString(ho, "algorithm");
-      final String value = CatalogJSONParserUtilities.getString(ho, "value");
+      final var ho = opt_hash_raw.get();
+      final var algo = CatalogJSONParserUtilities.getString(ho, "algorithm");
+      final var value = CatalogJSONParserUtilities.getString(ho, "value");
       opt_hash = Optional.of(CatalogFileHash.builder().setAlgorithm(algo).setValue(value).build());
     } else {
       opt_hash = Optional.empty();
@@ -139,21 +133,21 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     final ObjectNode o)
     throws CatalogJSONParseException, CatalogNodeException
   {
-    final Set<PosixFilePermission> perms = PosixFilePermissions.fromString(
+    final var perms = PosixFilePermissions.fromString(
       CatalogJSONParserUtilities.getString(
         o, "permissions"));
-    final String name = CatalogJSONParserUtilities.getString(o, "name");
-    final String owner = CatalogJSONParserUtilities.getString(o, "owner");
-    final String group = CatalogJSONParserUtilities.getString(o, "group");
-    final BigInteger inode =
+    final var name = CatalogJSONParserUtilities.getString(o, "name");
+    final var owner = CatalogJSONParserUtilities.getString(o, "owner");
+    final var group = CatalogJSONParserUtilities.getString(o, "group");
+    final var inode =
       CatalogJSONParserUtilities.getBigInteger(o, "inode");
-    final Instant access =
+    final var access =
       CatalogJSONParserUtilities.getInstant(o, "access-time");
-    final Instant modify =
+    final var modify =
       CatalogJSONParserUtilities.getInstant(o, "modification-time");
-    final Instant create =
+    final var create =
       CatalogJSONParserUtilities.getInstant(o, "creation-time");
-    final CatalogDirectoryNode dir_new =
+    final var dir_new =
       CatalogDirectoryNode.builder()
         .setPermissions(perms)
         .setOwner(owner)
@@ -166,11 +160,11 @@ public final class CatalogJSONParser implements CatalogJSONParserType
 
     db.addNode(dir, name, dir_new);
 
-    final ArrayNode entries = CatalogJSONParserUtilities.getArray(o, "entries");
-    for (int i = 0; i < entries.size(); ++i) {
-      final JsonNode ee = entries.get(i);
-      final ObjectNode eo = CatalogJSONParserUtilities.checkObject(null, ee);
-      CatalogJSONParser.parseFilesystemNode(db, dir_new, eo);
+    final var entries = CatalogJSONParserUtilities.getArray(o, "entries");
+    for (var i = 0; i < entries.size(); ++i) {
+      final var ee = entries.get(i);
+      final var eo = CatalogJSONParserUtilities.checkObject(null, ee);
+      parseFilesystemNode(db, dir_new, eo);
     }
   }
 
@@ -193,16 +187,16 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   {
     Objects.requireNonNull(p, "p");
 
-    final String guess_type = Files.probeContentType(p);
+    final var guess_type = Files.probeContentType(p);
     if ("application/gzip".equals(guess_type)) {
-      CatalogJSONParser.LOG.debug(
+      LOG.debug(
         "path {} appears to be of type {}, opening as compressed stream",
         p,
         guess_type);
       return this.parseCatalogFromPathWithCompression(
         p, CatalogCompress.COMPRESS_GZIP);
     } else {
-      CatalogJSONParser.LOG.debug(
+      LOG.debug(
         "path {} appears to be of type {}, opening as uncompressed stream",
         p,
         guess_type);
@@ -228,7 +222,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     // CHECKSTYLE:OFF
     switch (compression) {
       case COMPRESS_NONE:
-        try (final InputStream s = Files.newInputStream(p)) {
+        try (final var s = Files.newInputStream(p)) {
           return this.parseCatalogFromStream(s);
         }
       case COMPRESS_GZIP:
@@ -252,8 +246,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   {
     Objects.requireNonNull(is, "is");
 
-    final ObjectMapper jom = new ObjectMapper();
-    final JsonNode node = jom.readTree(is);
+    final var jom = new ObjectMapper();
+    final var node = jom.readTree(is);
     return this.parseCatalog(
       CatalogJSONParserUtilities.checkObject(null, node));
   }
@@ -270,22 +264,22 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     CatalogJSONParserUtilities.getStringWithValue(
       c, "schema", "http://schemas.io7m.com/jwhere");
     CatalogJSONParserUtilities.getStringWithValue(c, "schema-version", "1.0.0");
-    final ObjectNode root = CatalogJSONParserUtilities.getObject(c, "catalog");
+    final var root = CatalogJSONParserUtilities.getObject(c, "catalog");
     CatalogJSONParserUtilities.getStringWithValue(root, "type", "catalog");
 
     final SortedMap<CatalogDiskID, CatalogDisk> disks = new TreeMap<>();
 
-    final ArrayNode jdisks =
+    final var jdisks =
       CatalogJSONParserUtilities.getArray(root, "catalog-disks");
 
-    for (int index = 0; index < jdisks.size(); ++index) {
-      final ObjectNode jd =
+    for (var index = 0; index < jdisks.size(); ++index) {
+      final var jd =
         CatalogJSONParserUtilities.checkObject(null, jdisks.get(index));
-      final CatalogDisk disk = this.parseDisk(jd);
-      final CatalogDiskMetadata meta = disk.getMeta();
-      final CatalogDiskID disk_index = meta.getDiskID();
+      final var disk = this.parseDisk(jd);
+      final var meta = disk.getMeta();
+      final var disk_index = meta.getDiskID();
       if (disks.containsKey(disk_index)) {
-        final StringBuilder sb = new StringBuilder(128);
+        final var sb = new StringBuilder(128);
         sb.append("Multiple disks with the same ID.");
         sb.append(System.lineSeparator());
         sb.append("  Duplicate number: ");
@@ -306,33 +300,33 @@ public final class CatalogJSONParser implements CatalogJSONParserType
 
     CatalogJSONParserUtilities.getStringWithValue(c, "type", "disk");
 
-    final CatalogDiskName name =
+    final var name =
       CatalogDiskName.of(CatalogJSONParserUtilities.getString(c, "disk-name"));
-    final BigInteger size =
+    final var size =
       CatalogJSONParserUtilities.getBigInteger(c, "disk-size");
-    final CatalogDiskID index = CatalogDiskID.of(
+    final var index = CatalogDiskID.of(
       CatalogJSONParserUtilities.getBigInteger(c, "disk-id"));
-    final String fs_type =
+    final var fs_type =
       CatalogJSONParserUtilities.getString(c, "disk-filesystem-type");
 
-    final ObjectNode jroot =
+    final var jroot =
       CatalogJSONParserUtilities.getObject(c, "disk-filesystem-root");
 
-    final Set<PosixFilePermission> perms = PosixFilePermissions.fromString(
+    final var perms = PosixFilePermissions.fromString(
       CatalogJSONParserUtilities.getString(
         jroot, "permissions"));
-    final String owner = CatalogJSONParserUtilities.getString(jroot, "owner");
-    final String group = CatalogJSONParserUtilities.getString(jroot, "group");
-    final BigInteger inode =
+    final var owner = CatalogJSONParserUtilities.getString(jroot, "owner");
+    final var group = CatalogJSONParserUtilities.getString(jroot, "group");
+    final var inode =
       CatalogJSONParserUtilities.getBigInteger(jroot, "inode");
-    final Instant access =
+    final var access =
       CatalogJSONParserUtilities.getInstant(jroot, "access-time");
-    final Instant modify =
+    final var modify =
       CatalogJSONParserUtilities.getInstant(jroot, "modification-time");
-    final Instant create =
+    final var create =
       CatalogJSONParserUtilities.getInstant(jroot, "creation-time");
 
-    final CatalogDirectoryNode root =
+    final var root =
       CatalogDirectoryNode.builder()
         .setPermissions(perms)
         .setOwner(owner)
@@ -343,15 +337,15 @@ public final class CatalogJSONParser implements CatalogJSONParserType
         .setModificationTime(modify)
         .build();
 
-    final CatalogDiskBuilderType db =
+    final var db =
       CatalogDisk.newDiskBuilder(root, name, fs_type, index, size);
 
-    final ArrayNode entries =
+    final var entries =
       CatalogJSONParserUtilities.getArray(jroot, "entries");
-    for (int i = 0; i < entries.size(); ++i) {
-      final JsonNode ee = entries.get(i);
-      final ObjectNode eo = CatalogJSONParserUtilities.checkObject(null, ee);
-      CatalogJSONParser.parseFilesystemNode(db, root, eo);
+    for (var i = 0; i < entries.size(); ++i) {
+      final var ee = entries.get(i);
+      final var eo = CatalogJSONParserUtilities.checkObject(null, ee);
+      parseFilesystemNode(db, root, eo);
     }
 
     return db.build();

@@ -18,14 +18,12 @@ package com.io7m.jwhere.gui.model;
 
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.Catalog;
-import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import net.jcip.annotations.Immutable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -42,7 +40,7 @@ public final class CatalogState
   {
     this.catalog = Objects.requireNonNull(c, "c");
 
-    final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+    final var disks = c.getDisks();
     final List<CatalogDiskID> rows = new ArrayList<>(disks.size());
     rows.addAll(disks.keySet());
     this.catalog_disks = rows;

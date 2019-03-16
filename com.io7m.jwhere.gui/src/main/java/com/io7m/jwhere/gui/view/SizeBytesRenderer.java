@@ -42,7 +42,7 @@ final class SizeBytesRenderer extends DefaultTableCellRenderer
     super.getTableCellRendererComponent(
       table, value, is_selected, has_focus, row, column);
 
-    final SizeBytes size = (SizeBytes) value;
+    final var size = (SizeBytes) value;
     this.setText(size.toHumanString());
     return this;
   }

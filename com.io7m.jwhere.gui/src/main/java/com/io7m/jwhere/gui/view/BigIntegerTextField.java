@@ -60,12 +60,12 @@ final class BigIntegerTextField extends JTextField
   public Optional<BigInteger> getBigInteger()
   {
     try {
-      final Optional<BigInteger> r =
+      final var r =
         Optional.of(new BigInteger(this.getText()));
       super.setBackground(this.set_color);
       return r;
     } catch (final NumberFormatException e) {
-      super.setBackground(BigIntegerTextField.ERROR_COLOR);
+      super.setBackground(ERROR_COLOR);
       return Optional.empty();
     }
   }

@@ -17,14 +17,9 @@
 package com.io7m.jwhere.cmdline;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.io7m.jwhere.core.Catalog;
-import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
-import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParser;
-import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogNodeException;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
@@ -33,9 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Iterator;
-import java.util.SortedMap;
 
 /**
  * A command to list disks in a catalog.
@@ -73,22 +65,22 @@ public final class CommandListDisks extends CommandBase
   {
     super.setup();
 
-    int status = 0;
+    var status = 0;
 
     try {
-      final CatalogJSONParserType p = CatalogJSONParser.newParser();
-      final Path file = new File(this.catalog).toPath();
-      final ObjectMapper jom = new ObjectMapper();
+      final var p = CatalogJSONParser.newParser();
+      final var file = new File(this.catalog).toPath();
+      final var jom = new ObjectMapper();
 
-      CommandListDisks.LOG.debug("Opening {}", file);
+      LOG.debug("Opening {}", file);
 
-      final Catalog c = CommandBase.openCatalogForReading(p, file);
-      final SortedMap<CatalogDiskID, CatalogDisk> dm = c.getDisks();
-      final Iterator<CatalogDiskID> iter = dm.keySet().iterator();
+      final var c = CommandBase.openCatalogForReading(p, file);
+      final var dm = c.getDisks();
+      final var iter = dm.keySet().iterator();
       while (iter.hasNext()) {
-        final CatalogDiskID index = iter.next();
-        final CatalogDisk disk = dm.get(index);
-        final CatalogDiskMetadata meta = disk.getMeta();
+        final var index = iter.next();
+        final var disk = dm.get(index);
+        final var meta = disk.getMeta();
 
         System.out.printf(
           "[%s] %-32s %s %s\n",
@@ -99,24 +91,24 @@ public final class CommandListDisks extends CommandBase
       }
 
     } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
-      CommandListDisks.LOG.error(
+      LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandListDisks.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     } catch (final CatalogJSONParseException e) {
-      CommandListDisks.LOG.error(
+      LOG.error(
         "JSON parse error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandListDisks.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     } catch (final IOException e) {
-      CommandListDisks.LOG.error(
+      LOG.error(
         "I/O error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandListDisks.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     }

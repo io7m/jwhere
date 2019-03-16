@@ -16,17 +16,12 @@
 
 package com.io7m.jwhere.cmdline;
 
-import com.io7m.jwhere.core.Catalog;
-import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
 import com.io7m.jwhere.core.CatalogIgnoreAccessTime;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParser;
-import com.io7m.jwhere.core.CatalogJSONParserType;
-import com.io7m.jwhere.core.CatalogNodeException;
 import com.io7m.jwhere.core.CatalogVerificationListenerType;
 import com.io7m.jwhere.core.CatalogVerificationReportItemErrorType;
 import com.io7m.jwhere.core.CatalogVerificationReportItemOKType;
@@ -39,10 +34,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -107,27 +100,27 @@ public final class CommandVerifyDisk extends CommandBase
   {
     super.setup();
 
-    final AtomicInteger status = new AtomicInteger(0);
+    final var status = new AtomicInteger(0);
 
     try {
-      CommandVerifyDisk.LOG.debug("Index {}", this.disk_index);
-      CommandVerifyDisk.LOG.debug("Root {}", this.root);
-      CommandVerifyDisk.LOG.debug("Catalog input {}", this.catalog_in);
+      LOG.debug("Index {}", this.disk_index);
+      LOG.debug("Root {}", this.root);
+      LOG.debug("Catalog input {}", this.catalog_in);
 
-      final CatalogJSONParserType p = CatalogJSONParser.newParser();
-      final Path catalog_in_path = new File(this.catalog_in).toPath();
-      final Path root_path = new File(this.root).toPath();
+      final var p = CatalogJSONParser.newParser();
+      final var catalog_in_path = new File(this.catalog_in).toPath();
+      final var root_path = new File(this.root).toPath();
 
-      CommandVerifyDisk.LOG.debug("Opening {}", catalog_in_path);
-      final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final CatalogDiskID id = CatalogDiskID.of(this.disk_index);
-      final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+      LOG.debug("Opening {}", catalog_in_path);
+      final var c = CommandBase.openCatalogForReading(p, catalog_in_path);
+      final var id = CatalogDiskID.of(this.disk_index);
+      final var disks = c.getDisks();
       if (!disks.containsKey(id)) {
         throw new NoSuchElementException(this.disk_index.toString());
       }
 
-      final CatalogDisk disk = disks.get(id);
-      final CatalogVerificationReportSettings settings =
+      final var disk = disks.get(id);
+      final var settings =
         CatalogVerificationReportSettings.builder()
           .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
           .build();
@@ -136,38 +129,31 @@ public final class CommandVerifyDisk extends CommandBase
         disk, settings, root_path, new VerificationListener(status));
 
     } catch (final NoSuchElementException e) {
-      CommandVerifyDisk.LOG.error(
+      LOG.error(
         "No such disk with index: {}", e.getMessage());
       if (this.isDebug()) {
-        CommandVerifyDisk.LOG.error("Exception trace: ", e);
-      }
-      status.set(1);
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
-      CommandVerifyDisk.LOG.error(
-        "Catalog error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        CommandVerifyDisk.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status.set(1);
     } catch (final CatalogJSONParseException e) {
-      CommandVerifyDisk.LOG.error(
+      LOG.error(
         "JSON parse error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandVerifyDisk.LOG.error("Exception trace: ", e);
-      }
-      status.set(1);
-    } catch (final IOException e) {
-      CommandVerifyDisk.LOG.error(
-        "I/O error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        CommandVerifyDisk.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status.set(1);
     } catch (final CatalogException e) {
-      CommandVerifyDisk.LOG.error(
+      LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandVerifyDisk.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
+      }
+      status.set(1);
+    } catch (final IOException e) {
+      LOG.error(
+        "I/O error: {}: {}", e.getClass(), e.getMessage());
+      if (this.isDebug()) {
+        LOG.error("Exception trace: ", e);
       }
       status.set(1);
     }

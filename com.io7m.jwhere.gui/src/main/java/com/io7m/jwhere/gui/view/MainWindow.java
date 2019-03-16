@@ -41,7 +41,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -83,20 +82,20 @@ public final class MainWindow extends JFrame
 
     this.controller = Objects.requireNonNull(in_controller, "in_controller");
 
-    /**
+    /*
      * Create status bar.
      */
 
     this.status = new StatusBar(in_controller);
-    final Container pane = this.getContentPane();
+    final var pane = this.getContentPane();
     pane.setLayout(new BorderLayout());
     pane.add(this.status, BorderLayout.SOUTH);
 
-    /**
+    /*
      * Tabs.
      */
 
-    final JTabbedPane tabs = new JTabbedPane();
+    final var tabs = new JTabbedPane();
     this.tab_catalog = new CatalogTab(this, this.status, this.controller);
     this.tab_search = new SearchTab(this.controller);
     this.tab_tasks = new TasksTab(this.controller);
@@ -107,7 +106,7 @@ public final class MainWindow extends JFrame
     tabs.add("Verify", this.tab_verify);
     pane.add(tabs, BorderLayout.CENTER);
 
-    /**
+    /*
      * Set the window title and arrange to set it every time the unsaved
      * state of the catalog changes.
      */
@@ -117,14 +116,14 @@ public final class MainWindow extends JFrame
       c -> SwingUtilities.invokeLater(() -> this.setTitle(this.makeTitle(c))));
 
     this.setMinimumSize(new Dimension(640, 480));
-    this.setJMenuBar(MainWindow.makeMenu(this, this.status, in_controller));
+    this.setJMenuBar(makeMenu(this, this.status, in_controller));
     this.addWindowListener(
       new WindowAdapter()
       {
         @Override
         public void windowClosing(final WindowEvent e)
         {
-          MainWindow.onActionExit(
+          onActionExit(
             MainWindow.this,
             MainWindow.this.status,
             MainWindow.this.controller);
@@ -137,9 +136,9 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final JMenuBar bar = new JMenuBar();
-    final JMenu file = MainWindow.makeMenuFile(window, status, controller);
-    final JMenu edit = MainWindow.makeMenuEdit(window, status, controller);
+    final var bar = new JMenuBar();
+    final var file = makeMenuFile(window, status, controller);
+    final var edit = makeMenuEdit(window, status, controller);
     bar.add(file);
     bar.add(edit);
     return bar;
@@ -150,14 +149,14 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final JMenuItem edit_undo = new JMenuItem("Undo");
+    final var edit_undo = new JMenuItem("Undo");
     edit_undo.setMnemonic('U');
     edit_undo.addActionListener((e) -> controller.catalogUndo());
     edit_undo.setAccelerator(
       KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
     edit_undo.setModel(new UndoButtonModel(controller));
 
-    final JMenuItem edit_redo = new JMenuItem("Redo");
+    final var edit_redo = new JMenuItem("Redo");
     edit_redo.setMnemonic('R');
     edit_redo.addActionListener((e) -> controller.catalogRedo());
     edit_redo.setAccelerator(
@@ -165,7 +164,7 @@ public final class MainWindow extends JFrame
         KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
     edit_redo.setModel(new RedoButtonModel(controller));
 
-    final JMenu edit = new JMenu("Edit");
+    final var edit = new JMenu("Edit");
     edit.setMnemonic('E');
     edit.add(edit_undo);
     edit.add(edit_redo);
@@ -178,42 +177,42 @@ public final class MainWindow extends JFrame
     final StatusBar status,
     final ControllerType controller)
   {
-    final JMenuItem file_new = new JMenuItem("New");
+    final var file_new = new JMenuItem("New");
     file_new.setMnemonic('N');
     file_new.setAccelerator(
       KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
 
-    final JMenuItem file_open = new JMenuItem("Open...");
+    final var file_open = new JMenuItem("Open...");
     file_open.setMnemonic('O');
     file_open.setAccelerator(
       KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
     file_open.addActionListener(
-      e -> MainWindow.onActionCatalogSaveOpen(window, status, controller));
+      e -> onActionCatalogSaveOpen(window, status, controller));
 
-    final JMenuItem file_save = new JMenuItem("Save");
+    final var file_save = new JMenuItem("Save");
     file_save.setMnemonic('S');
     file_save.setAccelerator(
       KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
     file_save.addActionListener(
-      (e) -> MainWindow.onActionCatalogSave(window, status, controller));
+      (e) -> onActionCatalogSave(window, status, controller));
     file_save.setModel(new UnsavedButtonModel(controller));
 
-    final JMenuItem file_save_as = new JMenuItem("Save as...");
+    final var file_save_as = new JMenuItem("Save as...");
     file_save_as.addActionListener(
-      (e) -> MainWindow.onActionCatalogSaveAs(window, status, controller));
+      (e) -> onActionCatalogSaveAs(window, status, controller));
 
-    final JMenuItem file_close = new JMenuItem("Close");
+    final var file_close = new JMenuItem("Close");
     file_close.addActionListener(
-      (e) -> MainWindow.onActionCatalogClose(window, status, controller));
+      (e) -> onActionCatalogClose(window, status, controller));
 
-    final JMenuItem file_exit = new JMenuItem("Exit");
+    final var file_exit = new JMenuItem("Exit");
     file_exit.setMnemonic('X');
     file_exit.setAccelerator(
       KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
     file_exit.addActionListener(
-      (e) -> MainWindow.onActionExit(window, status, controller));
+      (e) -> onActionExit(window, status, controller));
 
-    final JMenu file = new JMenu("File");
+    final var file = new JMenu("File");
     file.setMnemonic('F');
     file.add(file_new);
     file.add(file_open);
@@ -234,9 +233,9 @@ public final class MainWindow extends JFrame
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
       (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
+      on_want_save_file = (x) -> onWantSaveFile(window);
 
-    /**
+    /*
      * Evaluated when saving starts.
      */
 
@@ -245,19 +244,19 @@ public final class MainWindow extends JFrame
       status.onInfoLater("Exiting...");
     };
 
-    /**
+    /*
      * Evaluated when closing/saving is finished.
      */
 
     final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
-        final Throwable ex = ex_opt.get();
-        MainWindow.LOG.error("closing/saving failed: ", ex);
+        final var ex = ex_opt.get();
+        LOG.error("closing/saving failed: ", ex);
         status.onErrorLater("Closing failed!");
         status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
       } else {
-        MainWindow.LOG.debug("closing/saving finished");
+        LOG.debug("closing/saving finished");
         controller.programExit(0);
       }
     };
@@ -274,11 +273,11 @@ public final class MainWindow extends JFrame
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
       (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
+      on_want_save_file = (x) -> onWantSaveFile(window);
     final FunctionType<Unit, Optional<Path>> on_want_open_file =
-      (x) -> MainWindow.onWantOpenFile(window);
+      (x) -> onWantOpenFile(window);
 
-    /**
+    /*
      * Evaluated when saving/loading starts.
      */
 
@@ -287,14 +286,14 @@ public final class MainWindow extends JFrame
       status.onInfoLater("Loading...");
     };
 
-    /**
+    /*
      * Evaluated when saving/loading is finished.
      */
 
     final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
-        final Throwable ex = ex_opt.get();
-        MainWindow.LOG.error("loading/saving failed: ", ex);
+        final var ex = ex_opt.get();
+        LOG.error("loading/saving failed: ", ex);
         status.onErrorLater("Load failed!");
         status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
@@ -318,9 +317,9 @@ public final class MainWindow extends JFrame
     final ControllerType controller)
   {
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
+      on_want_save_file = (x) -> onWantSaveFile(window);
 
-    /**
+    /*
      * Evaluated when closing/saving starts.
      */
 
@@ -329,14 +328,14 @@ public final class MainWindow extends JFrame
       status.onInfoLater("Saving...");
     };
 
-    /**
+    /*
      * Evaluated when closing/saving is finished.
      */
 
     final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
-        final Throwable ex = ex_opt.get();
-        MainWindow.LOG.error("saving failed: ", ex);
+        final var ex = ex_opt.get();
+        LOG.error("saving failed: ", ex);
         status.onErrorLater("Save failed!");
         status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
@@ -356,9 +355,9 @@ public final class MainWindow extends JFrame
     final ControllerType controller)
   {
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
+      on_want_save_file = (x) -> onWantSaveFile(window);
 
-    /**
+    /*
      * Evaluated when closing/saving starts.
      */
 
@@ -367,14 +366,14 @@ public final class MainWindow extends JFrame
       status.onInfoLater("Saving...");
     };
 
-    /**
+    /*
      * Evaluated when closing/saving is finished.
      */
 
     final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
-        final Throwable ex = ex_opt.get();
-        MainWindow.LOG.error("saving failed: ", ex);
+        final var ex = ex_opt.get();
+        LOG.error("saving failed: ", ex);
         status.onErrorLater("Save failed!");
         status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
@@ -396,9 +395,9 @@ public final class MainWindow extends JFrame
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes =
       (x) -> UnsavedChangesDialog.showUnsavedChangesDialog(window);
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
-      on_want_save_file = (x) -> MainWindow.onWantSaveFile(window);
+      on_want_save_file = (x) -> onWantSaveFile(window);
 
-    /**
+    /*
      * Evaluated when closing/saving starts.
      */
 
@@ -407,14 +406,14 @@ public final class MainWindow extends JFrame
       status.onInfoLater("Closing...");
     };
 
-    /**
+    /*
      * Evaluated when closing/saving is finished.
      */
 
     final ProcedureType<Optional<Throwable>> on_finish_io = (ex_opt) -> {
       if (ex_opt.isPresent()) {
-        final Throwable ex = ex_opt.get();
-        MainWindow.LOG.error("closing/saving failed: ", ex);
+        final var ex = ex_opt.get();
+        LOG.error("closing/saving failed: ", ex);
         status.onErrorLater("Closing failed!");
         status.onProgressIndeterminateFinishLater();
         ErrorBox.showErrorLater(ex);
@@ -436,14 +435,14 @@ public final class MainWindow extends JFrame
   private static Optional<Path> onWantOpenFile(final JFrame window)
   {
     final Optional<Path> r_path;
-    final JFileChooser chooser = new JFileChooser();
+    final var chooser = new JFileChooser();
     final FileFilter filter = new CatalogFileFilter();
     chooser.addChoosableFileFilter(filter);
     chooser.setFileFilter(filter);
-    final int r = chooser.showOpenDialog(window);
+    final var r = chooser.showOpenDialog(window);
     if (r == JFileChooser.APPROVE_OPTION) {
-      final File file = chooser.getSelectedFile();
-      MainWindow.LOG.debug("open: selected {}", file);
+      final var file = chooser.getSelectedFile();
+      LOG.debug("open: selected {}", file);
       r_path = Optional.of(file.toPath());
     } else {
       r_path = Optional.empty();
@@ -459,18 +458,18 @@ public final class MainWindow extends JFrame
   private static Optional<CatalogSaveSpecification> onWantSaveFile(
     final JFrame window)
   {
-    final SaveSpecificationPanel spec_panel = new SaveSpecificationPanel();
+    final var spec_panel = new SaveSpecificationPanel();
     final Optional<CatalogSaveSpecification> r_path;
-    final JFileChooser chooser = new JFileChooser();
+    final var chooser = new JFileChooser();
     final FileFilter filter = new CatalogFileFilter();
     chooser.addChoosableFileFilter(filter);
     chooser.setFileFilter(filter);
     chooser.setAccessory(spec_panel);
 
-    final int r = chooser.showSaveDialog(window);
+    final var r = chooser.showSaveDialog(window);
     if (r == JFileChooser.APPROVE_OPTION) {
-      final File file = chooser.getSelectedFile();
-      final boolean compress = spec_panel.isCompressSelected();
+      final var file = chooser.getSelectedFile();
+      final var compress = spec_panel.isCompressSelected();
       final CatalogSaveSpecification spec;
       if (compress) {
         spec =
@@ -486,7 +485,7 @@ public final class MainWindow extends JFrame
             .build();
       }
 
-      MainWindow.LOG.debug("save: selected {}", spec);
+      LOG.debug("save: selected {}", spec);
       r_path = Optional.of(spec);
     } else {
       r_path = Optional.empty();
@@ -497,8 +496,8 @@ public final class MainWindow extends JFrame
 
   private String makeTitle(final UnsavedChanges c)
   {
-    final Package p = this.getClass().getPackage();
-    final StringBuilder sb = new StringBuilder(64);
+    final var p = this.getClass().getPackage();
+    final var sb = new StringBuilder(64);
     sb.append(p.getImplementationTitle());
     sb.append(" ");
     sb.append(p.getImplementationVersion());
@@ -521,7 +520,7 @@ public final class MainWindow extends JFrame
       this.compress = new JCheckBox();
       this.compress.setSelected(true);
 
-      final DesignGridLayout dg = new DesignGridLayout(this);
+      final var dg = new DesignGridLayout(this);
       dg.row().grid(new JLabel("Compress")).add(this.compress);
     }
 
@@ -541,8 +540,8 @@ public final class MainWindow extends JFrame
     @Override
     public boolean accept(final File f)
     {
-      final String name = f.getName();
-      final boolean likely_file =
+      final var name = f.getName();
+      final var likely_file =
         f.isFile() && name.endsWith(".jcz") || name.endsWith(".jcz");
       return f.isDirectory() || likely_file;
     }

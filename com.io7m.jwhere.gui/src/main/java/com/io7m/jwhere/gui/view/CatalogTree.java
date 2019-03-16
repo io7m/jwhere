@@ -70,10 +70,10 @@ final class CatalogTree extends JTree
       Preconditions.checkPreconditionV(
         value instanceof DefaultMutableTreeNode,
         "value instanceof DefaultMutableTreeNode");
-      final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-      final Object node_value = node.getUserObject();
+      final var node = (DefaultMutableTreeNode) value;
+      final var node_value = node.getUserObject();
 
-      CatalogTree.LOG.debug("selected: {}", node_value.getClass());
+      LOG.debug("selected: {}", node_value.getClass());
 
       if (node_value instanceof CatalogRootType) {
         this.setIcon(Icons.getCatalogIcon16());
@@ -81,7 +81,7 @@ final class CatalogTree extends JTree
       }
 
       if (node_value instanceof CatalogDiskMetadata) {
-        final CatalogDiskMetadata disk_meta = (CatalogDiskMetadata) node_value;
+        final var disk_meta = (CatalogDiskMetadata) node_value;
         this.setIcon(CatalogDiskIcons.getIconForDisk(disk_meta));
         this.setText(disk_meta.getDiskName().value());
       }

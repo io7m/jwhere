@@ -19,7 +19,6 @@ package com.io7m.jwhere.gui.model;
 import com.io7m.jaffirm.core.Preconditions;
 
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -76,7 +75,7 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
       this.size() > 1,
       "Stack must have more than one element to pop and remain non-empty");
 
-    final T old_top = this.top;
+    final var old_top = this.top;
     this.top = this.stack.pop();
     return old_top;
   }
@@ -98,11 +97,11 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     if (this == o) {
       return true;
     }
-    if (o == null || this.getClass() != o.getClass()) {
+    if (o == null || !Objects.equals(this.getClass(), o.getClass())) {
       return false;
     }
 
-    final MutableBoundedNonEmptyDiscardStack<?> that =
+    final var that =
       (MutableBoundedNonEmptyDiscardStack<?>) o;
 
     if (this.bound != that.bound) {
@@ -113,15 +112,15 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     }
 
     {
-      final Iterator<T> i0 = this.stack.iterator();
-      final Iterator<?> i1 = that.stack.iterator();
+      final var i0 = this.stack.iterator();
+      final var i1 = that.stack.iterator();
 
       while (i0.hasNext()) {
         if (!i1.hasNext()) {
           return false;
         }
-        final T x = i0.next();
-        final Object y = i1.next();
+        final var x = i0.next();
+        final var y = i1.next();
         if (!x.equals(y)) {
           return false;
         }
@@ -134,7 +133,7 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
   @Override
   public int hashCode()
   {
-    int result = this.hashStack();
+    var result = this.hashStack();
     result = 31 * result + this.bound;
     result = 31 * result + this.top.hashCode();
     return result;
@@ -142,10 +141,10 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
 
   private int hashStack()
   {
-    int hash = 17;
-    final Iterator<T> i0 = this.stack.iterator();
+    var hash = 17;
+    final var i0 = this.stack.iterator();
     while (i0.hasNext()) {
-      final T x = i0.next();
+      final var x = i0.next();
       hash = hash + x.hashCode();
     }
     return hash;

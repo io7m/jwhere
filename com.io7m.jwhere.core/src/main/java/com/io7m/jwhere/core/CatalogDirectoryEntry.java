@@ -78,7 +78,7 @@ public final class CatalogDirectoryEntry
   @Override
   public String toString()
   {
-    final StringBuilder sb = new StringBuilder("CatalogDirectoryEntry{");
+    final var sb = new StringBuilder("CatalogDirectoryEntry{");
     sb.append("name='").append(this.name).append('\'');
     sb.append(", source=").append(this.source);
     sb.append(", target=").append(this.target);
@@ -101,11 +101,11 @@ public final class CatalogDirectoryEntry
     if (this == o) {
       return true;
     }
-    if (o == null || this.getClass() != o.getClass()) {
+    if (o == null || !Objects.equals(this.getClass(), o.getClass())) {
       return false;
     }
 
-    final CatalogDirectoryEntry that = (CatalogDirectoryEntry) o;
+    final var that = (CatalogDirectoryEntry) o;
     return this.source.equals(that.source)
       && this.name.equals(that.name)
       && this.target.equals(that.target);
@@ -114,7 +114,7 @@ public final class CatalogDirectoryEntry
   @Override
   public int hashCode()
   {
-    int result = this.source.hashCode();
+    var result = this.source.hashCode();
     result = 31 * result + this.name.hashCode();
     result = 31 * result + this.target.hashCode();
     return result;

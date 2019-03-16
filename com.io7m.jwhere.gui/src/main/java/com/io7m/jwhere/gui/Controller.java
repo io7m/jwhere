@@ -76,7 +76,7 @@ public final class Controller implements ControllerType
     this.model = Objects.requireNonNull(in_model, "in_model");
     this.exec = Executors.newSingleThreadExecutor(
       r -> {
-        final Thread thread = new Thread(r);
+        final var thread = new Thread(r);
         thread.setName("controller-task");
         thread.setPriority(Thread.MIN_PRIORITY);
         return thread;
@@ -120,13 +120,13 @@ public final class Controller implements ControllerType
     final Runnable on_start_io,
     final ProcedureType<Optional<Throwable>> on_finish_io)
   {
-    /**
+    /*
      * Check to see if saving is desired, or if the whole thing should be
      * aborted.
      */
 
     Optional<CatalogSaveSpecification> save_file = Optional.empty();
-    boolean cancel = false;
+    var cancel = false;
 
     try {
       save_file = this.getSaveFileForUnsavedChanges(
@@ -135,10 +135,10 @@ public final class Controller implements ControllerType
       cancel = true;
     }
 
-    final Optional<CatalogSaveSpecification> save_file_last = save_file;
+    final var save_file_last = save_file;
 
     if (!cancel) {
-      final Optional<Path> open_file = on_open_file.call(Unit.unit());
+      final var open_file = on_open_file.call(Unit.unit());
       if (open_file.isPresent()) {
         this.taskSubmit(
           "Open catalog", CompletableFuture.supplyAsync(
@@ -156,10 +156,10 @@ public final class Controller implements ControllerType
             }, this.exec).whenComplete(
             (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
       } else {
-        Controller.LOG.debug("cancelled open explicitly");
+        LOG.debug("cancelled open explicitly");
       }
     } else {
-      Controller.LOG.debug("cancelled open via save");
+      LOG.debug("cancelled open via save");
     }
   }
 
@@ -180,15 +180,15 @@ public final class Controller implements ControllerType
       case UNSAVED_CHANGES:
         switch (on_unsaved_changes.call(Unit.unit())) {
           case UNSAVED_CHANGES_DISCARD: {
-            Controller.LOG.debug("discarding unsaved changes");
+            LOG.debug("discarding unsaved changes");
             return Optional.empty();
           }
           case UNSAVED_CHANGES_CANCEL: {
-            Controller.LOG.debug("cancelling");
+            LOG.debug("cancelling");
             throw new CancellationException();
           }
           case UNSAVED_CHANGES_SAVE: {
-            Controller.LOG.debug("user wants to save changes");
+            LOG.debug("user wants to save changes");
             return this.getSaveFile(on_want_save_file);
           }
         }
@@ -207,20 +207,20 @@ public final class Controller implements ControllerType
       on_want_save_file)
     throws CancellationException
   {
-    final Optional<CatalogSaveSpecification> file_opt =
+    final var file_opt =
       this.model.getCatalogSaveSpecification();
     if (file_opt.isPresent()) {
-      Controller.LOG.debug("using existing file name");
+      LOG.debug("using existing file name");
       return file_opt;
     } else {
-      Controller.LOG.debug("no save file specified, asking user");
-      final Optional<CatalogSaveSpecification> save_opt =
+      LOG.debug("no save file specified, asking user");
+      final var save_opt =
         on_want_save_file.call(Unit.unit());
       if (save_opt.isPresent()) {
-        Controller.LOG.debug("provided save file");
+        LOG.debug("provided save file");
         return save_opt;
       } else {
-        Controller.LOG.debug("no save file specified, aborting");
+        LOG.debug("no save file specified, aborting");
         throw new CancellationException();
       }
     }
@@ -234,13 +234,13 @@ public final class Controller implements ControllerType
     final Runnable on_start_io,
     final ProcedureType<Optional<Throwable>> on_finish_io)
   {
-    /**
+    /*
      * Check to see if saving is desired, or if the whole thing should be
      * aborted.
      */
 
     Optional<CatalogSaveSpecification> save_file = Optional.empty();
-    boolean cancel = false;
+    var cancel = false;
 
     try {
       save_file = this.getSaveFileForUnsavedChanges(
@@ -249,7 +249,7 @@ public final class Controller implements ControllerType
       cancel = true;
     }
 
-    final Optional<CatalogSaveSpecification> save_file_opt = save_file;
+    final var save_file_opt = save_file;
     if (!cancel) {
       this.taskSubmit(
         "Close catalog", CompletableFuture.supplyAsync(
@@ -267,14 +267,14 @@ public final class Controller implements ControllerType
           }, this.exec).whenComplete(
           (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
     } else {
-      Controller.LOG.debug("aborting close");
+      LOG.debug("aborting close");
     }
   }
 
   @Override
   public void programExit(final int status)
   {
-    Controller.LOG.debug("exiting");
+    LOG.debug("exiting");
     System.exit(status);
   }
 
@@ -286,7 +286,7 @@ public final class Controller implements ControllerType
     final ProcedureType<Optional<Throwable>> on_finish_io)
   {
     try {
-      final Optional<CatalogSaveSpecification> save_file =
+      final var save_file =
         this.getSaveFile(on_want_save_file);
       this.taskSubmit(
         "Save catalog", CompletableFuture.supplyAsync(
@@ -303,7 +303,7 @@ public final class Controller implements ControllerType
           }, this.exec).whenComplete(
           (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
     } catch (final CancellationException ex) {
-      Controller.LOG.debug("aborting save");
+      LOG.debug("aborting save");
     }
   }
 
@@ -315,24 +315,22 @@ public final class Controller implements ControllerType
     final ProcedureType<Optional<Throwable>> on_finish_io)
   {
     try {
-      final Optional<CatalogSaveSpecification> save_file =
+      final var save_file =
         on_want_save_file.call(Unit.unit());
-      if (save_file.isPresent()) {
-        this.taskSubmit(
-          "Save catalog", CompletableFuture.supplyAsync(
-            () -> {
-              try {
-                on_start_io.run();
-                this.model.catalogSave(save_file.get());
-                return Unit.unit();
-              } catch (IOException e) {
-                throw new IOError(e);
-              }
-            }, this.exec).whenComplete(
-            (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
-      }
+      save_file.ifPresent(catalogSaveSpecification -> this.taskSubmit(
+        "Save catalog", CompletableFuture.supplyAsync(
+          () -> {
+            try {
+              on_start_io.run();
+              this.model.catalogSave(catalogSaveSpecification);
+              return Unit.unit();
+            } catch (IOException e) {
+              throw new IOError(e);
+            }
+          }, this.exec).whenComplete(
+          (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex)))));
     } catch (final CancellationException ex) {
-      Controller.LOG.debug("aborting save");
+      LOG.debug("aborting save");
     }
   }
 
@@ -467,10 +465,10 @@ public final class Controller implements ControllerType
     final CompletableFuture<?> f)
   {
     synchronized (this.tasks) {
-      final long id = this.task_ids.incrementAndGet();
-      final CatalogTask task = new CatalogTask(f, Long.valueOf(id), name);
-      final Long xid = Long.valueOf(id);
-      Controller.LOG.debug("submitted task {}: {}", xid, name);
+      final var id = this.task_ids.incrementAndGet();
+      final var task = new CatalogTask(f, Long.valueOf(id), name);
+      final var xid = Long.valueOf(id);
+      LOG.debug("submitted task {}: {}", xid, name);
       this.tasks.put(xid, task);
       this.tasks_list_model.addElement(task);
       f.whenComplete((x, ex) -> this.taskFinish(xid));
@@ -481,12 +479,12 @@ public final class Controller implements ControllerType
   private void taskFinish(final Long xid)
   {
     synchronized (this.tasks) {
-      final CatalogTask r = this.tasks.remove(xid);
+      final var r = this.tasks.remove(xid);
       if (r != null) {
-        Controller.LOG.debug("removed task: {}", r);
+        LOG.debug("removed task: {}", r);
         this.tasks_list_model.removeElement(r);
       } else {
-        Controller.LOG.debug("failed to remove nonexistent task: {}", xid);
+        LOG.debug("failed to remove nonexistent task: {}", xid);
       }
     }
   }

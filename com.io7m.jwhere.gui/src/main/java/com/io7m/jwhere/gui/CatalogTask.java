@@ -69,7 +69,7 @@ public final class CatalogTask
   @Override
   public String toString()
   {
-    final StringBuilder sb = new StringBuilder("Task{");
+    final var sb = new StringBuilder("Task{");
     sb.append("id=").append(this.id);
     sb.append(", name='").append(this.name).append('\'');
     sb.append('}');

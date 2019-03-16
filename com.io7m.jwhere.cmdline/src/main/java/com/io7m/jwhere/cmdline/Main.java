@@ -51,7 +51,7 @@ public final class Main
 
   public static void main(final String[] args)
   {
-    Main.run(args);
+    run(args);
   }
 
   private static int run(final String[] args)
@@ -66,7 +66,7 @@ public final class Main
     builder.withCommand(CommandVerifyDisk.class);
     builder.withCommand(CommandImportGWhere.class);
     builder.withCommand(Help.class);
-    final Cli<Runnable> parser = builder.build();
+    final var parser = builder.build();
 
     try {
       parser.parse(args).run();
@@ -74,7 +74,7 @@ public final class Main
     } catch (final ParseArgumentsMissingException
       | ParseOptionMissingException
       | ParseArgumentsUnexpectedException e) {
-      Main.LOG.error("Parse error: {}", e.getMessage());
+      LOG.error("Parse error: {}", e.getMessage());
       Help.help(parser.getMetadata(), Collections.emptyList());
       return 1;
     }

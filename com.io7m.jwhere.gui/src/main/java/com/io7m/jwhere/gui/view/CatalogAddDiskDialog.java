@@ -30,8 +30,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import java.math.BigInteger;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,43 +53,43 @@ final class CatalogAddDiskDialog extends JDialog
 
     this.setModalityType(ModalityType.APPLICATION_MODAL);
 
-    final JTextField disk_name = new JTextField();
+    final var disk_name = new JTextField();
 
-    final BigIntegerTextField disk_id = new BigIntegerTextField();
+    final var disk_id = new BigIntegerTextField();
     disk_id.setText(controller.catalogGetFreshDiskID().toString());
 
-    final JTextField disk_root = new JTextField(32);
+    final var disk_root = new JTextField(32);
 
-    final JButton disk_root_open = new JButton("Open...");
+    final var disk_root_open = new JButton("Open...");
     disk_root_open.addActionListener(
       e -> {
-        final JFileChooser chooser = new JFileChooser();
+        final var chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        final int r = chooser.showOpenDialog(this);
+        final var r = chooser.showOpenDialog(this);
         if (r == JFileChooser.APPROVE_OPTION) {
           disk_root.setText(chooser.getSelectedFile().toString());
         }
       });
 
-    final JButton cancel = new JButton("Cancel");
+    final var cancel = new JButton("Cancel");
     cancel.addActionListener(e -> WindowUtilities.closeDialog(this));
 
-    final JButton add = new JButton("Add");
+    final var add = new JButton("Add");
     add.addActionListener(
       e -> {
-        final Optional<BigInteger> id_opt = disk_id.getBigInteger();
+        final var id_opt = disk_id.getBigInteger();
         if (id_opt.isPresent()) {
-          final CatalogDiskID new_id = CatalogDiskID.of(id_opt.get());
-          final CatalogDiskName new_name =
+          final var new_id = CatalogDiskID.of(id_opt.get());
+          final var new_name =
             CatalogDiskName.of(disk_name.getText());
-          final Path new_path = Paths.get(disk_root.getText());
+          final var new_path = Paths.get(disk_root.getText());
 
           final ProcedureType<Optional<Throwable>> on_finish_io = ex_opt -> {
             if (ex_opt.isPresent()) {
-              final Throwable ex = ex_opt.get();
+              final var ex = ex_opt.get();
               status.onErrorLater("Adding disk failed!");
               status.onProgressIndeterminateFinishLater();
-              CatalogAddDiskDialog.LOG.error(
+              LOG.error(
                 "Failed to add disk: ", ex);
               ErrorBox.showErrorLater(ex);
             } else {
@@ -111,7 +109,7 @@ final class CatalogAddDiskDialog extends JDialog
         }
       });
 
-    final DesignGridLayout dg = new DesignGridLayout(this.getContentPane());
+    final var dg = new DesignGridLayout(this.getContentPane());
     dg.row().grid(new JLabel("Disk Name")).add(disk_name);
     dg.row().grid(new JLabel("Disk ID")).add(disk_id);
     dg.row().grid(new JLabel("Root Directory")).add(disk_root, 3).add(

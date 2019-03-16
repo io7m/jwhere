@@ -16,14 +16,11 @@
 
 package com.io7m.jwhere.cmdline;
 
-import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
-import com.io7m.jwhere.core.CatalogJSONSerializerType;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gwhere.GWhereParser;
-import com.io7m.jwhere.gwhere.GWhereParserType;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -31,9 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -91,21 +86,21 @@ public final class CommandImportGWhere extends CommandBase
   {
     super.setup();
 
-    int status = 0;
+    var status = 0;
 
     try {
-      CommandImportGWhere.LOG.debug("Catalog output {}", this.catalog_out);
-      CommandImportGWhere.LOG.debug("GWhere {}", this.gwhere);
+      LOG.debug("Catalog output {}", this.catalog_out);
+      LOG.debug("GWhere {}", this.gwhere);
 
-      final Path catalog_gw_path = new File(this.gwhere).toPath();
-      final Path catalog_out_path = new File(this.catalog_out).toPath();
+      final var catalog_gw_path = new File(this.gwhere).toPath();
+      final var catalog_out_path = new File(this.catalog_out).toPath();
 
-      final Path gp = catalog_gw_path;
-      try (InputStream is = Files.newInputStream(gp)) {
-        try (GZIPInputStream z = new GZIPInputStream(is)) {
-          final GWhereParserType gwp = GWhereParser.newParser(z);
-          final Catalog c = gwp.parseCatalog();
-          final CatalogJSONSerializerType s =
+      final var gp = catalog_gw_path;
+      try (var is = Files.newInputStream(gp)) {
+        try (var z = new GZIPInputStream(is)) {
+          final var gwp = GWhereParser.newParser(z);
+          final var c = gwp.parseCatalog();
+          final var s =
             CatalogJSONSerializer.newSerializer();
           s.serializeCatalogToPath(
             c,
@@ -117,17 +112,17 @@ public final class CommandImportGWhere extends CommandBase
       }
 
     } catch (final IOException e) {
-      CommandImportGWhere.LOG.error(
+      LOG.error(
         "I/O error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandImportGWhere.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     } catch (final CatalogException e) {
-      CommandImportGWhere.LOG.error(
+      LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandImportGWhere.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     }

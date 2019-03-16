@@ -16,17 +16,12 @@
 
 package com.io7m.jwhere.cmdline;
 
-import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogCompress;
-import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskNonexistentException;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParser;
-import com.io7m.jwhere.core.CatalogJSONParserType;
-import com.io7m.jwhere.core.CatalogNodeException;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
@@ -36,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Path;
-import java.util.SortedMap;
 
 /**
  * A command to remove a disk from a catalog.
@@ -103,21 +96,21 @@ public final class CommandRemoveDisk extends CommandBase
   {
     super.setup();
 
-    int status = 0;
+    var status = 0;
 
     try {
-      CommandRemoveDisk.LOG.debug("Index {}", this.disk_index);
-      CommandRemoveDisk.LOG.debug("Catalog input {}", this.catalog_in);
-      CommandRemoveDisk.LOG.debug("Catalog output {}", this.catalog_out);
+      LOG.debug("Index {}", this.disk_index);
+      LOG.debug("Catalog input {}", this.catalog_in);
+      LOG.debug("Catalog output {}", this.catalog_out);
 
-      final CatalogJSONParserType p = CatalogJSONParser.newParser();
-      final Path catalog_in_path = new File(this.catalog_in).toPath();
-      final Path catalog_out_path = new File(this.catalog_out).toPath();
+      final var p = CatalogJSONParser.newParser();
+      final var catalog_in_path = new File(this.catalog_in).toPath();
+      final var catalog_out_path = new File(this.catalog_out).toPath();
 
-      CommandRemoveDisk.LOG.debug("Opening {}", catalog_in_path);
-      final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
-      final CatalogDiskID id = CatalogDiskID.of(this.disk_index);
+      LOG.debug("Opening {}", catalog_in_path);
+      final var c = CommandBase.openCatalogForReading(p, catalog_in_path);
+      final var disks = c.getDisks();
+      final var id = CatalogDiskID.of(this.disk_index);
       if (!disks.containsKey(id)) {
         throw new CatalogDiskNonexistentException(
           String.format(
@@ -131,32 +124,25 @@ public final class CommandRemoveDisk extends CommandBase
           .setPath(catalog_out_path)
           .build());
 
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
-      CommandRemoveDisk.LOG.error(
-        "Catalog error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        CommandRemoveDisk.LOG.error("Exception trace: ", e);
-      }
-      status = 1;
     } catch (final CatalogJSONParseException e) {
-      CommandRemoveDisk.LOG.error(
+      LOG.error(
         "JSON parse error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandRemoveDisk.LOG.error("Exception trace: ", e);
-      }
-      status = 1;
-    } catch (final IOException e) {
-      CommandRemoveDisk.LOG.error(
-        "I/O error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        CommandRemoveDisk.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     } catch (final CatalogException e) {
-      CommandRemoveDisk.LOG.error(
+      LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandRemoveDisk.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
+      }
+      status = 1;
+    } catch (final IOException e) {
+      LOG.error(
+        "I/O error: {}: {}", e.getClass(), e.getMessage());
+      if (this.isDebug()) {
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     }

@@ -75,11 +75,11 @@ public final class CatalogDiskMetadata
     if (this == o) {
       return true;
     }
-    if (o == null || this.getClass() != o.getClass()) {
+    if (o == null || !Objects.equals(this.getClass(), o.getClass())) {
       return false;
     }
 
-    final CatalogDiskMetadata that = (CatalogDiskMetadata) o;
+    final var that = (CatalogDiskMetadata) o;
     return this.disk_name.equals(that.disk_name)
       && this.fs_type.equals(that.fs_type)
       && this.index.equals(that.index)
@@ -89,7 +89,7 @@ public final class CatalogDiskMetadata
   @Override
   public String toString()
   {
-    final StringBuilder sb = new StringBuilder("CatalogDiskMetadata{");
+    final var sb = new StringBuilder("CatalogDiskMetadata{");
     sb.append("disk_name=").append(this.disk_name);
     sb.append(", fs_type='").append(this.fs_type).append('\'');
     sb.append(", index=").append(this.index);
@@ -101,7 +101,7 @@ public final class CatalogDiskMetadata
   @Override
   public int hashCode()
   {
-    int result = this.disk_name.hashCode();
+    var result = this.disk_name.hashCode();
     result = 31 * result + this.fs_type.hashCode();
     result = 31 * result + this.index.hashCode();
     result = 31 * result + this.getSize().hashCode();

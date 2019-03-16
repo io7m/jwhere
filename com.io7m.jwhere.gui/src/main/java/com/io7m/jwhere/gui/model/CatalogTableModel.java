@@ -18,13 +18,9 @@ package com.io7m.jwhere.gui.model;
 
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskMetadata;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Objects;
-import java.util.SortedMap;
 import java.util.function.Supplier;
 
 /**
@@ -53,7 +49,7 @@ final class CatalogTableModel extends AbstractTableModel
     final Object c,
     final int col)
   {
-    final Class<?> type = CatalogTableModelField.values()[col].getType();
+    final var type = CatalogTableModelField.values()[col].getType();
     Preconditions.checkPreconditionV(
       type.isInstance(c), "%s must be an instance of %s", c.getClass(), type);
     return c;
@@ -96,8 +92,8 @@ final class CatalogTableModel extends AbstractTableModel
     final int row,
     final int col)
   {
-    final CatalogState state = this.state_get.get();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks =
+    final var state = this.state_get.get();
+    final var disks =
       state.getCatalog().getDisks();
 
     Preconditions.checkPreconditionV(row >= 0, "row >= 0");
@@ -107,22 +103,22 @@ final class CatalogTableModel extends AbstractTableModel
       col < CatalogTableModelField.values().length,
       "col < CatalogTableModelField.values().length");
 
-    final CatalogDiskID disk_index = state.getCatalogDiskAt(row);
+    final var disk_index = state.getCatalogDiskAt(row);
     Preconditions.checkPreconditionV(
       disks.containsKey(disk_index),
       "disks.containsKey(disk_index)");
-    final CatalogDisk disk = disks.get(disk_index);
-    final CatalogDiskMetadata meta = disk.getMeta();
+    final var disk = disks.get(disk_index);
+    final var meta = disk.getMeta();
 
     switch (CatalogTableModelField.values()[col]) {
       case NAME:
-        return CatalogTableModel.check(meta, col);
+        return check(meta, col);
       case ARCHIVE_NUMBER:
-        return CatalogTableModel.check(meta.getDiskID(), col);
+        return check(meta.getDiskID(), col);
       case FILESYSTEM:
-        return CatalogTableModel.check(meta.getFilesystemType(), col);
+        return check(meta.getFilesystemType(), col);
       case SIZE:
-        return CatalogTableModel.check(new SizeBytes(meta.getSize()), col);
+        return check(new SizeBytes(meta.getSize()), col);
     }
 
     throw new UnreachableCodeException();

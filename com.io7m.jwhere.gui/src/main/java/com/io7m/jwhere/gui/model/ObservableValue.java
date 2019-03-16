@@ -52,10 +52,10 @@ public final class ObservableValue<T>
 
   public void broadcast()
   {
-    final T now = this.supplier.get();
+    final var now = this.supplier.get();
 
     synchronized (this.observers) {
-      for (int index = 0; index < this.observers.size(); ++index) {
+      for (var index = 0; index < this.observers.size(); ++index) {
         this.observers.get(index).accept(now);
       }
     }

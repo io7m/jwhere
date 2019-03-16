@@ -85,8 +85,8 @@ public final class CatalogVerificationChangedType
   {
     return String.format(
       "Node was previously a %s but is now a %s",
-      CatalogVerificationChangedType.type(this.node),
-      CatalogVerificationChangedType.type(
+      type(this.node),
+      type(
         this.node_now));
   }
 }

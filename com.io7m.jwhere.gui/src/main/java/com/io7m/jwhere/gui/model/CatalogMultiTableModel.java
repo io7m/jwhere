@@ -18,14 +18,12 @@ package com.io7m.jwhere.gui.model;
 
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
-import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Objects;
-import java.util.SortedMap;
 import java.util.function.Supplier;
 
 /**
@@ -106,10 +104,10 @@ final class CatalogMultiTableModel extends AbstractTableModel
     Objects.requireNonNull(index, "index");
     Objects.requireNonNull(dir, "dir");
 
-    final CatalogState state = this.state_get.get();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks =
+    final var state = this.state_get.get();
+    final var disks =
       state.getCatalog().getDisks();
-    final CatalogDisk disk = disks.get(index);
+    final var disk = disks.get(index);
     this.disk_model.openDiskAtDirectory(disk, dir);
 
     this.updateTarget(CatalogTarget.DISK);
@@ -120,10 +118,10 @@ final class CatalogMultiTableModel extends AbstractTableModel
   {
     Objects.requireNonNull(index, "index");
 
-    final CatalogState state = this.state_get.get();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks =
+    final var state = this.state_get.get();
+    final var disks =
       state.getCatalog().getDisks();
-    final CatalogDisk disk = disks.get(index);
+    final var disk = disks.get(index);
     this.disk_model.openDiskAtRoot(disk);
 
     this.updateTarget(CatalogTarget.DISK);
@@ -158,7 +156,7 @@ final class CatalogMultiTableModel extends AbstractTableModel
 
   private void updateTarget(final CatalogTarget t)
   {
-    final CatalogTarget old_target = this.target;
+    final var old_target = this.target;
     this.target = t;
     if (t != old_target) {
       this.fireTableStructureChanged();

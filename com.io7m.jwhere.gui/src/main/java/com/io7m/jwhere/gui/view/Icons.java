@@ -23,9 +23,7 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -46,36 +44,36 @@ final class Icons
 
   static ImageIcon getErrorIcon()
   {
-    return Icons.getIcon("dialog-error-32.png");
+    return getIcon("dialog-error-32.png");
   }
 
   static ImageIcon getWarningIcon16()
   {
-    return Icons.getIcon("dialog-warning-16.png");
+    return getIcon("dialog-warning-16.png");
   }
 
   static ImageIcon getDiskOpticalIcon16()
   {
-    return Icons.getIcon("media-optical-16.png");
+    return getIcon("media-optical-16.png");
   }
 
   static ImageIcon getDiskIcon16()
   {
-    return Icons.getIcon("drive-harddisk-16.png");
+    return getIcon("drive-harddisk-16.png");
   }
 
   private static ImageIcon getIcon(final String name)
   {
-    if (Icons.ICON_CACHE.containsKey(name)) {
-      return Icons.ICON_CACHE.get(name);
+    if (ICON_CACHE.containsKey(name)) {
+      return ICON_CACHE.get(name);
     } else {
-      try (InputStream stream = Icons.class.getResourceAsStream(name)) {
-        final BufferedImage image = ImageIO.read(stream);
-        final ImageIcon icon = new ImageIcon(image);
-        Icons.ICON_CACHE.put(name, icon);
+      try (var stream = Icons.class.getResourceAsStream(name)) {
+        final var image = ImageIO.read(stream);
+        final var icon = new ImageIcon(image);
+        ICON_CACHE.put(name, icon);
         return icon;
       } catch (final IOException e) {
-        Icons.LOG.error("unable to load icon: ", e);
+        LOG.error("unable to load icon: ", e);
         return new ImageIcon();
       }
     }
@@ -83,21 +81,21 @@ final class Icons
 
   static Icon getFile16()
   {
-    return Icons.getIcon("text-x-generic-16.png");
+    return getIcon("text-x-generic-16.png");
   }
 
   static Icon getFolder16()
   {
-    return Icons.getIcon("folder-16.png");
+    return getIcon("folder-16.png");
   }
 
   static Icon getFolderUp16()
   {
-    return Icons.getIcon("folder-up-16.png");
+    return getIcon("folder-up-16.png");
   }
 
   static Icon getCatalogIcon16()
   {
-    return Icons.getIcon("system-file-manager-16.png");
+    return getIcon("system-file-manager-16.png");
   }
 }

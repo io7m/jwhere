@@ -56,7 +56,7 @@ public final class Catalog
   @Override
   public String toString()
   {
-    final StringBuilder sb = new StringBuilder("Catalog{");
+    final var sb = new StringBuilder("Catalog{");
     sb.append("disks=").append(this.disks);
     sb.append('}');
     return sb.toString();
@@ -68,11 +68,11 @@ public final class Catalog
     if (this == o) {
       return true;
     }
-    if (o == null || this.getClass() != o.getClass()) {
+    if (o == null || !Objects.equals(this.getClass(), o.getClass())) {
       return false;
     }
 
-    final Catalog catalog = (Catalog) o;
+    final var catalog = (Catalog) o;
     return this.getDisks().equals(catalog.getDisks());
   }
 

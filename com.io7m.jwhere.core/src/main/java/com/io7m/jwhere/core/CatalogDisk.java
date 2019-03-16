@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A catalogued disk.
@@ -84,9 +82,9 @@ public final class CatalogDisk
   {
     Objects.requireNonNull(d, "d");
 
-    final CatalogDirectoryNode d_root = d.getFilesystemRoot();
+    final var d_root = d.getFilesystemRoot();
 
-    final CatalogDirectoryNode in_root =
+    final var in_root =
       CatalogDirectoryNode.builder()
         .setPermissions(d_root.permissions())
         .setOwner(d_root.owner())
@@ -130,9 +128,9 @@ public final class CatalogDisk
     final Iterator<String> iter)
     throws NotDirectoryException
   {
-    final String name = iter.next();
-    final Set<CatalogDirectoryEntry> edges = g.outgoingEdgesOf(node);
-    for (final CatalogDirectoryEntry e : edges) {
+    final var name = iter.next();
+    final var edges = g.outgoingEdgesOf(node);
+    for (final var e : edges) {
       if (e.getName().equals(name)) {
         return e.getTarget().matchNode(
           new CatalogNodeMatcherType<Optional<CatalogNodeType>, NotDirectoryException>()
@@ -165,7 +163,7 @@ public final class CatalogDisk
     throws NotDirectoryException
   {
     if (iter.hasNext()) {
-      return CatalogDisk.getNodeForPathIterator(g, d, iter);
+      return getNodeForPathIterator(g, d, iter);
     }
     return Optional.of(d);
   }
@@ -185,7 +183,7 @@ public final class CatalogDisk
   @Override
   public String toString()
   {
-    final StringBuilder sb = new StringBuilder("CatalogDisk{");
+    final var sb = new StringBuilder("CatalogDisk{");
     sb.append("graph=").append(this.graph);
     sb.append(", root=").append(this.root);
     sb.append(", meta=").append(this.meta);
@@ -199,11 +197,11 @@ public final class CatalogDisk
     if (this == o) {
       return true;
     }
-    if (o == null || this.getClass() != o.getClass()) {
+    if (o == null || !Objects.equals(this.getClass(), o.getClass())) {
       return false;
     }
 
-    final CatalogDisk that = (CatalogDisk) o;
+    final var that = (CatalogDisk) o;
 
     return this.graph.equals(that.graph)
       && this.root.equals(that.root)
@@ -213,7 +211,7 @@ public final class CatalogDisk
   @Override
   public int hashCode()
   {
-    int result = this.graph.hashCode();
+    var result = this.graph.hashCode();
     result = 31 * result + this.root.hashCode();
     result = 31 * result + this.getMeta().hashCode();
     return result;
@@ -243,10 +241,10 @@ public final class CatalogDisk
     Objects.requireNonNull(node, "node");
 
     if (this.graph.containsVertex(node)) {
-      final DijkstraShortestPath<CatalogNodeType, CatalogDirectoryEntry> dsp =
+      final var dsp =
         new DijkstraShortestPath<>(this.graph, this.root, node);
 
-      final Stream<CatalogDirectoryEntry> edge_stream =
+      final var edge_stream =
         dsp.getPathEdgeList().stream();
       return edge_stream.map(CatalogDirectoryEntry::getName)
         .collect(Collectors.toList());
@@ -289,8 +287,8 @@ public final class CatalogDisk
     throws NotDirectoryException
   {
     Objects.requireNonNull(p, "p");
-    final Iterator<String> iter = p.iterator();
-    return CatalogDisk.getNodeForPathIterator(this.graph, this.root, iter);
+    final var iter = p.iterator();
+    return getNodeForPathIterator(this.graph, this.root, iter);
   }
 
   private static final class Builder implements CatalogDiskBuilderType
@@ -329,24 +327,24 @@ public final class CatalogDisk
     {
       Preconditions.checkPreconditionV(!this.finished, "Builders cannot be reused");
 
-      CatalogDisk.LOG.debug("adding {}: {} → {}", name, parent, node);
+      LOG.debug("adding {}: {} → {}", name, parent, node);
 
       if (this.graph.containsVertex(parent)) {
         this.checkNoDuplicateEntry(parent, name);
       }
 
       if (this.graph.containsVertex(node)) {
-        final StringBuilder sb = new StringBuilder(256);
+        final var sb = new StringBuilder(256);
         sb.append("Node already in filesystem.");
         sb.append(System.lineSeparator());
         sb.append("  Node: ");
         sb.append(node);
         sb.append(System.lineSeparator());
-        final String m = sb.toString();
+        final var m = sb.toString();
         throw new CatalogNodeDuplicateException(m);
       }
 
-      final CatalogDirectoryEntry edge =
+      final var edge =
         new CatalogDirectoryEntry(parent, node, name);
 
       this.graph.addVertex(parent);
@@ -359,10 +357,10 @@ public final class CatalogDisk
       final String name)
       throws CatalogNodeDuplicateDirectoryEntryException
     {
-      final Set<CatalogDirectoryEntry> out = this.graph.outgoingEdgesOf(parent);
-      for (final CatalogDirectoryEntry e : out) {
+      final var out = this.graph.outgoingEdgesOf(parent);
+      for (final var e : out) {
         if (e.getName().equals(name)) {
-          final StringBuilder sb = new StringBuilder(256);
+          final var sb = new StringBuilder(256);
           sb.append(
             "Directory already contains an entry for the given name.");
           sb.append(System.lineSeparator());
@@ -375,7 +373,7 @@ public final class CatalogDisk
           sb.append("  Node: ");
           sb.append(e.getTarget());
           sb.append(System.lineSeparator());
-          final String m = sb.toString();
+          final var m = sb.toString();
           throw new CatalogNodeDuplicateDirectoryEntryException(m);
         }
       }

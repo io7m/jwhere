@@ -30,9 +30,7 @@ import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
 import com.io7m.jwhere.core.CatalogIgnoreAccessTime;
 import com.io7m.jwhere.core.CatalogJSONParser;
-import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
-import com.io7m.jwhere.core.CatalogJSONSerializerType;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.core.CatalogVerificationListenerType;
 import com.io7m.jwhere.core.CatalogVerificationReportItemErrorType;
@@ -81,9 +79,9 @@ public final class Model
     this.catalog_save_spec = Optional.empty();
     this.catalog_history = new Revisions<>(CatalogState.newEmpty(), 32);
 
-    final CatalogTableModel tm =
+    final var tm =
       new CatalogTableModel(this.catalog_history::getCurrentValue);
-    final CatalogDiskTableModel dtm =
+    final var dtm =
       new CatalogDiskTableModel(this.catalog_history::getCurrentValue);
     this.catalog_table_model = new CatalogMultiTableModel(
       this.catalog_history::getCurrentValue, tm, dtm);
@@ -133,12 +131,12 @@ public final class Model
     final CatalogSaveSpecification spec)
     throws IOException
   {
-    Model.LOG.debug("saving catalog to: {}", spec);
+    LOG.debug("saving catalog to: {}", spec);
 
-    final CatalogJSONSerializerType serial =
+    final var serial =
       CatalogJSONSerializer.newSerializer();
 
-    final CatalogState current = this.catalog_history.getCurrentValue();
+    final var current = this.catalog_history.getCurrentValue();
     serial.serializeCatalogToPath(current.getCatalog(), spec);
     this.catalog_history.save();
     this.catalog_save_spec = Optional.of(spec);
@@ -156,10 +154,10 @@ public final class Model
   public void catalogOpen(final Path path)
     throws IOException, CatalogException
   {
-    Model.LOG.debug("opening catalog from: {}", path);
+    LOG.debug("opening catalog from: {}", path);
 
-    final CatalogJSONParserType parser = CatalogJSONParser.newParser();
-    final Catalog c = parser.parseCatalogFromPath(path);
+    final var parser = CatalogJSONParser.newParser();
+    final var c = parser.parseCatalogFromPath(path);
     this.catalog_history.reset(CatalogState.newWithCatalog(c));
     this.catalog_save_spec =
       Optional.of(
@@ -189,22 +187,22 @@ public final class Model
     final Path path)
     throws IOException, CatalogException
   {
-    Model.LOG.debug("adding disk: {} {} {}", disk_name, disk_id, path);
+    LOG.debug("adding disk: {} {} {}", disk_name, disk_id, path);
 
-    final CatalogState current = this.catalog_history.getCurrentValue();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks =
+    final var current = this.catalog_history.getCurrentValue();
+    final var disks =
       current.getCatalog().getDisks();
 
     if (disks.containsKey(disk_id)) {
       throw new CatalogDiskDuplicateIDException(disk_id.toString());
     }
 
-    final CatalogDisk disk =
+    final var disk =
       CatalogFilesystemReader.newDisk(disk_name, disk_id, path);
     final SortedMap<CatalogDiskID, CatalogDisk> new_disks =
       new TreeMap<>(disks);
     new_disks.put(disk_id, disk);
-    final Catalog c = new Catalog(new_disks);
+    final var c = new Catalog(new_disks);
 
     this.catalog_history.newRevision(CatalogState.newWithCatalog(c));
     this.catalog_table_model.fireTableDataChanged();
@@ -218,9 +216,9 @@ public final class Model
 
   public void catalogClose()
   {
-    Model.LOG.debug("closing catalog");
+    LOG.debug("closing catalog");
 
-    final CatalogState current = CatalogState.newEmpty();
+    final var current = CatalogState.newEmpty();
     this.catalog_history.reset(current);
     this.catalog_save_spec = Optional.empty();
     this.catalog_table_model.reset();
@@ -247,7 +245,7 @@ public final class Model
   {
     Objects.requireNonNull(index, "index");
 
-    final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
+    final var c = this.catalog_history.getCurrentValue().getCatalog();
     Preconditions.checkPreconditionV(
       c.getDisks().containsKey(index),
       "c.getDisks().containsKey(index)");
@@ -268,7 +266,7 @@ public final class Model
     Objects.requireNonNull(index, "index");
     Objects.requireNonNull(dir, "dir");
 
-    final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
+    final var c = this.catalog_history.getCurrentValue().getCatalog();
     Preconditions.checkPreconditionV(
       c.getDisks().containsKey(index),
       "c.getDisks().containsKey(index)");
@@ -291,7 +289,7 @@ public final class Model
   public void catalogRedo()
   {
     this.catalog_history.redo();
-    final CatalogState current = this.catalog_history.getCurrentValue();
+    final var current = this.catalog_history.getCurrentValue();
     this.catalog_table_model.fireTableDataChanged();
     this.catalog_tree_model.update(current.getCatalog());
     this.catalog_combo_box_model.update();
@@ -304,7 +302,7 @@ public final class Model
   public void catalogUndo()
   {
     this.catalog_history.undo();
-    final CatalogState current = this.catalog_history.getCurrentValue();
+    final var current = this.catalog_history.getCurrentValue();
     this.catalog_table_model.fireTableDataChanged();
     this.catalog_tree_model.update(current.getCatalog());
     this.catalog_combo_box_model.update();
@@ -341,11 +339,11 @@ public final class Model
 
   public CatalogDiskID catalogGetFreshDiskID()
   {
-    final Catalog current = this.catalog_history.getCurrentValue().getCatalog();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks = current.getDisks();
+    final var current = this.catalog_history.getCurrentValue().getCatalog();
+    final var disks = current.getDisks();
     if (!disks.isEmpty()) {
-      final CatalogDiskID last = disks.lastKey();
-      final CatalogDiskID new_id =
+      final var last = disks.lastKey();
+      final var new_id =
         CatalogDiskID.of(last.value().add(BigInteger.ONE));
       Postconditions.checkPostconditionV(!disks.containsKey(new_id), "!disks.containsKey(new_id)");
       return new_id;
@@ -383,16 +381,16 @@ public final class Model
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(path, "path");
 
-    final CatalogVerificationReportSettings settings =
+    final var settings =
       CatalogVerificationReportSettings.builder()
         .setIgnoreAccessTime(CatalogIgnoreAccessTime.IGNORE_ACCESS_TIME)
         .build();
 
-    final Catalog current = this.catalog_history.getCurrentValue().getCatalog();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks = current.getDisks();
+    final var current = this.catalog_history.getCurrentValue().getCatalog();
+    final var disks = current.getDisks();
     Preconditions.checkPreconditionV(disks.containsKey(id), "disks.containsKey(id)");
-    final CatalogDisk disk = disks.get(id);
-    final CatalogVerificationTableModel cvm = this.catalog_verification_model;
+    final var disk = disks.get(id);
+    final var cvm = this.catalog_verification_model;
 
     cvm.reset();
     CatalogFilesystemReader.verifyDisk(

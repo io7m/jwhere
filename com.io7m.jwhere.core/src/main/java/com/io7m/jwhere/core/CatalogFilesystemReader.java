@@ -19,13 +19,11 @@ package com.io7m.jwhere.core;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jfunctional.Unit;
 import com.io7m.junreachable.UnreachableCodeException;
-import org.jgrapht.graph.UnmodifiableGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.FileStore;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -35,7 +33,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFileAttributeView;
-import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
@@ -43,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -92,19 +88,19 @@ public final class CatalogFilesystemReader
     Objects.requireNonNull(index, "index");
     Objects.requireNonNull(root, "root");
 
-    CatalogFilesystemReader.LOG.debug(
+    LOG.debug(
       "creating new disk \"{}\" index {} for root {}", disk_name, index, root);
 
-    final FileStore store = Files.getFileStore(root);
-    final BigInteger size = BigInteger.valueOf(store.getTotalSpace());
-    final String fs_type = store.type();
+    final var store = Files.getFileStore(root);
+    final var size = BigInteger.valueOf(store.getTotalSpace());
+    final var fs_type = store.type();
 
-    final AtomicReference<BigInteger> id_pool =
+    final var id_pool =
       new AtomicReference<>(BigInteger.ZERO);
-    final CatalogDirectoryNode root_dir =
-      CatalogFilesystemReader.onDirectory(id_pool, root);
+    final var root_dir =
+      onDirectory(id_pool, root);
 
-    final CatalogDiskBuilderType db =
+    final var db =
       CatalogDisk.newDiskBuilder(root_dir, disk_name, fs_type, index, size);
 
     final Deque<CatalogDirectoryNode> dirs = new LinkedList<>();
@@ -151,17 +147,17 @@ public final class CatalogFilesystemReader
     Objects.requireNonNull(root, "root");
     Objects.requireNonNull(listener, "listener");
 
-    final CatalogDiskMetadata meta = d.getMeta();
-    CatalogFilesystemReader.LOG.debug(
+    final var meta = d.getMeta();
+    LOG.debug(
       "verifying disk \"{}\" index {} for root {}",
       meta.getDiskName(),
       meta.getDiskID(),
       root);
 
-    final AtomicReference<BigInteger> id_pool =
+    final var id_pool =
       new AtomicReference<>(BigInteger.ZERO);
 
-    final LoggingListener logging_listener = new LoggingListener(d, listener);
+    final var logging_listener = new LoggingListener(d, listener);
 
     Files.walkFileTree(
       root,
@@ -169,11 +165,11 @@ public final class CatalogFilesystemReader
       Integer.MAX_VALUE,
       new VerifyingPathVisitor(root, d, logging_listener, id_pool, settings));
 
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
+    final var g =
       d.getFilesystemGraph();
-    for (final CatalogNodeType v : g.vertexSet()) {
-      final List<String> p = d.getPathForNode(v);
-      final Path q = CatalogFilesystemReader.stringListToPath(root, p);
+    for (final var v : g.vertexSet()) {
+      final var p = d.getPathForNode(v);
+      final var q = stringListToPath(root, p);
 
       if (!logging_listener.pathIsReferenced(q)) {
         listener.onItemError(CatalogVerificationVanishedItem.builder().setPath(q).build());
@@ -194,10 +190,10 @@ public final class CatalogFilesystemReader
       rb.onItemError(new CatalogVerificationChangedType(path, node, node_now));
     }
 
-    CatalogFilesystemReader.compareNodeOwnership(path, node, node_now, rb);
-    CatalogFilesystemReader.compareNodeTimes(
+    compareNodeOwnership(path, node, node_now, rb);
+    compareNodeTimes(
       settings, path, node, node_now, rb);
-    CatalogFilesystemReader.compareNodeHashes(path, node, node_now, rb);
+    compareNodeHashes(path, node, node_now, rb);
 
     if (!rb.pathIsReferenced(path)) {
       rb.onItemVerified(CatalogVerificationOKItem.builder().setPath(path).build());
@@ -221,8 +217,8 @@ public final class CatalogFilesystemReader
     final LoggingListener rb)
   {
     if (settings.ignoreAccessTime() == CatalogIgnoreAccessTime.DO_NOT_IGNORE_ACCESS_TIME) {
-      final Instant then_atime = node.accessTime();
-      final Instant curr_atime = node_now.accessTime();
+      final var then_atime = node.accessTime();
+      final var curr_atime = node_now.accessTime();
       if (!then_atime.equals(curr_atime)) {
         rb.onItemError(
           CatalogVerificationChangedMetadata.builder()
@@ -234,8 +230,8 @@ public final class CatalogFilesystemReader
       }
     }
 
-    final Instant then_mtime = node.modificationTime();
-    final Instant curr_mtime = node_now.modificationTime();
+    final var then_mtime = node.modificationTime();
+    final var curr_mtime = node_now.modificationTime();
     if (!then_mtime.equals(curr_mtime)) {
       rb.onItemError(
         CatalogVerificationChangedMetadata.builder()
@@ -246,8 +242,8 @@ public final class CatalogFilesystemReader
           .build());
     }
 
-    final Instant then_ctime = node.creationTime();
-    final Instant curr_ctime = node_now.creationTime();
+    final var then_ctime = node.creationTime();
+    final var curr_ctime = node_now.creationTime();
     if (!then_ctime.equals(curr_ctime)) {
       rb.onItemError(
         CatalogVerificationChangedMetadata.builder()
@@ -299,7 +295,7 @@ public final class CatalogFilesystemReader
   private static List<String> pathToStringList(final Path file)
   {
     final List<String> xs = new ArrayList<>(16);
-    final Iterator<Path> iter = file.iterator();
+    final var iter = file.iterator();
     while (iter.hasNext()) {
       xs.add(iter.next().toString());
     }
@@ -310,8 +306,8 @@ public final class CatalogFilesystemReader
     final Path root,
     final List<String> file)
   {
-    Path p = root;
-    final Iterator<String> iter = file.iterator();
+    var p = root;
+    final var iter = file.iterator();
     while (iter.hasNext()) {
       p = p.resolve(iter.next());
     }
@@ -331,11 +327,11 @@ public final class CatalogFilesystemReader
     final Instant c_time;
     final Instant m_time;
 
-    final PosixFileAttributeView posix_view = Files.getFileAttributeView(
+    final var posix_view = Files.getFileAttributeView(
       file, PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
 
     if (posix_view != null) {
-      final PosixFileAttributes attribs = posix_view.readAttributes();
+      final var attribs = posix_view.readAttributes();
       size = BigInteger.valueOf(attribs.size());
       owner = attribs.owner().getName();
       group = attribs.group().getName();
@@ -344,11 +340,11 @@ public final class CatalogFilesystemReader
       m_time = attribs.lastModifiedTime().toInstant();
       c_time = attribs.creationTime().toInstant();
     } else {
-      final BasicFileAttributeView basic_view = Files.getFileAttributeView(
+      final var basic_view = Files.getFileAttributeView(
         file, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
 
       if (basic_view != null) {
-        final BasicFileAttributes attribs = basic_view.readAttributes();
+        final var attribs = basic_view.readAttributes();
         owner = "nobody";
         group = "nobody";
         size = BigInteger.valueOf(attribs.size());
@@ -361,8 +357,8 @@ public final class CatalogFilesystemReader
       }
     }
 
-    CatalogFilesystemReader.LOG.debug("hashing {}", file);
-    final CatalogFileHash hash = CatalogFileHashes.fromFile(file);
+    LOG.debug("hashing {}", file);
+    final var hash = CatalogFileHashes.fromFile(file);
 
     return CatalogFileNode.builder()
       .setPermissions(perms)
@@ -389,11 +385,11 @@ public final class CatalogFilesystemReader
     final Instant c_time;
     final Instant m_time;
 
-    final PosixFileAttributeView posix_view = Files.getFileAttributeView(
+    final var posix_view = Files.getFileAttributeView(
       root, PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
 
     if (posix_view != null) {
-      final PosixFileAttributes attribs = posix_view.readAttributes();
+      final var attribs = posix_view.readAttributes();
       owner = attribs.owner().getName();
       group = attribs.group().getName();
       perms = attribs.permissions();
@@ -401,11 +397,11 @@ public final class CatalogFilesystemReader
       m_time = attribs.lastModifiedTime().toInstant();
       c_time = attribs.creationTime().toInstant();
     } else {
-      final BasicFileAttributeView basic_view = Files.getFileAttributeView(
+      final var basic_view = Files.getFileAttributeView(
         root, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
 
       if (basic_view != null) {
-        final BasicFileAttributes attribs = basic_view.readAttributes();
+        final var attribs = basic_view.readAttributes();
         owner = "nobody";
         group = "nobody";
         perms = EnumSet.noneOf(PosixFilePermission.class);
@@ -491,13 +487,13 @@ public final class CatalogFilesystemReader
     public Unit onFile(final CatalogFileNodeType file_then)
     {
       if (this.node_now instanceof CatalogFileNode) {
-        final CatalogFileNode file_now = (CatalogFileNode) this.node_now;
-        final Optional<CatalogFileHash> then_opt = file_then.hash();
-        final Optional<CatalogFileHash> now_opt = file_now.hash();
+        final var file_now = (CatalogFileNode) this.node_now;
+        final var then_opt = file_then.hash();
+        final var now_opt = file_now.hash();
 
         if (then_opt.isPresent()) {
-          final CatalogFileHash hash_then = then_opt.get();
-          final CatalogFileHash hash_now = now_opt.get();
+          final var hash_then = then_opt.get();
+          final var hash_now = now_opt.get();
           if (!hash_then.equals(hash_now)) {
             this.listener.onItemError(
               CatalogVerificationChangedHash.builder()
@@ -547,14 +543,14 @@ public final class CatalogFilesystemReader
       final BasicFileAttributes attrs)
       throws IOException
     {
-      CatalogFilesystemReader.LOG.debug(
+      LOG.debug(
         "preVisitDirectory: {}", dir);
 
-      final Path path_rel = this.root.relativize(dir);
+      final var path_rel = this.root.relativize(dir);
 
-      final List<String> path =
-        CatalogFilesystemReader.pathToStringList(path_rel);
-      CatalogFilesystemReader.LOG.debug("path: {}", path);
+      final var path =
+        pathToStringList(path_rel);
+      LOG.debug("path: {}", path);
 
       final Optional<CatalogNodeType> node_opt;
       if (dir.equals(this.root)) {
@@ -563,17 +559,17 @@ public final class CatalogFilesystemReader
         node_opt = this.disk.getNodeForPath(path);
       }
 
-      if (!node_opt.isPresent()) {
+      if (node_opt.isEmpty()) {
         this.logging_listener.onItemError(CatalogVerificationUncataloguedItem.builder().setPath(
           path_rel).build());
         return FileVisitResult.CONTINUE;
       }
 
-      final CatalogNodeType node = node_opt.get();
-      final CatalogDirectoryNode node_now =
-        CatalogFilesystemReader.onDirectory(this.id_pool, dir);
+      final var node = node_opt.get();
+      final var node_now =
+        onDirectory(this.id_pool, dir);
 
-      CatalogFilesystemReader.compareNodes(
+      compareNodes(
         this.settings, path_rel, node, node_now, this.logging_listener);
 
       return FileVisitResult.CONTINUE;
@@ -585,25 +581,25 @@ public final class CatalogFilesystemReader
       final BasicFileAttributes attrs)
       throws IOException
     {
-      final Path path_rel = this.root.relativize(file);
+      final var path_rel = this.root.relativize(file);
 
-      final List<String> path =
-        CatalogFilesystemReader.pathToStringList(path_rel);
-      CatalogFilesystemReader.LOG.debug("path: {}", path);
+      final var path =
+        pathToStringList(path_rel);
+      LOG.debug("path: {}", path);
 
-      final Optional<CatalogNodeType> node_opt = this.disk.getNodeForPath(path);
+      final var node_opt = this.disk.getNodeForPath(path);
 
-      if (!node_opt.isPresent()) {
+      if (node_opt.isEmpty()) {
         this.logging_listener.onItemError(CatalogVerificationUncataloguedItem.builder().setPath(
           path_rel).build());
         return FileVisitResult.CONTINUE;
       }
 
-      final CatalogNodeType node = node_opt.get();
-      final CatalogFileNode node_now =
-        CatalogFilesystemReader.onFile(this.id_pool, file);
+      final var node = node_opt.get();
+      final var node_now =
+        onFile(this.id_pool, file);
 
-      CatalogFilesystemReader.compareNodes(
+      compareNodes(
         this.settings, path_rel, node, node_now, this.logging_listener);
 
       return FileVisitResult.CONTINUE;
@@ -624,13 +620,13 @@ public final class CatalogFilesystemReader
       final IOException exc)
       throws IOException
     {
-      CatalogFilesystemReader.LOG.debug(
+      LOG.debug(
         "postVisitDirectory: {}", dir);
       return FileVisitResult.CONTINUE;
     }
   }
 
-  private static class DiskCreator implements FileVisitor<Path>
+  private static final class DiskCreator implements FileVisitor<Path>
   {
     private final Path root;
     private final Deque<CatalogDirectoryNode> directories;
@@ -656,19 +652,19 @@ public final class CatalogFilesystemReader
       throws IOException
     {
       try {
-        CatalogFilesystemReader.LOG.debug(
+        LOG.debug(
           "preVisitDirectory: {}", dir);
 
-        final Path fn = dir.getFileName();
+        final var fn = dir.getFileName();
         if (fn == null) {
           Preconditions.checkPreconditionV(dir.equals(this.root), "Root must match");
         } else {
           if (!dir.equals(this.root)) {
-            final CatalogDirectoryNode current = this.directories.peek();
-            final CatalogDirectoryNode new_dir =
-              CatalogFilesystemReader.onDirectory(this.id_pool, dir);
+            final var current = this.directories.peek();
+            final var new_dir =
+              onDirectory(this.id_pool, dir);
 
-            final String name = fn.toString();
+            final var name = fn.toString();
             this.disk_builder.addNode(current, name, new_dir);
             this.directories.push(new_dir);
           }
@@ -687,13 +683,13 @@ public final class CatalogFilesystemReader
       throws IOException
     {
       try {
-        CatalogFilesystemReader.LOG.debug("visitFile: {}", file);
+        LOG.debug("visitFile: {}", file);
 
         if (attrs.isRegularFile()) {
-          final CatalogDirectoryNode current = this.directories.peek();
-          final CatalogFileNode new_file =
-            CatalogFilesystemReader.onFile(this.id_pool, file);
-          final String name = file.getFileName().toString();
+          final var current = this.directories.peek();
+          final var new_file =
+            onFile(this.id_pool, file);
+          final var name = file.getFileName().toString();
           this.disk_builder.addNode(current, name, new_file);
         }
 
@@ -718,7 +714,7 @@ public final class CatalogFilesystemReader
       final IOException exc)
       throws IOException
     {
-      CatalogFilesystemReader.LOG.debug(
+      LOG.debug(
         "postVisitDirectory: {}", dir);
 
       Preconditions.checkPreconditionV(!this.directories.isEmpty(), "Must have empty directories");

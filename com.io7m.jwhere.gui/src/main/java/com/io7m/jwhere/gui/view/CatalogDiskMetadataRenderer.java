@@ -45,7 +45,7 @@ final class CatalogDiskMetadataRenderer extends DefaultTableCellRenderer
     Preconditions.checkPreconditionV(
       value instanceof CatalogDiskMetadata,
       "value instanceof CatalogDiskMetadata");
-    final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
+    final var meta = (CatalogDiskMetadata) value;
 
     this.setIcon(CatalogDiskIcons.getIconForDisk(meta));
     this.setText(meta.getDiskName().value());

@@ -40,7 +40,7 @@ final class WindowUtilities
   static void closeDialog(
     final JDialog dialog)
   {
-    final WindowEvent ev =
+    final var ev =
       new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING);
     dialog.dispatchEvent(ev);
   }
@@ -52,7 +52,7 @@ final class WindowUtilities
   static void closeWindow(
     final JFrame frame)
   {
-    final WindowEvent ev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+    final var ev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
     frame.dispatchEvent(ev);
   }
 }

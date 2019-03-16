@@ -48,25 +48,25 @@ final class ErrorBox
     final String message,
     final JTextArea backtrace)
   {
-    final JDialog d = new JDialog();
+    final var d = new JDialog();
     d.setTitle(title);
 
-    final JButton ok = new JButton("OK");
+    final var ok = new JButton("OK");
     ok.addActionListener((x) -> WindowUtilities.closeDialog(d));
 
-    final JLabel icon = new JLabel(Icons.getErrorIcon());
-    final JPanel main = new JPanel();
+    final var icon = new JLabel(Icons.getErrorIcon());
+    final var main = new JPanel();
 
-    final DesignGridLayout dg = new DesignGridLayout(main);
+    final var dg = new DesignGridLayout(main);
     dg.row().grid(icon).add(new JLabel(title));
     dg.emptyRow();
 
     if (backtrace != null) {
-      final JScrollPane pane = new JScrollPane(backtrace);
+      final var pane = new JScrollPane(backtrace);
       pane.setPreferredSize(new Dimension(300, 200));
       backtrace.setCaretPosition(0);
 
-      final JLabel backtrace_note =
+      final var backtrace_note =
         new JLabel("The full error backtrace is as follows:");
       dg.emptyRow();
       dg.row().grid().add(backtrace_note);
@@ -88,18 +88,18 @@ final class ErrorBox
     final String message,
     final Throwable e)
   {
-    final JTextArea text = new JTextArea();
+    final var text = new JTextArea();
     text.setEditable(false);
-    text.setText(ErrorBox.showStackTraceText(e));
+    text.setText(showStackTraceText(e));
     text.setFont(Fonts.getMonospacedSmall());
-    return ErrorBox.showActualErrorBox(title, message, text);
+    return showActualErrorBox(title, message, text);
   }
 
   public static JDialog showError(
     final Throwable e)
   {
-    final String title = e.getClass().getCanonicalName();
-    return ErrorBox.showActualErrorWithException(
+    final var title = e.getClass().getCanonicalName();
+    return showActualErrorWithException(
       title, e.getMessage(), e);
   }
 
@@ -107,14 +107,14 @@ final class ErrorBox
     final Throwable e)
   {
     SwingUtilities.invokeLater(
-      () -> ErrorBox.showError(e));
+      () -> showError(e));
   }
 
   public static JDialog showErrorWithoutException(
     final String title,
     final String message)
   {
-    return ErrorBox.showActualErrorBox(title, message, null);
+    return showActualErrorBox(title, message, null);
   }
 
   public static void showErrorWithoutExceptionLater(
@@ -123,11 +123,11 @@ final class ErrorBox
   {
     SwingUtilities.invokeLater(
       () -> {
-        final JTextArea text = new JTextArea();
+        final var text = new JTextArea();
         text.setEditable(false);
         text.setText(message);
         text.setFont(Fonts.getMonospacedSmall());
-        ErrorBox.showActualErrorBox(title, message, text);
+        showActualErrorBox(title, message, text);
       });
   }
 
@@ -135,7 +135,7 @@ final class ErrorBox
     final String title,
     final Throwable e)
   {
-    return ErrorBox.showActualErrorWithException(title, e.getMessage(), e);
+    return showActualErrorWithException(title, e.getMessage(), e);
   }
 
   public static void showErrorWithTitleLater(
@@ -143,13 +143,13 @@ final class ErrorBox
     final Throwable e)
   {
     SwingUtilities.invokeLater(
-      () -> ErrorBox.showErrorWithTitle(title, e));
+      () -> showErrorWithTitle(title, e));
   }
 
   private static String showStackTraceText(
     final Throwable e)
   {
-    try (StringWriter writer = new StringWriter()) {
+    try (var writer = new StringWriter()) {
       writer.append(e.getMessage());
       writer.append("\n");
       writer.append("\n");

@@ -20,7 +20,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -73,11 +72,11 @@ public final class CatalogFileHashes
     final Path file)
     throws IOException
   {
-    final byte[] data = new byte[8192];
+    final var data = new byte[8192];
 
-    try (InputStream is = Files.newInputStream(file)) {
+    try (var is = Files.newInputStream(file)) {
       while (true) {
-        final int r = is.read(data);
+        final var r = is.read(data);
         if (r == -1) {
           break;
         }
@@ -85,7 +84,7 @@ public final class CatalogFileHashes
       }
     }
 
-    final String hex = Hex.encodeHexString(md.digest()).toUpperCase();
+    final var hex = Hex.encodeHexString(md.digest()).toUpperCase();
     return CatalogFileHash.builder()
       .setAlgorithm(md.getAlgorithm())
       .setValue(hex)

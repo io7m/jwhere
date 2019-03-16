@@ -16,19 +16,14 @@
 
 package com.io7m.jwhere.cmdline;
 
-import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogCompress;
-import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogException;
 import com.io7m.jwhere.core.CatalogFilesystemReader;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParser;
-import com.io7m.jwhere.core.CatalogJSONParserType;
-import com.io7m.jwhere.core.CatalogNodeException;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
@@ -38,8 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Path;
-import java.util.SortedMap;
 
 /**
  * A command to add a disk to a catalog.
@@ -122,33 +115,33 @@ public final class CommandAddDisk extends CommandBase
   {
     super.setup();
 
-    int status = 0;
+    var status = 0;
 
     try {
-      CommandAddDisk.LOG.debug("Disk {}", this.disk_name);
-      CommandAddDisk.LOG.debug("Index {}", this.disk_index);
-      CommandAddDisk.LOG.debug("Root {}", this.root);
-      CommandAddDisk.LOG.debug("Catalog input {}", this.catalog_in);
-      CommandAddDisk.LOG.debug("Catalog output {}", this.catalog_out);
+      LOG.debug("Disk {}", this.disk_name);
+      LOG.debug("Index {}", this.disk_index);
+      LOG.debug("Root {}", this.root);
+      LOG.debug("Catalog input {}", this.catalog_in);
+      LOG.debug("Catalog output {}", this.catalog_out);
 
-      final CatalogJSONParserType p = CatalogJSONParser.newParser();
-      final Path catalog_in_path = new File(this.catalog_in).toPath();
-      final Path catalog_out_path = new File(this.catalog_out).toPath();
-      final Path root_path = new File(this.root).toPath();
+      final var p = CatalogJSONParser.newParser();
+      final var catalog_in_path = new File(this.catalog_in).toPath();
+      final var catalog_out_path = new File(this.catalog_out).toPath();
+      final var root_path = new File(this.root).toPath();
 
-      CommandAddDisk.LOG.debug("Opening {}", catalog_in_path);
-      final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
-      final CatalogDiskID id = CatalogDiskID.of(this.disk_index);
+      LOG.debug("Opening {}", catalog_in_path);
+      final var c = CommandBase.openCatalogForReading(p, catalog_in_path);
+      final var disks = c.getDisks();
+      final var id = CatalogDiskID.of(this.disk_index);
       if (disks.containsKey(id)) {
         throw new CatalogDiskDuplicateIDException(
           String.format(
             "Catalog already contains a disk with index %s", id));
       }
 
-      final CatalogDisk disk = CatalogFilesystemReader.newDisk(
+      final var disk = CatalogFilesystemReader.newDisk(
         CatalogDiskName.of(this.disk_name), id, root_path);
-      final CatalogDiskMetadata meta = disk.getMeta();
+      final var meta = disk.getMeta();
 
       disks.put(meta.getDiskID(), disk);
       CommandBase.writeCatalogToDisk(
@@ -158,32 +151,25 @@ public final class CommandAddDisk extends CommandBase
           .setPath(catalog_out_path)
           .build());
 
-    } catch (final CatalogNodeException | CatalogDiskDuplicateIDException e) {
-      CommandAddDisk.LOG.error(
-        "Catalog error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        CommandAddDisk.LOG.error("Exception trace: ", e);
-      }
-      status = 1;
     } catch (final CatalogJSONParseException e) {
-      CommandAddDisk.LOG.error(
+      LOG.error(
         "JSON parse error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandAddDisk.LOG.error("Exception trace: ", e);
-      }
-      status = 1;
-    } catch (final IOException e) {
-      CommandAddDisk.LOG.error(
-        "I/O error: {}: {}", e.getClass(), e.getMessage());
-      if (this.isDebug()) {
-        CommandAddDisk.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     } catch (final CatalogException e) {
-      CommandAddDisk.LOG.error(
+      LOG.error(
         "Catalog error: {}: {}", e.getClass(), e.getMessage());
       if (this.isDebug()) {
-        CommandAddDisk.LOG.error("Exception trace: ", e);
+        LOG.error("Exception trace: ", e);
+      }
+      status = 1;
+    } catch (final IOException e) {
+      LOG.error(
+        "I/O error: {}: {}", e.getClass(), e.getMessage());
+      if (this.isDebug()) {
+        LOG.error("Exception trace: ", e);
       }
       status = 1;
     }

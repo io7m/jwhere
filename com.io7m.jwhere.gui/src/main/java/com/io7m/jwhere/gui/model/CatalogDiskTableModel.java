@@ -18,12 +18,10 @@ package com.io7m.jwhere.gui.model;
 
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogFileNodeType;
@@ -35,11 +33,9 @@ import javax.swing.table.AbstractTableModel;
 import java.math.BigInteger;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
 import java.util.function.Supplier;
 
 /**
@@ -64,16 +60,16 @@ final class CatalogDiskTableModel extends AbstractTableModel
     final CatalogNodeType node,
     final List<CatalogDirectoryEntry> entries)
   {
-    /**
+    /*
      * Entries are inserted into a sorted array for accessing by "row".
      */
 
     entries.clear();
-    final Set<CatalogDirectoryEntry> out = graph.outgoingEdgesOf(node);
-    out.stream().forEach(entries::add);
-    entries.sort((ea, eb) -> ea.getName().compareTo(eb.getName()));
+    final var out = graph.outgoingEdgesOf(node);
+    entries.addAll(out);
+    entries.sort(Comparator.comparing(CatalogDirectoryEntry::getName));
 
-    /**
+    /*
      * An entry representing ".." is synthesized.
      *
      * If the directory is the root node, there won't be any incoming
@@ -81,7 +77,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
      * is responsible for doing something sensible with this.
      */
 
-    final Set<CatalogDirectoryEntry> in = graph.incomingEdgesOf(node);
+    final var in = graph.incomingEdgesOf(node);
     Preconditions.checkPreconditionV(in.size() >= 0, "in.size() >= 0");
     Preconditions.checkPreconditionV(in.size() <= 1, "in.size() <= 1");
 
@@ -114,7 +110,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
     final int col,
     final Object c)
   {
-    final Class<?> type = CatalogDiskTableModelField.values()[col].getType();
+    final var type = CatalogDiskTableModelField.values()[col].getType();
     Preconditions.checkPreconditionV(
       type.isInstance(c), "%s must be an instance of %s", c.getClass(), type);
     return c;
@@ -146,14 +142,14 @@ final class CatalogDiskTableModel extends AbstractTableModel
     Objects.requireNonNull(disk, "disk");
     Objects.requireNonNull(node, "node");
 
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph =
+    final var graph =
       disk.getFilesystemGraph();
     Preconditions.checkPreconditionV(graph.containsVertex(node), "graph.containsVertex(node)");
 
     this.current_disk = disk;
     this.current_dir = node;
 
-    CatalogDiskTableModel.makeEntries(graph, node, this.current_entries);
+    makeEntries(graph, node, this.current_entries);
   }
 
   @Override
@@ -193,32 +189,32 @@ final class CatalogDiskTableModel extends AbstractTableModel
       row < this.current_entries.size(),
       "row < this.current_entries.size()");
 
-    final CatalogDisk disk = Objects.requireNonNull(this.current_disk, "this.current_disk");
-    final CatalogDirectoryEntry entry = this.current_entries.get(row);
-    final CatalogNodeType target = entry.getTarget();
-    final CatalogDiskMetadata meta = disk.getMeta();
+    final var disk = Objects.requireNonNull(this.current_disk, "this.current_disk");
+    final var entry = this.current_entries.get(row);
+    final var target = entry.getTarget();
+    final var meta = disk.getMeta();
 
     switch (CatalogDiskTableModelField.values()[col]) {
       case NAME:
-        return CatalogDiskTableModel.check(
+        return check(
           col, entry.getTarget().matchNode(new NameGetter(row, entry, meta, disk)));
       case SIZE:
-        return CatalogDiskTableModel.check(col, target.matchNode(new SizeGetter()));
+        return check(col, target.matchNode(new SizeGetter()));
       case CREATION_TIME:
-        return CatalogDiskTableModel.check(col, target.creationTime());
+        return check(col, target.creationTime());
       case MODIFICATION_TIME:
-        return CatalogDiskTableModel.check(col, target.modificationTime());
+        return check(col, target.modificationTime());
       case ACCESS_TIME:
-        return CatalogDiskTableModel.check(col, target.accessTime());
+        return check(col, target.accessTime());
       case OWNER:
-        return CatalogDiskTableModel.check(col, target.owner());
+        return check(col, target.owner());
       case GROUP:
-        return CatalogDiskTableModel.check(col, target.group());
+        return check(col, target.group());
       case PERMISSIONS:
-        return CatalogDiskTableModel.check(
+        return check(
           col, PosixFilePermissions.toString(target.permissions()));
       case HASH:
-        return CatalogDiskTableModel.check(col, target.matchNode(new HashGetter()));
+        return check(col, target.matchNode(new HashGetter()));
     }
 
     throw new UnreachableCodeException();
@@ -237,23 +233,23 @@ final class CatalogDiskTableModel extends AbstractTableModel
 
   public void checkStillValid()
   {
-    final CatalogState state = this.state_supplier.get();
-    final Catalog c = state.getCatalog();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+    final var state = this.state_supplier.get();
+    final var c = state.getCatalog();
+    final var disks = c.getDisks();
 
     if (this.current_disk != null) {
-      final CatalogDirectoryNodeType dir =
+      final var dir =
         Objects.requireNonNull(this.current_dir, "this.current_dir");
 
-      final CatalogDiskMetadata meta = this.current_disk.getMeta();
-      final CatalogDiskID disk_id = meta.getDiskID();
+      final var meta = this.current_disk.getMeta();
+      final var disk_id = meta.getDiskID();
       if (!disks.containsKey(disk_id)) {
         this.reset();
         return;
       }
 
-      final CatalogDisk disk = disks.get(disk_id);
-      final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> root =
+      final var disk = disks.get(disk_id);
+      final var root =
         disk.getFilesystemGraph();
       if (!root.containsVertex(dir)) {
         this.reset();
@@ -346,12 +342,8 @@ final class CatalogDiskTableModel extends AbstractTableModel
     public String onFile(
       final CatalogFileNodeType f)
     {
-      final Optional<CatalogFileHash> h_opt = f.hash();
-      if (h_opt.isPresent()) {
-        return h_opt.get().toString();
-      } else {
-        return "";
-      }
+      final var h_opt = f.hash();
+      return h_opt.map(CatalogFileHash::toString).orElse("");
     }
 
     @Override

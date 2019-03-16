@@ -32,7 +32,7 @@ final class UnsavedChangesDialog
   {
     final Object[] options = {"Save", "Discard", "Cancel"};
 
-    final int n = JOptionPane.showOptionDialog(
+    final var n = JOptionPane.showOptionDialog(
       frame,
       "There are unsaved changes. Do you want to save?",
       "Save data?",

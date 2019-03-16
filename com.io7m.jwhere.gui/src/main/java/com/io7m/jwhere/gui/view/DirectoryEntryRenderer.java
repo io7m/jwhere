@@ -51,7 +51,7 @@ final class DirectoryEntryRenderer extends DefaultTableCellRenderer
     Preconditions.checkPreconditionV(
       value instanceof DirectoryEntryType,
       "value instanceof DirectoryEntryType");
-    final DirectoryEntryType entry = (DirectoryEntryType) value;
+    final var entry = (DirectoryEntryType) value;
 
     this.setText(entry.getName());
     entry.matchEntry(new IconSetter());

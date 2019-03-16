@@ -17,14 +17,9 @@
 package com.io7m.jwhere.gui.model;
 
 import com.io7m.jwhere.core.Catalog;
-import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskMetadata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.util.Set;
-import java.util.SortedMap;
 
 /**
  * A tree model that maps a given catalog to a tree.
@@ -40,14 +35,14 @@ final class CatalogTreeModel extends DefaultTreeModel
 
   public void update(final Catalog in_catalog)
   {
-    final DefaultMutableTreeNode new_root = new DefaultMutableTreeNode(
+    final var new_root = new DefaultMutableTreeNode(
       (CatalogRootType) () -> "Catalog");
 
-    final SortedMap<CatalogDiskID, CatalogDisk> disks = in_catalog.getDisks();
-    final Set<CatalogDiskID> indices = disks.keySet();
-    for (final CatalogDiskID index : indices) {
-      final CatalogDisk disk = disks.get(index);
-      final CatalogDiskMetadata meta = disk.getMeta();
+    final var disks = in_catalog.getDisks();
+    final var indices = disks.keySet();
+    for (final var index : indices) {
+      final var disk = disks.get(index);
+      final var meta = disk.getMeta();
       new_root.add(new DefaultMutableTreeNode(meta));
     }
     this.setRoot(new_root);

@@ -23,7 +23,6 @@ import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogJSONParseException;
 import com.io7m.jwhere.core.CatalogJSONParserType;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
-import com.io7m.jwhere.core.CatalogJSONSerializerType;
 import com.io7m.jwhere.core.CatalogNodeException;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import io.airlift.airline.Option;
@@ -61,7 +60,7 @@ public abstract class CommandBase implements Runnable
     final CatalogSaveSpecification spec)
     throws IOException
   {
-    final CatalogJSONSerializerType s = CatalogJSONSerializer.newSerializer();
+    final var s = CatalogJSONSerializer.newSerializer();
     s.serializeCatalogToPath(c, spec);
   }
 
@@ -80,7 +79,7 @@ public abstract class CommandBase implements Runnable
 
   private void configureLogLevel()
   {
-    final Logger root = (Logger) LoggerFactory.getLogger(
+    final var root = (Logger) LoggerFactory.getLogger(
       org.slf4j.Logger.ROOT_LOGGER_NAME);
     if (this.debug) {
       root.setLevel(Level.DEBUG);

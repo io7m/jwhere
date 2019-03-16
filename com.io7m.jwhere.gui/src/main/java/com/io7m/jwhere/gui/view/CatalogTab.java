@@ -34,7 +34,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -63,27 +62,27 @@ final class CatalogTab extends JPanel
     this.catalog_table = new CatalogTable(in_controller.catalogGetTableModel());
     this.catalog_table.addMouseListener(new TableMouseAdapter(in_controller));
 
-    final JScrollPane table_scroller = new JScrollPane();
+    final var table_scroller = new JScrollPane();
     table_scroller.setViewportView(this.catalog_table);
 
     this.catalog_disk_list =
       new CatalogTree(in_controller.catalogGetTreeModel());
     this.catalog_disk_list.addTreeSelectionListener(
       e -> {
-        final Object selected =
+        final var selected =
           this.catalog_disk_list.getLastSelectedPathComponent();
 
         if (selected == null) {
           return;
         }
 
-        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) selected;
-        final Object node_value = node.getUserObject();
+        final var node = (DefaultMutableTreeNode) selected;
+        final var node_value = node.getUserObject();
 
-        CatalogTab.LOG.debug("selected: {}", node_value.getClass());
+        LOG.debug("selected: {}", node_value.getClass());
 
         if (node_value instanceof CatalogDiskMetadata) {
-          final CatalogDiskMetadata meta = (CatalogDiskMetadata) node_value;
+          final var meta = (CatalogDiskMetadata) node_value;
           this.controller.catalogSelectDiskAtRoot(meta.getDiskID());
           return;
         }
@@ -100,10 +99,10 @@ final class CatalogTab extends JPanel
       new CatalogTreePopupListener(
         parent, this.controller, status, this.catalog_disk_list));
 
-    final JScrollPane list_scroller = new JScrollPane();
+    final var list_scroller = new JScrollPane();
     list_scroller.setViewportView(this.catalog_disk_list);
 
-    final JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    final var splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitter.add(list_scroller);
     splitter.add(table_scroller);
     splitter.setContinuousLayout(false);
@@ -132,10 +131,10 @@ final class CatalogTab extends JPanel
       this.catalog_popup = new JPopupMenu();
 
       {
-        final JMenuItem add_disk = new JMenuItem("Add disk...");
+        final var add_disk = new JMenuItem("Add disk...");
         add_disk.addActionListener(
           (e) -> {
-            final CatalogAddDiskDialog d =
+            final var d =
               new CatalogAddDiskDialog(parent, in_controller, in_status);
             d.pack();
             d.setVisible(true);
@@ -144,7 +143,7 @@ final class CatalogTab extends JPanel
       }
 
       {
-        final JMenuItem verify_disk = new JMenuItem("Verify disk...");
+        final var verify_disk = new JMenuItem("Verify disk...");
         this.disk_popup.add(verify_disk);
       }
     }
@@ -164,19 +163,19 @@ final class CatalogTab extends JPanel
     private void maybeShowPopup(final MouseEvent e)
     {
       if (e.isPopupTrigger()) {
-        final int cx = e.getX();
-        final int cy = e.getY();
+        final var cx = e.getX();
+        final var cy = e.getY();
 
-        final TreePath p = this.tree.getPathForLocation(cx, cy);
+        final var p = this.tree.getPathForLocation(cx, cy);
         if (p == null) {
           return;
         }
 
-        final DefaultMutableTreeNode last =
+        final var last =
           (DefaultMutableTreeNode) p.getLastPathComponent();
-        final Object node_value = last.getUserObject();
+        final var node_value = last.getUserObject();
 
-        CatalogTab.LOG.debug("popup selected: {}", node_value.getClass());
+        LOG.debug("popup selected: {}", node_value.getClass());
 
         if (node_value instanceof CatalogDiskMetadata) {
           this.disk_popup.show(e.getComponent(), e.getX(), e.getY());
@@ -203,14 +202,14 @@ final class CatalogTab extends JPanel
     public void mouseClicked(final MouseEvent e)
     {
       if (e.getClickCount() == 2) {
-        final JTable target = (JTable) e.getSource();
-        final int row = target.getSelectedRow();
+        final var target = (JTable) e.getSource();
+        final var row = target.getSelectedRow();
         if (row >= 0) {
-          final Object val = target.getValueAt(row, 0);
-          CatalogTab.LOG.debug("selected: {} ({})", val, val.getClass());
+          final var val = target.getValueAt(row, 0);
+          LOG.debug("selected: {} ({})", val, val.getClass());
 
           if (val instanceof CatalogDiskMetadata) {
-            final CatalogDiskMetadata meta = (CatalogDiskMetadata) val;
+            final var meta = (CatalogDiskMetadata) val;
             this.controller.catalogSelectDiskAtRoot(meta.getDiskID());
             return;
           }
@@ -221,7 +220,7 @@ final class CatalogTab extends JPanel
           }
 
           if (val instanceof DirectoryEntryDirectory) {
-            final DirectoryEntryDirectory dir =
+            final var dir =
               (DirectoryEntryDirectory) val;
             this.controller.catalogSelectDiskAtDirectory(
               dir.getDiskIndex(), dir.getNode());

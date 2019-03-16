@@ -177,8 +177,8 @@ public final class Revisions<T>
   public void newRevision(final T x)
   {
     Objects.requireNonNull(x, "x");
-    final Element<T> current = this.history.peek();
-    final BigInteger next_id = current.revision.add(BigInteger.ONE);
+    final var current = this.history.peek();
+    final var next_id = current.revision.add(BigInteger.ONE);
     this.history.push(new Element<>(next_id, x));
     this.broadcast();
   }
@@ -189,17 +189,17 @@ public final class Revisions<T>
 
   public void redo()
   {
-    final Element<T> current = this.history.peek();
-    Revisions.LOG.debug("redo: requesting at revision {}", current.revision);
+    final var current = this.history.peek();
+    LOG.debug("redo: requesting at revision {}", current.revision);
 
     if (this.hasRedo() == RedoAvailable.REDO_AVAILABLE) {
-      final Element<T> redo_current = this.redo.pop().get();
+      final var redo_current = this.redo.pop().get();
       this.history.push(redo_current);
-      final Element<T> new_current = this.history.peek();
-      Revisions.LOG.debug("redo: now at revision {}", new_current.revision);
+      final var new_current = this.history.peek();
+      LOG.debug("redo: now at revision {}", new_current.revision);
       this.broadcast();
     } else {
-      Revisions.LOG.debug("redo: nothing to redo");
+      LOG.debug("redo: nothing to redo");
     }
   }
 
@@ -216,17 +216,17 @@ public final class Revisions<T>
 
   public void undo()
   {
-    final Element<T> current = this.history.peek();
-    Revisions.LOG.debug("undo: requesting at revision {}", current.revision);
+    final var current = this.history.peek();
+    LOG.debug("undo: requesting at revision {}", current.revision);
 
     if (this.hasUndo() == UndoAvailable.UNDO_AVAILABLE) {
       this.history.pop();
       this.redo.push(current);
-      final Element<T> new_current = this.history.peek();
-      Revisions.LOG.debug("undo: now at revision {}", new_current.revision);
+      final var new_current = this.history.peek();
+      LOG.debug("undo: now at revision {}", new_current.revision);
       this.broadcast();
     } else {
-      Revisions.LOG.debug("undo: nothing to undo");
+      LOG.debug("undo: nothing to undo");
     }
   }
 
@@ -237,7 +237,7 @@ public final class Revisions<T>
 
   public UnsavedChanges hasUnsavedChanges()
   {
-    final BigInteger current_revision = this.getCurrentRevision();
+    final var current_revision = this.getCurrentRevision();
     if (current_revision.equals(this.saved)) {
       return UnsavedChanges.NO_UNSAVED_CHANGES;
     } else {

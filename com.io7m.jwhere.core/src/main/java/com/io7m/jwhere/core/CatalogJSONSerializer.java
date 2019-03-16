@@ -17,8 +17,6 @@
 package com.io7m.jwhere.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.junreachable.UnreachableCodeException;
@@ -28,12 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.time.Instant;
-import java.util.Iterator;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -53,11 +46,11 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     final CatalogFileNodeType node,
     final String name)
   {
-    final Instant atime = node.accessTime();
-    final Instant mtime = node.modificationTime();
-    final Instant ctime = node.creationTime();
+    final var atime = node.accessTime();
+    final var mtime = node.modificationTime();
+    final var ctime = node.creationTime();
 
-    final ObjectNode jout = jom.createObjectNode();
+    final var jout = jom.createObjectNode();
     jout.put("type", "file");
     jout.put("name", name);
     jout.set("size", new BigIntegerNode(node.size()));
@@ -70,10 +63,10 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     jout.put(
       "permissions", PosixFilePermissions.toString(node.permissions()));
 
-    final Optional<CatalogFileHash> hash_opt = node.hash();
+    final var hash_opt = node.hash();
     if (hash_opt.isPresent()) {
-      final ObjectNode jhash =
-        CatalogJSONSerializer.serializeHash(jom, hash_opt.get());
+      final var jhash =
+        serializeHash(jom, hash_opt.get());
       jout.set("hash", jhash);
     }
 
@@ -84,7 +77,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     final ObjectMapper jom,
     final CatalogFileHash hash)
   {
-    final ObjectNode jout = jom.createObjectNode();
+    final var jout = jom.createObjectNode();
     jout.put("type", "hash");
     jout.put("algorithm", hash.algorithm());
     jout.put("value", hash.value());
@@ -103,13 +96,13 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
         @Override
         public ObjectNode onFile(final CatalogFileNodeType f)
         {
-          return CatalogJSONSerializer.serializeFile(jom, g, f, name);
+          return serializeFile(jom, g, f, name);
         }
 
         @Override
         public ObjectNode onDirectory(final CatalogDirectoryNodeType d)
         {
-          return CatalogJSONSerializer.serializeDirectory(jom, g, d, name);
+          return serializeDirectory(jom, g, d, name);
         }
       });
   }
@@ -120,11 +113,11 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     final CatalogDirectoryNodeType node,
     final String name)
   {
-    final Instant atime = node.accessTime();
-    final Instant mtime = node.modificationTime();
-    final Instant ctime = node.creationTime();
+    final var atime = node.accessTime();
+    final var mtime = node.modificationTime();
+    final var ctime = node.creationTime();
 
-    final ObjectNode jout = jom.createObjectNode();
+    final var jout = jom.createObjectNode();
     jout.put("type", "directory");
     jout.put("name", name);
     jout.put("owner", node.owner());
@@ -136,12 +129,12 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     jout.put(
       "permissions", PosixFilePermissions.toString(node.permissions()));
 
-    final ArrayNode ee = jom.createArrayNode();
-    final Set<CatalogDirectoryEntry> oe = g.outgoingEdgesOf(node);
-    for (final CatalogDirectoryEntry edge : oe) {
-      final String e_name = edge.getName();
-      final CatalogNodeType e_node = edge.getTarget();
-      ee.add(CatalogJSONSerializer.serializeNode(jom, g, e_node, e_name));
+    final var ee = jom.createArrayNode();
+    final var oe = g.outgoingEdgesOf(node);
+    for (final var edge : oe) {
+      final var e_name = edge.getName();
+      final var e_node = edge.getTarget();
+      ee.add(serializeNode(jom, g, e_node, e_name));
     }
 
     jout.set("entries", ee);
@@ -165,7 +158,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   {
     switch (s.compress()) {
       case COMPRESS_NONE:
-        try (OutputStream os = Files.newOutputStream(s.path())) {
+        try (var os = Files.newOutputStream(s.path())) {
           this.serializeCatalogToStream(c, os);
         }
         break;
@@ -187,8 +180,8 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     Objects.requireNonNull(c, "c");
     Objects.requireNonNull(os, "os");
 
-    final ObjectMapper jom = new ObjectMapper();
-    final ObjectWriter jw = jom.writerWithDefaultPrettyPrinter();
+    final var jom = new ObjectMapper();
+    final var jw = jom.writerWithDefaultPrettyPrinter();
     jw.writeValue(os, this.serializeCatalog(c));
   }
 
@@ -197,20 +190,20 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   {
     Objects.requireNonNull(c, "c");
 
-    final ObjectMapper jom = new ObjectMapper();
+    final var jom = new ObjectMapper();
 
-    final ObjectNode jcat = jom.createObjectNode();
+    final var jcat = jom.createObjectNode();
     jcat.put("type", "catalog");
-    final ArrayNode jda = jom.createArrayNode();
-    final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
-    final Iterator<CatalogDiskID> iter = disks.keySet().iterator();
+    final var jda = jom.createArrayNode();
+    final var disks = c.getDisks();
+    final var iter = disks.keySet().iterator();
     while (iter.hasNext()) {
-      final CatalogDisk disk = disks.get(iter.next());
+      final var disk = disks.get(iter.next());
       jda.add(this.serializeDisk(disk));
     }
     jcat.set("catalog-disks", jda);
 
-    final ObjectNode jroot = jom.createObjectNode();
+    final var jroot = jom.createObjectNode();
     jroot.put("schema", "http://schemas.io7m.com/jwhere");
     jroot.put("schema-version", "1.0.0");
     jroot.set("catalog", jcat);
@@ -223,15 +216,15 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   {
     Objects.requireNonNull(d, "d");
 
-    final ObjectMapper jom = new ObjectMapper();
-    final ObjectNode jd = jom.createObjectNode();
+    final var jom = new ObjectMapper();
+    final var jd = jom.createObjectNode();
 
-    final ObjectNode jfs = CatalogJSONSerializer.serializeDirectory(
+    final var jfs = serializeDirectory(
       jom, d.getFilesystemGraph(), d.getFilesystemRoot(), "/");
 
     jd.put("type", "disk");
 
-    final CatalogDiskMetadata meta = d.getMeta();
+    final var meta = d.getMeta();
 
     jd.put("disk-name", meta.getDiskName().value());
     jd.set("disk-size", new BigIntegerNode(meta.getSize()));

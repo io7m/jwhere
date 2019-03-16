@@ -45,7 +45,7 @@ final class CatalogDiskIDRenderer extends DefaultTableCellRenderer
     Preconditions.checkPreconditionV(
       value instanceof CatalogDiskID,
       "value instanceof CatalogDiskID");
-    final CatalogDiskID id = (CatalogDiskID) value;
+    final var id = (CatalogDiskID) value;
 
     this.setText(id.value().toString());
     return this;

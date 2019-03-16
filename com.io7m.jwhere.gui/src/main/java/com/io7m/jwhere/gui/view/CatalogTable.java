@@ -46,7 +46,7 @@ final class CatalogTable extends JTable
 
     this.getTableHeader().setReorderingAllowed(false);
 
-    final DirectoryEntryRenderer er = new DirectoryEntryRenderer();
+    final var er = new DirectoryEntryRenderer();
     this.setDefaultRenderer(DirectoryEntryDirectory.class, er);
     this.setDefaultRenderer(DirectoryEntryFile.class, er);
     this.setDefaultRenderer(DirectoryEntryUp.class, er);

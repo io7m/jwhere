@@ -17,7 +17,6 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jfunctional.ProcedureType;
-import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.ControllerType;
 import net.java.dev.designgridlayout.DesignGridLayout;
@@ -33,7 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import java.awt.Component;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,23 +54,23 @@ final class VerifyTab extends JPanel
     this.controller = Objects.requireNonNull(in_controller, "in_controller");
     Objects.requireNonNull(status, "status");
 
-    final JTextField mount = new JTextField(32);
-    final CatalogVerificationTable table = new CatalogVerificationTable(
+    final var mount = new JTextField(32);
+    final var table = new CatalogVerificationTable(
       this.controller.catalogGetVerificationTableModel());
 
-    final JScrollPane table_scroller = new JScrollPane(table);
+    final var table_scroller = new JScrollPane(table);
 
-    final JComboBox<CatalogDiskMetadata> disk_menu = new JComboBox<>();
+    final var disk_menu = new JComboBox<CatalogDiskMetadata>();
     disk_menu.setModel(in_controller.catalogGetComboBoxModel());
     disk_menu.setRenderer(new DiskMenuCellRenderer());
 
-    final JButton select = new JButton("Select...");
-    final JButton verify = new JButton("Verify");
+    final var select = new JButton("Select...");
+    final var verify = new JButton("Verify");
     verify.setEnabled(false);
 
     disk_menu.addActionListener(
       e -> {
-        final CatalogDiskMetadata selected =
+        final var selected =
           (CatalogDiskMetadata) disk_menu.getSelectedItem();
         if (selected != null) {
           verify.setEnabled(true);
@@ -83,12 +81,12 @@ final class VerifyTab extends JPanel
 
     verify.addActionListener(
       e -> {
-        final CatalogDiskMetadata selected = Objects.requireNonNull(
+        final var selected = Objects.requireNonNull(
           (CatalogDiskMetadata) disk_menu.getSelectedItem(),
           "(CatalogDiskMetadata) disk_menu.getSelectedItem()");
 
-        final CatalogDiskID id = selected.getDiskID();
-        final Path path = Paths.get(mount.getText());
+        final var id = selected.getDiskID();
+        final var path = Paths.get(mount.getText());
         final Runnable on_start_io = () -> {
           status.onProgressIndeterminateStartLater();
           status.onInfoLater("Verifying disk...");
@@ -96,8 +94,8 @@ final class VerifyTab extends JPanel
 
         final ProcedureType<Optional<Throwable>> on_finish_io = ex_opt -> {
           if (ex_opt.isPresent()) {
-            final Throwable ex = ex_opt.get();
-            VerifyTab.LOG.error("verification failed: ", ex);
+            final var ex = ex_opt.get();
+            LOG.error("verification failed: ", ex);
             status.onErrorLater("Verification failed!");
             status.onProgressIndeterminateFinishLater();
             ErrorBox.showErrorLater(ex);
@@ -110,7 +108,7 @@ final class VerifyTab extends JPanel
         this.controller.catalogVerifyDisk(id, path, on_start_io, on_finish_io);
       });
 
-    final DesignGridLayout dg = new DesignGridLayout(this);
+    final var dg = new DesignGridLayout(this);
     dg.row().grid(new JLabel("Mount")).add(mount, 3).add(select);
     dg.row().grid(new JLabel("Disk")).add(disk_menu, 3).add(verify);
     dg.row().grid().add(table_scroller);
@@ -135,7 +133,7 @@ final class VerifyTab extends JPanel
         list, value, index, is_selected, has_focus);
 
       if (value instanceof CatalogDiskMetadata) {
-        final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
+        final var meta = (CatalogDiskMetadata) value;
         this.setIcon(CatalogDiskIcons.getIconForDisk(meta));
         this.setText(meta.getDiskName().value());
       }

@@ -50,15 +50,15 @@ public final class SizeBytes
 
   private static String showAsMegabytes(final BigInteger x)
   {
-    final BigDecimal mb = new BigDecimal(x, 2).divide(
-      SizeBytes.BYTE_MEGABYTE_DIVISOR, RoundingMode.UP);
+    final var mb = new BigDecimal(x, 2).divide(
+      BYTE_MEGABYTE_DIVISOR, RoundingMode.UP);
     return mb + "mb";
   }
 
   private static String showAsKilobytes(final BigInteger x)
   {
-    final BigDecimal mb = new BigDecimal(x, 2).divide(
-      SizeBytes.BYTE_KILOBYTE_DIVISOR, RoundingMode.UP);
+    final var mb = new BigDecimal(x, 2).divide(
+      BYTE_KILOBYTE_DIVISOR, RoundingMode.UP);
     return mb + "kb";
   }
 
@@ -82,11 +82,11 @@ public final class SizeBytes
     if (this == o) {
       return true;
     }
-    if (o == null || this.getClass() != o.getClass()) {
+    if (o == null || !Objects.equals(this.getClass(), o.getClass())) {
       return false;
     }
 
-    final SizeBytes other = (SizeBytes) o;
+    final var other = (SizeBytes) o;
     return this.value.equals(other.value);
   }
 
@@ -110,13 +110,13 @@ public final class SizeBytes
   public String toHumanString()
   {
     if (this.value.compareTo(BigInteger.valueOf(1_000L)) < 0) {
-      return SizeBytes.showAsBytes(this.value);
+      return showAsBytes(this.value);
     }
 
     if (this.value.compareTo(BigInteger.valueOf(1_000_000L)) < 0) {
-      return SizeBytes.showAsKilobytes(this.value);
+      return showAsKilobytes(this.value);
     }
 
-    return SizeBytes.showAsMegabytes(this.value);
+    return showAsMegabytes(this.value);
   }
 }

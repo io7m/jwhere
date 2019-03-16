@@ -46,19 +46,19 @@ final class TasksTab extends JPanel
     super();
     Objects.requireNonNull(in_controller, "in_controller");
 
-    /**
+    /*
      * Task list.
      */
 
-    final JList<CatalogTask> tasks =
+    final var tasks =
       new JList<>(in_controller.catalogGetTasksListModel());
-    final JButton cancel = new JButton("Cancel");
+    final var cancel = new JButton("Cancel");
     cancel.setEnabled(false);
     cancel.addActionListener(
       (e) -> {
-        final CatalogTask task = tasks.getSelectedValue();
+        final var task = tasks.getSelectedValue();
         if (task != null) {
-          TasksTab.LOG.debug("cancelling: {}");
+          LOG.debug("cancelling: {}");
           task.getFuture().cancel(true);
         }
       });
@@ -68,18 +68,18 @@ final class TasksTab extends JPanel
     tasks.addListSelectionListener(
       e -> {
         if (!e.getValueIsAdjusting()) {
-          final CatalogTask task = tasks.getSelectedValue();
+          final var task = tasks.getSelectedValue();
           if (task != null) {
-            TasksTab.LOG.debug("selected: {}");
+            LOG.debug("selected: {}");
             cancel.setEnabled(true);
           } else {
             cancel.setEnabled(false);
           }
         }
       });
-    final JScrollPane tasks_pane = new JScrollPane(tasks);
+    final var tasks_pane = new JScrollPane(tasks);
 
-    final DesignGridLayout dg = new DesignGridLayout(this);
+    final var dg = new DesignGridLayout(this);
     dg.row().left().add(new JLabel("Running Tasks"));
     dg.row().grid().add(tasks_pane);
     dg.row().right().add(cancel);
@@ -106,7 +106,7 @@ final class TasksTab extends JPanel
       Preconditions.checkPreconditionV(
         value instanceof CatalogTask,
         "value instanceof CatalogTask");
-      final CatalogTask task = (CatalogTask) value;
+      final var task = (CatalogTask) value;
 
       this.setText(task.getName());
       return this;
