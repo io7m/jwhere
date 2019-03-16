@@ -28,6 +28,7 @@
     <module>com.io7m.jwhere.gui</module>
     <module>com.io7m.jwhere.gwhere</module>
     <module>com.io7m.jwhere.schema</module>
+    <module>com.io7m.jwhere.tests</module>
   </modules>
 
   <properties>
