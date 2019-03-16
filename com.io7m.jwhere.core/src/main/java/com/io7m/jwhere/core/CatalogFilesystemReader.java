@@ -395,7 +395,7 @@ public final class CatalogFilesystemReader
           return Unit.unit();
         }
 
-        @Override public Unit onDirectory(final CatalogDirectoryNode d)
+        @Override public Unit onDirectory(final CatalogDirectoryNodeType d)
         {
           return Unit.unit();
         }
@@ -412,8 +412,8 @@ public final class CatalogFilesystemReader
     if (settings.getIgnoreAccessTime()
         == CatalogIgnoreAccessTime
           .DO_NOT_IGNORE_ACCESS_TIME) {
-      final Instant then_atime = node.getAccessTime();
-      final Instant curr_atime = node_now.getAccessTime();
+      final Instant then_atime = node.accessTime();
+      final Instant curr_atime = node_now.accessTime();
       if (!then_atime.equals(curr_atime)) {
         rb.onItemError(
           new CatalogVerificationChangedMetadata(
@@ -424,8 +424,8 @@ public final class CatalogFilesystemReader
       }
     }
 
-    final Instant then_mtime = node.getModificationTime();
-    final Instant curr_mtime = node_now.getModificationTime();
+    final Instant then_mtime = node.modificationTime();
+    final Instant curr_mtime = node_now.modificationTime();
     if (!then_mtime.equals(curr_mtime)) {
       rb.onItemError(
         new CatalogVerificationChangedMetadata(
@@ -435,8 +435,8 @@ public final class CatalogFilesystemReader
           curr_mtime.toString()));
     }
 
-    final Instant then_ctime = node.getCreationTime();
-    final Instant curr_ctime = node_now.getCreationTime();
+    final Instant then_ctime = node.creationTime();
+    final Instant curr_ctime = node_now.creationTime();
     if (!then_ctime.equals(curr_ctime)) {
       rb.onItemError(
         new CatalogVerificationChangedMetadata(
@@ -453,31 +453,31 @@ public final class CatalogFilesystemReader
     final CatalogNodeType node_now,
     final LoggingListener rb)
   {
-    if (!node.getOwner().equals(node_now.getOwner())) {
+    if (!node.owner().equals(node_now.owner())) {
       rb.onItemError(
         new CatalogVerificationChangedMetadata(
           path,
           CatalogVerificationChangedMetadata.Field.OWNER,
-          node.getOwner(),
-          node_now.getOwner()));
+          node.owner(),
+          node_now.owner()));
     }
 
-    if (!node.getGroup().equals(node_now.getGroup())) {
+    if (!node.group().equals(node_now.group())) {
       rb.onItemError(
         new CatalogVerificationChangedMetadata(
           path,
           CatalogVerificationChangedMetadata.Field.GROUP,
-          node.getGroup(),
-          node_now.getGroup()));
+          node.group(),
+          node_now.group()));
     }
 
-    if (!node.getPermissions().equals(node_now.getPermissions())) {
+    if (!node.permissions().equals(node_now.permissions())) {
       rb.onItemError(
         new CatalogVerificationChangedMetadata(
           path,
           CatalogVerificationChangedMetadata.Field.PERMISSIONS,
-          PosixFilePermissions.toString(node.getPermissions()),
-          PosixFilePermissions.toString(node_now.getPermissions())));
+          PosixFilePermissions.toString(node.permissions()),
+          PosixFilePermissions.toString(node_now.permissions())));
     }
   }
 
@@ -600,14 +600,15 @@ public final class CatalogFilesystemReader
       }
     }
 
-    return new CatalogDirectoryNode(
-      perms,
-      owner,
-      group,
-      id_pool.updateAndGet(x -> x.add(BigInteger.ONE)),
-      a_time,
-      c_time,
-      m_time);
+    return CatalogDirectoryNode.builder()
+      .setPermissions(perms)
+      .setOwner(owner)
+      .setGroup(group)
+      .setId(id_pool.updateAndGet(x -> x.add(BigInteger.ONE)))
+      .setAccessTime(a_time)
+      .setCreationTime(c_time)
+      .setModificationTime(m_time)
+      .build();
   }
 
   private static final class LoggingListener

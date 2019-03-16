@@ -63,7 +63,7 @@ public final class CatalogVerificationChangedType
           return "file";
         }
 
-        @Override public String onDirectory(final CatalogDirectoryNode d)
+        @Override public String onDirectory(final CatalogDirectoryNodeType d)
         {
           return "directory";
         }

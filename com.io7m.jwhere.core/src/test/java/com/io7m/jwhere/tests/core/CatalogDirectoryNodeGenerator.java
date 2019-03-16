@@ -16,25 +16,25 @@
 
 package com.io7m.jwhere.tests.core;
 
-import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import net.java.quickcheck.Generator;
 
 import java.math.BigInteger;
 import java.nio.file.attribute.PosixFilePermission;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
 public final class CatalogDirectoryNodeGenerator
   implements Generator<CatalogDirectoryNode>
 {
-  private final Generator<Boolean>                  type_gen;
-  private final Generator<BigInteger>               long_gen;
+  private final Generator<Boolean> type_gen;
+  private final Generator<BigInteger> long_gen;
   private final Generator<Set<PosixFilePermission>> perm_gen;
-  private final Generator<String>                   user_gen;
-  private final Generator<String>                   group_gen;
-  private final Generator<Instant>                  time_gen;
+  private final Generator<String> user_gen;
+  private final Generator<String> group_gen;
+  private final Generator<Instant> time_gen;
 
   public CatalogDirectoryNodeGenerator(
     final Generator<Boolean> in_type_gen,
@@ -70,7 +70,8 @@ public final class CatalogDirectoryNodeGenerator
       bool_gen, long_gen, perm_set_gen, user_gen, group_gen, time_gen);
   }
 
-  @Override public CatalogDirectoryNode next()
+  @Override
+  public CatalogDirectoryNode next()
   {
     final Set<PosixFilePermission> perms = this.perm_gen.next();
     final String owner = this.user_gen.next();
@@ -80,7 +81,15 @@ public final class CatalogDirectoryNodeGenerator
     final Instant creation = this.time_gen.next();
     final Instant modify = this.time_gen.next();
 
-    return new CatalogDirectoryNode(
-      perms, owner, group, inode, access, creation, modify);
+    return
+      CatalogDirectoryNode.builder()
+        .setPermissions(perms)
+        .setOwner(owner)
+        .setGroup(group)
+        .setId(inode)
+        .setAccessTime(access)
+        .setCreationTime(creation)
+        .setModificationTime(modify)
+        .build();
   }
 }

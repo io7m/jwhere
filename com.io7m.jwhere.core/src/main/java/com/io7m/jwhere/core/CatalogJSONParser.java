@@ -143,8 +143,16 @@ public final class CatalogJSONParser implements CatalogJSONParserType
       CatalogJSONParserUtilities.getInstant(o, "modification-time");
     final Instant create =
       CatalogJSONParserUtilities.getInstant(o, "creation-time");
-    final CatalogDirectoryNode dir_new = new CatalogDirectoryNode(
-      perms, owner, group, inode, access, create, modify);
+    final CatalogDirectoryNode dir_new =
+      CatalogDirectoryNode.builder()
+        .setPermissions(perms)
+        .setOwner(owner)
+        .setGroup(group)
+        .setId(inode)
+        .setAccessTime(access)
+        .setCreationTime(create)
+        .setModificationTime(modify)
+        .build();
 
     db.addNode(dir, name, dir_new);
 
@@ -308,8 +316,17 @@ public final class CatalogJSONParser implements CatalogJSONParserType
       CatalogJSONParserUtilities.getInstant(jroot, "modification-time");
     final Instant create =
       CatalogJSONParserUtilities.getInstant(jroot, "creation-time");
-    final CatalogDirectoryNode root = new CatalogDirectoryNode(
-      perms, owner, group, inode, access, create, modify);
+
+    final CatalogDirectoryNode root =
+      CatalogDirectoryNode.builder()
+        .setPermissions(perms)
+        .setOwner(owner)
+        .setGroup(group)
+        .setId(inode)
+        .setAccessTime(access)
+        .setCreationTime(create)
+        .setModificationTime(modify)
+        .build();
 
     final CatalogDiskBuilderType db =
       CatalogDisk.newDiskBuilder(root, name, fs_type, index, size);

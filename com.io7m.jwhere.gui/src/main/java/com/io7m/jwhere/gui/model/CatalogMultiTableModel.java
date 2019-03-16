@@ -19,6 +19,7 @@ package com.io7m.jwhere.gui.model;
 import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import org.slf4j.Logger;
@@ -99,7 +100,7 @@ final class CatalogMultiTableModel extends AbstractTableModel
 
   public void openDiskAtDirectory(
     final CatalogDiskID index,
-    final CatalogDirectoryNode dir)
+    final CatalogDirectoryNodeType dir)
   {
     Objects.requireNonNull(index, "index");
     Objects.requireNonNull(dir, "dir");

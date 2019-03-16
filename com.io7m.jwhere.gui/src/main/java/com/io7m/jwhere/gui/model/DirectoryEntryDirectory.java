@@ -18,6 +18,7 @@ package com.io7m.jwhere.gui.model;
 
 import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
 
 /**
@@ -27,7 +28,7 @@ import com.io7m.jwhere.core.CatalogDiskID;
 public final class DirectoryEntryDirectory implements DirectoryEntryType
 {
   private final CatalogDiskID disk_index;
-  private final CatalogDirectoryNode node;
+  private final CatalogDirectoryNodeType node;
   private final String               name;
 
   /**
@@ -41,7 +42,7 @@ public final class DirectoryEntryDirectory implements DirectoryEntryType
   public DirectoryEntryDirectory(
     final CatalogDiskID in_disk_index,
     final String in_name,
-    final CatalogDirectoryNode in_node)
+    final CatalogDirectoryNodeType in_node)
   {
     this.disk_index = Objects.requireNonNull(in_disk_index, "in_disk_index");
     this.name = Objects.requireNonNull(in_name, "in_name");
@@ -61,7 +62,7 @@ public final class DirectoryEntryDirectory implements DirectoryEntryType
    * @return The actual directory node
    */
 
-  public CatalogDirectoryNode getNode()
+  public CatalogDirectoryNodeType getNode()
   {
     return this.node;
   }

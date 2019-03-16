@@ -54,22 +54,22 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     final CatalogFileNode node,
     final String name)
   {
-    final Instant atime = node.getAccessTime();
-    final Instant mtime = node.getModificationTime();
-    final Instant ctime = node.getCreationTime();
+    final Instant atime = node.accessTime();
+    final Instant mtime = node.modificationTime();
+    final Instant ctime = node.creationTime();
 
     final ObjectNode jout = jom.createObjectNode();
     jout.put("type", "file");
     jout.put("name", name);
     jout.set("size", new BigIntegerNode(node.getSize()));
-    jout.put("owner", node.getOwner());
-    jout.put("group", node.getGroup());
+    jout.put("owner", node.owner());
+    jout.put("group", node.group());
     jout.put("access-time", atime.toString());
     jout.put("modification-time", mtime.toString());
     jout.put("creation-time", ctime.toString());
-    jout.set("inode", new BigIntegerNode(node.getID()));
+    jout.set("inode", new BigIntegerNode(node.id()));
     jout.put(
-      "permissions", PosixFilePermissions.toString(node.getPermissions()));
+      "permissions", PosixFilePermissions.toString(node.permissions()));
 
     final Optional<CatalogFileHash> hash_opt = node.getHash();
     if (hash_opt.isPresent()) {
@@ -106,7 +106,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
           return CatalogJSONSerializer.serializeFile(jom, g, f, name);
         }
 
-        @Override public ObjectNode onDirectory(final CatalogDirectoryNode d)
+        @Override public ObjectNode onDirectory(final CatalogDirectoryNodeType d)
         {
           return CatalogJSONSerializer.serializeDirectory(jom, g, d, name);
         }
@@ -116,24 +116,24 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   private static ObjectNode serializeDirectory(
     final ObjectMapper jom,
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
-    final CatalogDirectoryNode node,
+    final CatalogDirectoryNodeType node,
     final String name)
   {
-    final Instant atime = node.getAccessTime();
-    final Instant mtime = node.getModificationTime();
-    final Instant ctime = node.getCreationTime();
+    final Instant atime = node.accessTime();
+    final Instant mtime = node.modificationTime();
+    final Instant ctime = node.creationTime();
 
     final ObjectNode jout = jom.createObjectNode();
     jout.put("type", "directory");
     jout.put("name", name);
-    jout.put("owner", node.getOwner());
-    jout.put("group", node.getGroup());
+    jout.put("owner", node.owner());
+    jout.put("group", node.group());
     jout.put("access-time", atime.toString());
     jout.put("modification-time", mtime.toString());
     jout.put("creation-time", ctime.toString());
-    jout.set("inode", new BigIntegerNode(node.getID()));
+    jout.set("inode", new BigIntegerNode(node.id()));
     jout.put(
-      "permissions", PosixFilePermissions.toString(node.getPermissions()));
+      "permissions", PosixFilePermissions.toString(node.permissions()));
 
     final ArrayNode ee = jom.createArrayNode();
     final Set<CatalogDirectoryEntry> oe = g.outgoingEdgesOf(node);

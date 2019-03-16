@@ -22,6 +22,7 @@ import com.io7m.jfunctional.Unit;
 import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
@@ -342,7 +343,7 @@ public final class Controller implements ControllerType
 
   @Override public void catalogSelectDiskAtDirectory(
     final CatalogDiskID index,
-    final CatalogDirectoryNode dir)
+    final CatalogDirectoryNodeType dir)
   {
     this.model.selectDiskAtDirectory(index, dir);
   }

@@ -18,6 +18,7 @@ package com.io7m.jwhere.tests.core;
 
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
 import net.java.quickcheck.Generator;
@@ -58,7 +59,7 @@ public final class CatalogFileNodeTest
                 return Boolean.TRUE;
               }
 
-              @Override public Boolean onDirectory(final CatalogDirectoryNode d)
+              @Override public Boolean onDirectory(final CatalogDirectoryNodeType d)
                 throws RuntimeException
               {
                 throw new UnreachableCodeException();
@@ -83,23 +84,23 @@ public final class CatalogFileNodeTest
           final CatalogFileNode ce = gen.next();
           final CatalogFileNode cf = new CatalogFileNode(
             cd.getSize(),
-            cd.getPermissions(),
-            cd.getOwner(),
-            cd.getGroup(),
-            cd.getID(),
-            cd.getAccessTime(),
-            cd.getCreationTime(),
-            cd.getModificationTime(),
+            cd.permissions(),
+            cd.owner(),
+            cd.group(),
+            cd.id(),
+            cd.accessTime(),
+            cd.creationTime(),
+            cd.modificationTime(),
             cd.getHash());
           final CatalogFileNode cg = new CatalogFileNode(
             cd.getSize(),
-            cd.getPermissions(),
-            cd.getOwner(),
-            cd.getGroup(),
-            cd.getID(),
-            cd.getAccessTime(),
-            cd.getCreationTime(),
-            cd.getModificationTime(),
+            cd.permissions(),
+            cd.owner(),
+            cd.group(),
+            cd.id(),
+            cd.accessTime(),
+            cd.creationTime(),
+            cd.modificationTime(),
             cd.getHash());
 
           // Reflexivity

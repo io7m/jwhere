@@ -22,6 +22,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
@@ -52,7 +53,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
   private final     List<CatalogDirectoryEntry> current_entries;
   private final     Supplier<CatalogState>      state_supplier;
   private @Nullable CatalogDisk                 current_disk;
-  private @Nullable CatalogDirectoryNode        current_dir;
+  private @Nullable CatalogDirectoryNodeType current_dir;
 
   CatalogDiskTableModel(final Supplier<CatalogState> supplier)
   {
@@ -142,7 +143,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
 
   public void openDiskAtDirectory(
     final CatalogDisk disk,
-    final CatalogDirectoryNode node)
+    final CatalogDirectoryNodeType node)
   {
     Objects.requireNonNull(disk, "disk");
     Objects.requireNonNull(node, "node");
@@ -204,7 +205,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
               }
 
               @Override public DirectoryEntryType onDirectory(
-                final CatalogDirectoryNode d)
+                final CatalogDirectoryNodeType d)
               {
                 if (row == 0) {
                   return new DirectoryEntryUp(
@@ -213,8 +214,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
                     entry.getSource(),
                     d.equals(disk.getFilesystemRoot()));
                 }
-                return new DirectoryEntryDirectory(
-                  meta.getDiskID(), entry.getName(), d);
+                return new DirectoryEntryDirectory(meta.getDiskID(), entry.getName(), d);
               }
             }));
       case SIZE:
@@ -229,24 +229,24 @@ final class CatalogDiskTableModel extends AbstractTableModel
               }
 
               @Override public SizeBytes onDirectory(
-                final CatalogDirectoryNode d)
+                final CatalogDirectoryNodeType d)
               {
                 return new SizeBytes(BigInteger.ZERO);
               }
             }));
       case CREATION_TIME:
-        return CatalogDiskTableModel.check(col, target.getCreationTime());
+        return CatalogDiskTableModel.check(col, target.creationTime());
       case MODIFICATION_TIME:
-        return CatalogDiskTableModel.check(col, target.getModificationTime());
+        return CatalogDiskTableModel.check(col, target.modificationTime());
       case ACCESS_TIME:
-        return CatalogDiskTableModel.check(col, target.getAccessTime());
+        return CatalogDiskTableModel.check(col, target.accessTime());
       case OWNER:
-        return CatalogDiskTableModel.check(col, target.getOwner());
+        return CatalogDiskTableModel.check(col, target.owner());
       case GROUP:
-        return CatalogDiskTableModel.check(col, target.getGroup());
+        return CatalogDiskTableModel.check(col, target.group());
       case PERMISSIONS:
         return CatalogDiskTableModel.check(
-          col, PosixFilePermissions.toString(target.getPermissions()));
+          col, PosixFilePermissions.toString(target.permissions()));
       case HASH:
         return CatalogDiskTableModel.check(
           col, target.matchNode(
@@ -264,7 +264,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
               }
 
               @Override public String onDirectory(
-                final CatalogDirectoryNode d)
+                final CatalogDirectoryNodeType d)
               {
                 return "";
               }
@@ -289,7 +289,8 @@ final class CatalogDiskTableModel extends AbstractTableModel
     final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
 
     if (this.current_disk != null) {
-      final CatalogDirectoryNode dir = Objects.requireNonNull(this.current_dir, "this.current_dir");
+      final CatalogDirectoryNodeType dir =
+        Objects.requireNonNull(this.current_dir, "this.current_dir");
 
       final CatalogDiskMetadata meta = this.current_disk.getMeta();
       final CatalogDiskID disk_id = meta.getDiskID();

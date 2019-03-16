@@ -48,6 +48,6 @@ public interface CatalogNodeMatcherType<A, E extends Exception>
    * @throws E If required
    */
 
-  A onDirectory(CatalogDirectoryNode d)
+  A onDirectory(CatalogDirectoryNodeType d)
     throws E;
 }

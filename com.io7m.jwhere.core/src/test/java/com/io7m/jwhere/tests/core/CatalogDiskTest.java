@@ -71,14 +71,15 @@ public final class CatalogDiskTest
 
   private CatalogDirectoryNode getRoot(final Clock c)
   {
-    return new CatalogDirectoryNode(
-      new HashSet<>(1),
-      "root",
-      "root",
-      BigInteger.valueOf(0L),
-      c.instant(),
-      c.instant(),
-      c.instant());
+    return CatalogDirectoryNode.builder()
+      .setPermissions(new HashSet<>())
+      .setGroup("root")
+      .setOwner("root")
+      .setId(BigInteger.valueOf(0L))
+      .setModificationTime(c.instant())
+      .setAccessTime(c.instant())
+      .setCreationTime(c.instant())
+      .build();
   }
 
   @Test public void testBuilderReuse()
@@ -150,14 +151,15 @@ public final class CatalogDiskTest
 
     final CatalogDirectoryNode root = this.getRoot(c);
 
-    final CatalogDirectoryNode d0 = new CatalogDirectoryNode(
-      new HashSet<>(1),
-      "root",
-      "root",
-      BigInteger.valueOf(1L),
-      c.instant(),
-      c.instant(),
-      c.instant());
+    final CatalogDirectoryNode d0 = CatalogDirectoryNode.builder()
+      .setPermissions(new HashSet<>())
+      .setGroup("root")
+      .setOwner("root")
+      .setId(BigInteger.valueOf(0L))
+      .setModificationTime(c.instant())
+      .setAccessTime(c.instant())
+      .setCreationTime(c.instant())
+      .build();
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
@@ -179,23 +181,25 @@ public final class CatalogDiskTest
 
     final CatalogDirectoryNode root = this.getRoot(c);
 
-    final CatalogDirectoryNode d0 = new CatalogDirectoryNode(
-      new HashSet<>(1),
-      "root",
-      "root",
-      BigInteger.valueOf(1L),
-      c.instant(),
-      c.instant(),
-      c.instant());
+    final CatalogDirectoryNode d0 = CatalogDirectoryNode.builder()
+      .setPermissions(new HashSet<>())
+      .setGroup("root")
+      .setOwner("root")
+      .setId(BigInteger.valueOf(1L))
+      .setModificationTime(c.instant())
+      .setAccessTime(c.instant())
+      .setCreationTime(c.instant())
+      .build();
 
-    final CatalogDirectoryNode d1 = new CatalogDirectoryNode(
-      new HashSet<>(1),
-      "root",
-      "root",
-      BigInteger.valueOf(2L),
-      c.instant(),
-      c.instant(),
-      c.instant());
+    final CatalogDirectoryNode d1 = CatalogDirectoryNode.builder()
+      .setPermissions(new HashSet<>())
+      .setGroup("root")
+      .setOwner("root")
+      .setId(BigInteger.valueOf(2L))
+      .setModificationTime(c.instant())
+      .setAccessTime(c.instant())
+      .setCreationTime(c.instant())
+      .build();
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,
@@ -219,14 +223,15 @@ public final class CatalogDiskTest
 
     final CatalogDirectoryNode root = this.getRoot(c);
 
-    final CatalogDirectoryNode d0 = new CatalogDirectoryNode(
-      new HashSet<>(1),
-      "root",
-      "root",
-      BigInteger.valueOf(1L),
-      c.instant(),
-      c.instant(),
-      c.instant());
+    final CatalogDirectoryNode d0 = CatalogDirectoryNode.builder()
+      .setPermissions(new HashSet<>())
+      .setGroup("root")
+      .setOwner("root")
+      .setId(BigInteger.valueOf(1L))
+      .setModificationTime(c.instant())
+      .setAccessTime(c.instant())
+      .setCreationTime(c.instant())
+      .build();
 
     final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
       root,

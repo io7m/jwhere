@@ -17,6 +17,8 @@
 package com.io7m.jwhere.gwhere;
 
 import com.io7m.jfunctional.Pair;
+
+import java.util.HashSet;
 import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnimplementedCodeException;
@@ -294,8 +296,17 @@ public final class GWhereParser implements GWhereParserType
 
     switch (type) {
       case DIRECTORY:
-        final CatalogDirectoryNode cdn = new CatalogDirectoryNode(
-          p, owner, group, inode, access, creation, modification);
+        final CatalogDirectoryNode cdn =
+          CatalogDirectoryNode.builder()
+            .setPermissions(p)
+            .setGroup(owner)
+            .setOwner(group)
+            .setId(inode)
+            .setModificationTime(modification)
+            .setAccessTime(access)
+            .setCreationTime(creation)
+            .build();
+
         return Pair.pair(name, cdn);
       case FILE:
         final CatalogFileNode cfn = new CatalogFileNode(

@@ -91,9 +91,9 @@ import java.util.Set;
     }
 
     final CatalogFileNode that = (CatalogFileNode) o;
-    return this.getPermissions().equals(that.getPermissions())
-           && this.getOwner().equals(that.getOwner())
-           && this.getGroup().equals(that.getGroup())
+    return this.permissions().equals(that.permissions())
+           && this.owner().equals(that.owner())
+           && this.group().equals(that.group())
            && this.id.equals(that.id)
            && this.creation_time.equals(that.creation_time)
            && this.modify_time.equals(that.modify_time)
@@ -104,9 +104,9 @@ import java.util.Set;
 
   @Override public int hashCode()
   {
-    int result = this.getPermissions().hashCode();
-    result = 31 * result + this.getOwner().hashCode();
-    result = 31 * result + this.getGroup().hashCode();
+    int result = this.permissions().hashCode();
+    result = 31 * result + this.owner().hashCode();
+    result = 31 * result + this.group().hashCode();
     result = 31 * result + this.id.hashCode();
     result = 31 * result + this.creation_time.hashCode();
     result = 31 * result + this.modify_time.hashCode();
@@ -157,37 +157,37 @@ import java.util.Set;
     return m.onFile(this);
   }
 
-  @Override public Instant getAccessTime()
+  @Override public Instant accessTime()
   {
     return this.access_time;
   }
 
-  @Override public Instant getCreationTime()
+  @Override public Instant creationTime()
   {
     return this.creation_time;
   }
 
-  @Override public String getGroup()
+  @Override public String group()
   {
     return this.group;
   }
 
-  @Override public BigInteger getID()
+  @Override public BigInteger id()
   {
     return this.id;
   }
 
-  @Override public Instant getModificationTime()
+  @Override public Instant modificationTime()
   {
     return this.modify_time;
   }
 
-  @Override public String getOwner()
+  @Override public String owner()
   {
     return this.owner;
   }
 
-  @Override public Set<PosixFilePermission> getPermissions()
+  @Override public Set<PosixFilePermission> permissions()
   {
     return this.permissions;
   }

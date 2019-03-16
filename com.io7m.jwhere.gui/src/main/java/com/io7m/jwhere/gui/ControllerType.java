@@ -20,6 +20,7 @@ import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
@@ -175,7 +176,7 @@ public interface ControllerType
 
   void catalogSelectDiskAtDirectory(
     CatalogDiskID index,
-    CatalogDirectoryNode dir);
+    CatalogDirectoryNodeType dir);
 
   /**
    * Load the catalog into the table model.

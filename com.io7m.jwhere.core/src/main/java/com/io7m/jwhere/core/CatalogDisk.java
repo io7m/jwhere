@@ -84,14 +84,17 @@ import java.util.stream.Stream;
     Objects.requireNonNull(d, "d");
 
     final CatalogDirectoryNode d_root = d.getFilesystemRoot();
-    final CatalogDirectoryNode in_root = new CatalogDirectoryNode(
-      d_root.getPermissions(),
-      d_root.getOwner(),
-      d_root.getGroup(),
-      d_root.getID(),
-      d_root.getAccessTime(),
-      d_root.getCreationTime(),
-      d_root.getModificationTime());
+
+    final CatalogDirectoryNode in_root =
+      CatalogDirectoryNode.builder()
+      .setPermissions(d_root.permissions())
+      .setOwner(d_root.owner())
+      .setGroup(d_root.group())
+      .setId(d_root.id())
+      .setAccessTime(d_root.accessTime())
+      .setCreationTime(d_root.creationTime())
+      .setModificationTime(d_root.modificationTime())
+      .build();
 
     return new CatalogDisk(
       d.getFilesystemGraph(), in_root, d.getMeta());
@@ -122,7 +125,7 @@ import java.util.stream.Stream;
 
   private static Optional<CatalogNodeType> getNodeForPathIterator(
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
-    final CatalogDirectoryNode node,
+    final CatalogDirectoryNodeType node,
     final Iterator<String> iter)
     throws NotDirectoryException
   {
@@ -145,7 +148,7 @@ import java.util.stream.Stream;
             }
 
             @Override public Optional<CatalogNodeType> onDirectory(
-              final CatalogDirectoryNode d)
+              final CatalogDirectoryNodeType d)
               throws NotDirectoryException
             {
               if (iter.hasNext()) {

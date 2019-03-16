@@ -19,6 +19,7 @@ package com.io7m.jwhere.gui.model;
 import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
+import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskDuplicateIDException;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -257,7 +258,7 @@ public final class Model
 
   public void selectDiskAtDirectory(
     final CatalogDiskID index,
-    final CatalogDirectoryNode dir)
+    final CatalogDirectoryNodeType dir)
   {
     Objects.requireNonNull(index, "index");
     Objects.requireNonNull(dir, "dir");

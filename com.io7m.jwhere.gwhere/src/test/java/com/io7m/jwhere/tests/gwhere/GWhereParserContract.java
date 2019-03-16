@@ -176,9 +176,9 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(BigInteger.valueOf(4386893824L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
-    Assert.assertEquals("root", root.getOwner());
-    Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
+    Assert.assertEquals("root", root.owner());
+    Assert.assertEquals("root", root.group());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -188,14 +188,14 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     perms.add(PosixFilePermission.GROUP_READ);
     perms.add(PosixFilePermission.OTHERS_EXECUTE);
     perms.add(PosixFilePermission.OTHERS_READ);
-    Assert.assertEquals(perms, root.getPermissions());
+    Assert.assertEquals(perms, root.permissions());
 
     Assert.assertEquals(
-      Instant.parse("2008-12-07T11:48:09Z"), root.getAccessTime());
+      Instant.parse("2008-12-07T11:48:09Z"), root.accessTime());
     Assert.assertEquals(
-      Instant.parse("2008-12-07T11:48:09Z"), root.getModificationTime());
+      Instant.parse("2008-12-07T11:48:09Z"), root.modificationTime());
     Assert.assertEquals(
-      Instant.parse("2008-12-07T11:48:09Z"), root.getCreationTime());
+      Instant.parse("2008-12-07T11:48:09Z"), root.creationTime());
   }
 
   @Test public final void testParserReal0()
@@ -212,9 +212,9 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(BigInteger.valueOf(4411650048L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
-    Assert.assertEquals("root", root.getOwner());
-    Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
+    Assert.assertEquals("root", root.owner());
+    Assert.assertEquals("root", root.group());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -224,14 +224,14 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     perms.add(PosixFilePermission.GROUP_READ);
     perms.add(PosixFilePermission.OTHERS_EXECUTE);
     perms.add(PosixFilePermission.OTHERS_READ);
-    Assert.assertEquals(perms, root.getPermissions());
+    Assert.assertEquals(perms, root.permissions());
 
     Assert.assertEquals(
-      Instant.parse("2013-07-31T22:22:17Z"), root.getAccessTime());
+      Instant.parse("2013-07-31T22:22:17Z"), root.accessTime());
     Assert.assertEquals(
-      Instant.parse("2013-07-31T22:22:17Z"), root.getModificationTime());
+      Instant.parse("2013-07-31T22:22:17Z"), root.modificationTime());
     Assert.assertEquals(
-      Instant.parse("2013-07-31T22:22:17Z"), root.getCreationTime());
+      Instant.parse("2013-07-31T22:22:17Z"), root.creationTime());
 
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
       d.getFilesystemGraph();
@@ -260,9 +260,9 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(BigInteger.valueOf(4681787392L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
-    Assert.assertEquals("root", root.getOwner());
-    Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
+    Assert.assertEquals("root", root.owner());
+    Assert.assertEquals("root", root.group());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -272,14 +272,14 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     perms.add(PosixFilePermission.GROUP_READ);
     perms.add(PosixFilePermission.OTHERS_EXECUTE);
     perms.add(PosixFilePermission.OTHERS_READ);
-    Assert.assertEquals(perms, root.getPermissions());
+    Assert.assertEquals(perms, root.permissions());
 
     Assert.assertEquals(
-      Instant.parse("2012-08-04T22:56:20Z"), root.getAccessTime());
+      Instant.parse("2012-08-04T22:56:20Z"), root.accessTime());
     Assert.assertEquals(
-      Instant.parse("2012-08-04T22:56:20Z"), root.getModificationTime());
+      Instant.parse("2012-08-04T22:56:20Z"), root.modificationTime());
     Assert.assertEquals(
-      Instant.parse("2012-08-04T22:56:20Z"), root.getCreationTime());
+      Instant.parse("2012-08-04T22:56:20Z"), root.creationTime());
 
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
       d.getFilesystemGraph();
@@ -298,26 +298,26 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         final CatalogNodeType file = e.getTarget();
         Assert.assertEquals(CatalogFileNode.class, file.getClass());
         final CatalogFileNode ffile = (CatalogFileNode) file;
-        Assert.assertEquals("root", ffile.getOwner());
-        Assert.assertEquals("root", ffile.getGroup());
+        Assert.assertEquals("root", ffile.owner());
+        Assert.assertEquals("root", ffile.group());
         Assert.assertEquals(BigInteger.valueOf(417761L), ffile.getSize());
-        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.getID());
+        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.id());
       }
 
       if ("arch".equals(e.getName())) {
         final CatalogNodeType file = e.getTarget();
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
-        Assert.assertEquals("root", file.getOwner());
-        Assert.assertEquals("root", file.getGroup());
-        Assert.assertEquals(BigInteger.valueOf(1728L), file.getID());
+        Assert.assertEquals("root", file.owner());
+        Assert.assertEquals("root", file.group());
+        Assert.assertEquals(BigInteger.valueOf(1728L), file.id());
       }
 
       if ("vls".equals(e.getName())) {
         final CatalogNodeType file = e.getTarget();
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
-        Assert.assertEquals("root", file.getOwner());
-        Assert.assertEquals("root", file.getGroup());
-        Assert.assertEquals(BigInteger.valueOf(1536L), file.getID());
+        Assert.assertEquals("root", file.owner());
+        Assert.assertEquals("root", file.group());
+        Assert.assertEquals(BigInteger.valueOf(1536L), file.id());
       }
     }
 
@@ -343,9 +343,9 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(BigInteger.valueOf(10000L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
-    Assert.assertEquals("root", root.getOwner());
-    Assert.assertEquals("root", root.getGroup());
-    Assert.assertEquals(BigInteger.valueOf(1472L), root.getID());
+    Assert.assertEquals("root", root.owner());
+    Assert.assertEquals("root", root.group());
+    Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
 
     final Set<PosixFilePermission> perms =
       EnumSet.noneOf(PosixFilePermission.class);
@@ -355,14 +355,14 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     perms.add(PosixFilePermission.GROUP_READ);
     perms.add(PosixFilePermission.OTHERS_EXECUTE);
     perms.add(PosixFilePermission.OTHERS_READ);
-    Assert.assertEquals(perms, root.getPermissions());
+    Assert.assertEquals(perms, root.permissions());
 
     Assert.assertEquals(
-      Instant.parse("2012-08-04T22:56:20Z"), root.getAccessTime());
+      Instant.parse("2012-08-04T22:56:20Z"), root.accessTime());
     Assert.assertEquals(
-      Instant.parse("2012-08-04T22:56:20Z"), root.getModificationTime());
+      Instant.parse("2012-08-04T22:56:20Z"), root.modificationTime());
     Assert.assertEquals(
-      Instant.parse("2012-08-04T22:56:20Z"), root.getCreationTime());
+      Instant.parse("2012-08-04T22:56:20Z"), root.creationTime());
 
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
       d.getFilesystemGraph();
@@ -381,18 +381,18 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
         final CatalogNodeType file = e.getTarget();
         Assert.assertEquals(CatalogFileNode.class, file.getClass());
         final CatalogFileNode ffile = (CatalogFileNode) file;
-        Assert.assertEquals("root", ffile.getOwner());
-        Assert.assertEquals("root", ffile.getGroup());
+        Assert.assertEquals("root", ffile.owner());
+        Assert.assertEquals("root", ffile.group());
         Assert.assertEquals(BigInteger.valueOf(417761L), ffile.getSize());
-        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.getID());
+        Assert.assertEquals(BigInteger.valueOf(1474L), ffile.id());
       }
 
       if ("empty".equals(e.getName())) {
         final CatalogNodeType file = e.getTarget();
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
-        Assert.assertEquals("root", file.getOwner());
-        Assert.assertEquals("root", file.getGroup());
-        Assert.assertEquals(BigInteger.valueOf(1728L), file.getID());
+        Assert.assertEquals("root", file.owner());
+        Assert.assertEquals("root", file.group());
+        Assert.assertEquals(BigInteger.valueOf(1728L), file.id());
       }
     }
 

@@ -46,41 +46,41 @@ public interface CatalogNodeType
    * @return The node's POSIX file permissions
    */
 
-  Set<PosixFilePermission> getPermissions();
+  Set<PosixFilePermission> permissions();
 
   /**
    * @return The node's owner
    */
 
-  String getOwner();
+  String owner();
 
   /**
    * @return The node's group
    */
 
-  String getGroup();
+  String group();
 
   /**
    * @return The node's filesystem inode value
    */
 
-  BigInteger getID();
+  BigInteger id();
 
   /**
    * @return The node's time of creation
    */
 
-  Instant getCreationTime();
+  Instant creationTime();
 
   /**
    * @return The node's time of most recent modification
    */
 
-  Instant getModificationTime();
+  Instant modificationTime();
 
   /**
    * @return The node's time of most recent access
    */
 
-  Instant getAccessTime();
+  Instant accessTime();
 }
