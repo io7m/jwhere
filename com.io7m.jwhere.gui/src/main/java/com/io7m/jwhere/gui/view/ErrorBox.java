@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
 import net.java.dev.designgridlayout.DesignGridLayout;
 
@@ -47,7 +46,7 @@ final class ErrorBox
   private static JDialog showActualErrorBox(
     final String title,
     final String message,
-    final @Nullable JTextArea backtrace)
+    final JTextArea backtrace)
   {
     final JDialog d = new JDialog();
     d.setTitle(title);

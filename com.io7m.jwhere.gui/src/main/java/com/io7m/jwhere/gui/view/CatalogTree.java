@@ -16,11 +16,11 @@
 
 package com.io7m.jwhere.gui.view;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.model.CatalogRootType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valid4j.Assertive;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -67,7 +67,9 @@ final class CatalogTree extends JTree
       super.getTreeCellRendererComponent(
         tree, value, sel, expanded, leaf, row, has_focus);
 
-      Assertive.require(value instanceof DefaultMutableTreeNode);
+      Preconditions.checkPreconditionV(
+        value instanceof DefaultMutableTreeNode,
+        "value instanceof DefaultMutableTreeNode");
       final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
       final Object node_value = node.getUserObject();
 

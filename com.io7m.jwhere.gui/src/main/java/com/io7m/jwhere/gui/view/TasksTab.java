@@ -16,12 +16,12 @@
 
 package com.io7m.jwhere.gui.view;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.gui.CatalogTask;
 import com.io7m.jwhere.gui.ControllerType;
 import net.java.dev.designgridlayout.DesignGridLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valid4j.Assertive;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -64,27 +64,7 @@ final class TasksTab extends JPanel
       });
 
     tasks.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    tasks.setCellRenderer(
-      new DefaultListCellRenderer()
-      {
-        @Override
-        public Component getListCellRendererComponent(
-          final JList<?> list,
-          final Object value,
-          final int index,
-          final boolean is_selected,
-          final boolean has_focus)
-        {
-          super.getListCellRendererComponent(
-            list, value, index, is_selected, has_focus);
-
-          Assertive.require(value instanceof CatalogTask);
-          final CatalogTask task = (CatalogTask) value;
-
-          this.setText(task.getName());
-          return this;
-        }
-      });
+    tasks.setCellRenderer(new TasksCellRenderer());
     tasks.addListSelectionListener(
       e -> {
         if (!e.getValueIsAdjusting()) {
@@ -103,5 +83,33 @@ final class TasksTab extends JPanel
     dg.row().left().add(new JLabel("Running Tasks"));
     dg.row().grid().add(tasks_pane);
     dg.row().right().add(cancel);
+  }
+
+  private static final class TasksCellRenderer extends DefaultListCellRenderer
+  {
+    TasksCellRenderer()
+    {
+
+    }
+
+    @Override
+    public Component getListCellRendererComponent(
+      final JList<?> list,
+      final Object value,
+      final int index,
+      final boolean is_selected,
+      final boolean has_focus)
+    {
+      super.getListCellRendererComponent(
+        list, value, index, is_selected, has_focus);
+
+      Preconditions.checkPreconditionV(
+        value instanceof CatalogTask,
+        "value instanceof CatalogTask");
+      final CatalogTask task = (CatalogTask) value;
+
+      this.setText(task.getName());
+      return this;
+    }
   }
 }

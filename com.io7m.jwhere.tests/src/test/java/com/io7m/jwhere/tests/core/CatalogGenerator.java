@@ -16,13 +16,13 @@
 
 package com.io7m.jwhere.tests.core;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.generator.support.IntegerGenerator;
-import org.valid4j.Assertive;
 
 import java.util.Objects;
 import java.util.SortedMap;
@@ -57,7 +57,9 @@ public final class CatalogGenerator implements Generator<Catalog>
       final CatalogDisk d = this.disk_gen.next();
       final CatalogDiskMetadata meta = d.getMeta();
       final CatalogDiskID disk_index = meta.getDiskID();
-      Assertive.require(disks.containsKey(disk_index) == false);
+      Preconditions.checkPrecondition(
+        disks.containsKey(disk_index) == false,
+        "Disk map must contain disk index");
       disks.put(disk_index, d);
     }
 

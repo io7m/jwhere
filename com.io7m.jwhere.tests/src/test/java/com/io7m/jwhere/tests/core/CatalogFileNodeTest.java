@@ -29,7 +29,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.valid4j.exceptions.RequireViolation;
 
 import java.math.BigInteger;
 import java.time.Clock;

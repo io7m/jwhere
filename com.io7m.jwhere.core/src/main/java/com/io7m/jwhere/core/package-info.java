@@ -18,5 +18,5 @@
  * Core types and functions.
  */
 
+@org.osgi.annotation.bundle.Export
 package com.io7m.jwhere.core;
-

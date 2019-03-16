@@ -17,7 +17,6 @@
 package com.io7m.jwhere.tests.core;
 
 import com.io7m.jaffirm.core.PreconditionViolationException;
-import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
@@ -30,7 +29,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.valid4j.exceptions.RequireViolation;
 
 import java.math.BigInteger;
 import java.time.Clock;

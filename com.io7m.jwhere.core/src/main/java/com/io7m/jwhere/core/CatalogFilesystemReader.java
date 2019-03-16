@@ -16,12 +16,12 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jfunctional.Unit;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.jgrapht.graph.UnmodifiableGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valid4j.Assertive;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -661,7 +661,7 @@ public final class CatalogFilesystemReader
 
         final Path fn = dir.getFileName();
         if (fn == null) {
-          Assertive.ensure(dir.equals(this.root));
+          Preconditions.checkPreconditionV(dir.equals(this.root), "Root must match");
         } else {
           if (!dir.equals(this.root)) {
             final CatalogDirectoryNode current = this.directories.peek();
@@ -721,7 +721,7 @@ public final class CatalogFilesystemReader
       CatalogFilesystemReader.LOG.debug(
         "postVisitDirectory: {}", dir);
 
-      Assertive.ensure(!this.directories.isEmpty());
+      Preconditions.checkPreconditionV(!this.directories.isEmpty(), "Must have empty directories");
       this.directories.pop();
       return FileVisitResult.CONTINUE;
     }

@@ -16,6 +16,8 @@
 
 package com.io7m.jwhere.gui.model;
 
+import com.io7m.jaffirm.core.Postconditions;
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
@@ -38,7 +40,6 @@ import com.io7m.jwhere.core.CatalogVerificationReportItemOKType;
 import com.io7m.jwhere.core.CatalogVerificationReportSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valid4j.Assertive;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.table.TableModel;
@@ -247,7 +248,9 @@ public final class Model
     Objects.requireNonNull(index, "index");
 
     final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
-    Assertive.require(c.getDisks().containsKey(index));
+    Preconditions.checkPreconditionV(
+      c.getDisks().containsKey(index),
+      "c.getDisks().containsKey(index)");
     this.catalog_table_model.openDiskAtRoot(index);
   }
 
@@ -266,7 +269,9 @@ public final class Model
     Objects.requireNonNull(dir, "dir");
 
     final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
-    Assertive.require(c.getDisks().containsKey(index));
+    Preconditions.checkPreconditionV(
+      c.getDisks().containsKey(index),
+      "c.getDisks().containsKey(index)");
     this.catalog_table_model.openDiskAtDirectory(index, dir);
   }
 
@@ -342,7 +347,7 @@ public final class Model
       final CatalogDiskID last = disks.lastKey();
       final CatalogDiskID new_id =
         CatalogDiskID.of(last.value().add(BigInteger.ONE));
-      Assertive.ensure(!disks.containsKey(new_id));
+      Postconditions.checkPostconditionV(!disks.containsKey(new_id), "!disks.containsKey(new_id)");
       return new_id;
     }
 
@@ -385,7 +390,7 @@ public final class Model
 
     final Catalog current = this.catalog_history.getCurrentValue().getCatalog();
     final SortedMap<CatalogDiskID, CatalogDisk> disks = current.getDisks();
-    Assertive.require(disks.containsKey(id));
+    Preconditions.checkPreconditionV(disks.containsKey(id), "disks.containsKey(id)");
     final CatalogDisk disk = disks.get(id);
     final CatalogVerificationTableModel cvm = this.catalog_verification_model;
 

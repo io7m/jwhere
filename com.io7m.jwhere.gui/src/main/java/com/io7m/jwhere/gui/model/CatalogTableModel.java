@@ -16,11 +16,11 @@
 
 package com.io7m.jwhere.gui.model;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
-import org.valid4j.Assertive;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Objects;
@@ -54,7 +54,7 @@ final class CatalogTableModel extends AbstractTableModel
     final int col)
   {
     final Class<?> type = CatalogTableModelField.values()[col].getType();
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       type.isInstance(c), "%s must be an instance of %s", c.getClass(), type);
     return c;
   }
@@ -74,16 +74,20 @@ final class CatalogTableModel extends AbstractTableModel
   @Override
   public String getColumnName(final int col)
   {
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogTableModelField.values().length);
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogTableModelField.values().length,
+      "col < CatalogTableModelField.values().length");
     return CatalogTableModelField.values()[col].getName();
   }
 
   @Override
   public Class<?> getColumnClass(final int col)
   {
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogTableModelField.values().length);
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogTableModelField.values().length,
+      "col < CatalogTableModelField.values().length");
     return CatalogTableModelField.values()[col].getType();
   }
 
@@ -96,13 +100,17 @@ final class CatalogTableModel extends AbstractTableModel
     final SortedMap<CatalogDiskID, CatalogDisk> disks =
       state.getCatalog().getDisks();
 
-    Assertive.require(row >= 0);
-    Assertive.require(row < disks.size());
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogTableModelField.values().length);
+    Preconditions.checkPreconditionV(row >= 0, "row >= 0");
+    Preconditions.checkPreconditionV(row < disks.size(), "row < disks.size()");
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogTableModelField.values().length,
+      "col < CatalogTableModelField.values().length");
 
     final CatalogDiskID disk_index = state.getCatalogDiskAt(row);
-    Assertive.ensure(disks.containsKey(disk_index));
+    Preconditions.checkPreconditionV(
+      disks.containsKey(disk_index),
+      "disks.containsKey(disk_index)");
     final CatalogDisk disk = disks.get(disk_index);
     final CatalogDiskMetadata meta = disk.getMeta();
 

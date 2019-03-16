@@ -16,6 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jfunctional.Unit;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.gui.model.DirectoryEntryDirectory;
@@ -23,7 +24,6 @@ import com.io7m.jwhere.gui.model.DirectoryEntryFile;
 import com.io7m.jwhere.gui.model.DirectoryEntryMatcherType;
 import com.io7m.jwhere.gui.model.DirectoryEntryType;
 import com.io7m.jwhere.gui.model.DirectoryEntryUp;
-import org.valid4j.Assertive;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -48,7 +48,9 @@ final class DirectoryEntryRenderer extends DefaultTableCellRenderer
     super.getTableCellRendererComponent(
       table, value, is_selected, has_focus, row, column);
 
-    Assertive.require(value instanceof DirectoryEntryType);
+    Preconditions.checkPreconditionV(
+      value instanceof DirectoryEntryType,
+      "value instanceof DirectoryEntryType");
     final DirectoryEntryType entry = (DirectoryEntryType) value;
 
     this.setText(entry.getName());

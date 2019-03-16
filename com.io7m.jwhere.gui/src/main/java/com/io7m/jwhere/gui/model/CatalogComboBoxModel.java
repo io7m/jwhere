@@ -16,11 +16,11 @@
 
 package com.io7m.jwhere.gui.model;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
-import org.valid4j.Assertive;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -51,8 +51,10 @@ final class CatalogComboBoxModel extends AbstractListModel<CatalogDiskMetadata>
   {
     final CatalogState state = this.supplier.get();
 
-    Assertive.require(index >= 0);
-    Assertive.require(index < state.getCatalogDiskCount());
+    Preconditions.checkPreconditionV(index >= 0, "index >= 0");
+    Preconditions.checkPreconditionV(
+      index < state.getCatalogDiskCount(),
+      "index < state.getCatalogDiskCount()");
 
     final CatalogDiskID disk_id = state.getCatalogDiskAt(index);
     final Catalog c = state.getCatalog();

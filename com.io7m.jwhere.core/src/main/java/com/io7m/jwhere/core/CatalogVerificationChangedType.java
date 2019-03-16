@@ -16,8 +16,8 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
-import org.valid4j.Assertive;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -50,7 +50,9 @@ public final class CatalogVerificationChangedType
     this.node = Objects.requireNonNull(in_node, "in_node");
     this.node_now = Objects.requireNonNull(in_node_now, "in_node_now");
 
-    Assertive.require(!this.node.getClass().equals(this.node_now.getClass()));
+    Preconditions.checkPreconditionV(
+      !this.node.getClass().equals(this.node_now.getClass()),
+      "Node types must match");
   }
 
   private static String type(final CatalogNodeType node)

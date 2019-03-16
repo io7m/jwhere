@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import org.valid4j.Assertive;
+import com.io7m.jaffirm.core.Preconditions;
 
 import java.util.Deque;
 import java.util.Iterator;
@@ -48,7 +48,7 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     final T in_top,
     final int in_bound)
   {
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       in_bound > 1, "Bound %d must be > 1", Integer.valueOf(in_bound));
 
     this.stack = new ConcurrentLinkedDeque<>();
@@ -72,7 +72,7 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
   @Override
   public T pop()
   {
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       this.size() > 1,
       "Stack must have more than one element to pop and remain non-empty");
 

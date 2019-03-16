@@ -16,11 +16,11 @@
 
 package com.io7m.jwhere.gui.model;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import net.jcip.annotations.Immutable;
-import org.valid4j.Assertive;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,8 +96,10 @@ public final class CatalogState
 
   public CatalogDiskID getCatalogDiskAt(final int row)
   {
-    Assertive.ensure(row >= 0, "Row must be non-negative");
-    Assertive.ensure(row < this.getCatalogDiskCount());
+    Preconditions.checkPreconditionV(row >= 0, "Row must be non-negative");
+    Preconditions.checkPreconditionV(
+      row < this.getCatalogDiskCount(),
+      "row < this.getCatalogDiskCount()");
     return this.catalog_disks.get(row);
   }
 }

@@ -2,8 +2,12 @@
 
 <div xmlns="http://www.w3.org/1999/xhtml">
   <ul>
-    <li>Catalogs disks, storing owner/group/file size/permissions/access time/modification time/creation time/SHA-256 hash.</li>
-    <li>Verifies catalogs against mounted disks to detect any data corruption or disk issues.</li>
+    <li>Catalogs disks, storing owner/group/file size/permissions/access
+      time/modification time/creation time/SHA-256 hash.
+    </li>
+    <li>Verifies catalogs against mounted disks to detect any data corruption or
+      disk issues.
+    </li>
     <li>Imports GWhere catalogs.</li>
     <li>Well-tested core API with extensive unit tests.</li>
     <li>Command-line frontend for non-interactive use.</li>

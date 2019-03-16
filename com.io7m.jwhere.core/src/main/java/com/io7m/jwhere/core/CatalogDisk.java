@@ -16,6 +16,7 @@
 
 package com.io7m.jwhere.core;
 
+import com.io7m.jaffirm.core.Preconditions;
 import net.jcip.annotations.Immutable;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -23,7 +24,6 @@ import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.UnmodifiableGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valid4j.Assertive;
 
 import java.math.BigInteger;
 import java.nio.file.NotDirectoryException;
@@ -62,11 +62,11 @@ public final class CatalogDisk
     this.root = Objects.requireNonNull(in_root, "in_root");
     this.meta = Objects.requireNonNull(in_meta, "in_meta");
 
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       this.graph.containsVertex(this.root),
       "Root node %s must be in filesystem",
       this.root);
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       this.graph.incomingEdgesOf(this.root).isEmpty(),
       "Root node %s must have no parents",
       this.root);
@@ -327,7 +327,7 @@ public final class CatalogDisk
       final CatalogNodeType node)
       throws CatalogNodeException
     {
-      Assertive.require(!this.finished, "Builders cannot be reused");
+      Preconditions.checkPreconditionV(!this.finished, "Builders cannot be reused");
 
       CatalogDisk.LOG.debug("adding {}: {} → {}", name, parent, node);
 
@@ -384,7 +384,7 @@ public final class CatalogDisk
     @Override
     public CatalogDisk build()
     {
-      Assertive.require(!this.finished, "Builders cannot be reused");
+      Preconditions.checkPreconditionV(!this.finished, "Builders cannot be reused");
 
       try {
         return new CatalogDisk(

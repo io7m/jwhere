@@ -16,8 +16,8 @@
 
 package com.io7m.jwhere.gui.view;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
-import org.valid4j.Assertive;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -42,7 +42,9 @@ final class CatalogDiskMetadataRenderer extends DefaultTableCellRenderer
     super.getTableCellRendererComponent(
       table, value, is_selected, has_focus, row, column);
 
-    Assertive.require(value instanceof CatalogDiskMetadata);
+    Preconditions.checkPreconditionV(
+      value instanceof CatalogDiskMetadata,
+      "value instanceof CatalogDiskMetadata");
     final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
 
     this.setIcon(CatalogDiskIcons.getIconForDisk(meta));

@@ -16,8 +16,8 @@
 
 package com.io7m.jwhere.gui.view;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.CatalogDiskID;
-import org.valid4j.Assertive;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -42,7 +42,9 @@ final class CatalogDiskIDRenderer extends DefaultTableCellRenderer
     super.getTableCellRendererComponent(
       table, value, is_selected, has_focus, row, column);
 
-    Assertive.require(value instanceof CatalogDiskID);
+    Preconditions.checkPreconditionV(
+      value instanceof CatalogDiskID,
+      "value instanceof CatalogDiskID");
     final CatalogDiskID id = (CatalogDiskID) value;
 
     this.setText(id.value().toString());

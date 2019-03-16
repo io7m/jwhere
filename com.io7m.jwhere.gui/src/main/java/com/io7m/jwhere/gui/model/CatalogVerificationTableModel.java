@@ -16,9 +16,9 @@
 
 package com.io7m.jwhere.gui.model;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogVerificationReportItemType;
-import org.valid4j.Assertive;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ final class CatalogVerificationTableModel extends AbstractTableModel
   {
     final Class<?> type =
       CatalogVerificationTableModelField.values()[col].getType();
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       type.isInstance(c), "%s must be an instance of %s", c.getClass(), type);
     return c;
   }
@@ -80,16 +80,20 @@ final class CatalogVerificationTableModel extends AbstractTableModel
   @Override
   public Class<?> getColumnClass(final int col)
   {
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogVerificationTableModelField.values().length);
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogVerificationTableModelField.values().length,
+      "col < CatalogVerificationTableModelField.values().length");
     return CatalogVerificationTableModelField.values()[col].getType();
   }
 
   @Override
   public String getColumnName(final int col)
   {
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogVerificationTableModelField.values().length);
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogVerificationTableModelField.values().length,
+      "col < CatalogVerificationTableModelField.values().length");
     return CatalogVerificationTableModelField.values()[col].getName();
   }
 
@@ -98,10 +102,12 @@ final class CatalogVerificationTableModel extends AbstractTableModel
     final int row,
     final int col)
   {
-    Assertive.require(row >= 0);
-    Assertive.require(row < this.data.size());
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogVerificationTableModelField.values().length);
+    Preconditions.checkPreconditionV(row >= 0, "row >= 0");
+    Preconditions.checkPreconditionV(row < this.data.size(), "row < this.data.size()");
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogVerificationTableModelField.values().length,
+      "col < CatalogVerificationTableModelField.values().length");
 
     switch (CatalogVerificationTableModelField.values()[col]) {
       case NAME:

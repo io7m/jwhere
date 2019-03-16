@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import org.valid4j.Assertive;
+import com.io7m.jaffirm.core.Preconditions;
 
 import java.util.Deque;
 import java.util.Iterator;
@@ -46,7 +46,7 @@ public final class MutableBoundedDiscardStack<T>
   public MutableBoundedDiscardStack(
     final int in_bound)
   {
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       in_bound >= 1, "Bound %d must be >= 1", Integer.valueOf(in_bound));
 
     this.stack = new ConcurrentLinkedDeque<>();

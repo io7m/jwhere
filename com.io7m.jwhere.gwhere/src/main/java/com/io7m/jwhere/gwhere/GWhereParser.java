@@ -17,7 +17,6 @@
 package com.io7m.jwhere.gwhere;
 
 import com.io7m.jfunctional.Pair;
-import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.Catalog;
@@ -377,8 +376,7 @@ public final class GWhereParser implements GWhereParserType
     return line;
   }
 
-  private @Nullable
-  String getLineOrEOF()
+  private String getLineOrEOF()
     throws IOException
   {
     final String line = this.reader.readLine();

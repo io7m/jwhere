@@ -16,12 +16,12 @@
 
 package com.io7m.jwhere.tests.gui;
 
+import com.io7m.jaffirm.core.PreconditionViolationException;
 import com.io7m.jwhere.gui.model.MutableBoundedDiscardStack;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.valid4j.exceptions.RequireViolation;
 
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testLowBound()
   {
-    this.expected.expect(RequireViolation.class);
+    this.expected.expect(PreconditionViolationException.class);
     new MutableBoundedDiscardStack<>(0);
   }
 

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.Nullable;
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
@@ -30,7 +30,6 @@ import com.io7m.jwhere.core.CatalogFileNodeType;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
 import com.io7m.jwhere.core.CatalogNodeType;
 import org.jgrapht.graph.UnmodifiableGraph;
-import org.valid4j.Assertive;
 
 import javax.swing.table.AbstractTableModel;
 import java.math.BigInteger;
@@ -51,8 +50,8 @@ final class CatalogDiskTableModel extends AbstractTableModel
 {
   private final List<CatalogDirectoryEntry> current_entries;
   private final Supplier<CatalogState> state_supplier;
-  private @Nullable CatalogDisk current_disk;
-  private @Nullable CatalogDirectoryNodeType current_dir;
+  private CatalogDisk current_disk;
+  private CatalogDirectoryNodeType current_dir;
 
   CatalogDiskTableModel(final Supplier<CatalogState> supplier)
   {
@@ -83,12 +82,14 @@ final class CatalogDiskTableModel extends AbstractTableModel
      */
 
     final Set<CatalogDirectoryEntry> in = graph.incomingEdgesOf(node);
-    Assertive.require(in.size() >= 0);
-    Assertive.require(in.size() <= 1);
+    Preconditions.checkPreconditionV(in.size() >= 0, "in.size() >= 0");
+    Preconditions.checkPreconditionV(in.size() <= 1, "in.size() <= 1");
 
     final CatalogDirectoryEntry parent;
     if (in.isEmpty()) {
-      Assertive.require(node instanceof CatalogDirectoryNode);
+      Preconditions.checkPreconditionV(
+        node instanceof CatalogDirectoryNode,
+        "node instanceof CatalogDirectoryNode");
       parent =
         new CatalogDirectoryEntry((CatalogDirectoryNode) node, node, "..");
     } else {
@@ -114,7 +115,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
     final Object c)
   {
     final Class<?> type = CatalogDiskTableModelField.values()[col].getType();
-    Assertive.require(
+    Preconditions.checkPreconditionV(
       type.isInstance(c), "%s must be an instance of %s", c.getClass(), type);
     return c;
   }
@@ -147,7 +148,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
 
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph =
       disk.getFilesystemGraph();
-    Assertive.require(graph.containsVertex(node));
+    Preconditions.checkPreconditionV(graph.containsVertex(node), "graph.containsVertex(node)");
 
     this.current_disk = disk;
     this.current_dir = node;
@@ -158,8 +159,10 @@ final class CatalogDiskTableModel extends AbstractTableModel
   @Override
   public String getColumnName(final int col)
   {
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogDiskTableModelField.values().length);
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogDiskTableModelField.values().length,
+      "col < CatalogDiskTableModelField.values().length");
 
     return CatalogDiskTableModelField.values()[col].getName();
   }
@@ -181,10 +184,14 @@ final class CatalogDiskTableModel extends AbstractTableModel
     final int row,
     final int col)
   {
-    Assertive.require(col >= 0);
-    Assertive.require(col < CatalogDiskTableModelField.values().length);
-    Assertive.require(row >= 0);
-    Assertive.require(row < this.current_entries.size());
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
+    Preconditions.checkPreconditionV(
+      col < CatalogDiskTableModelField.values().length,
+      "col < CatalogDiskTableModelField.values().length");
+    Preconditions.checkPreconditionV(row >= 0, "row >= 0");
+    Preconditions.checkPreconditionV(
+      row < this.current_entries.size(),
+      "row < this.current_entries.size()");
 
     final CatalogDisk disk = Objects.requireNonNull(this.current_disk, "this.current_disk");
     final CatalogDirectoryEntry entry = this.current_entries.get(row);
@@ -220,8 +227,10 @@ final class CatalogDiskTableModel extends AbstractTableModel
   @Override
   public Class<?> getColumnClass(final int col)
   {
-    Assertive.require(col < CatalogDiskTableModelField.values().length);
-    Assertive.require(col >= 0);
+    Preconditions.checkPreconditionV(
+      col < CatalogDiskTableModelField.values().length,
+      "col < CatalogDiskTableModelField.values().length");
+    Preconditions.checkPreconditionV(col >= 0, "col >= 0");
 
     return CatalogDiskTableModelField.values()[col].getType();
   }
@@ -283,7 +292,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
     @Override
     public DirectoryEntryType onFile(final CatalogFileNodeType f)
     {
-      Assertive.require(this.row > 0);
+      Preconditions.checkPreconditionV(this.row > 0, "this.row > 0");
       return new DirectoryEntryFile(this.entry.getName());
     }
 

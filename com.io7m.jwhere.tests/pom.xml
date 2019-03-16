@@ -18,6 +18,10 @@
   <description>Disk catalog (Unit tests)</description>
   <url>http://io7m.github.io/jwhere/</url>
 
+  <properties>
+    <mdep.analyze.skip>true</mdep.analyze.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
