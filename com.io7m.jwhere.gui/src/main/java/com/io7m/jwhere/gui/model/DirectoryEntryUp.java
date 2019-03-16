@@ -27,7 +27,7 @@ import com.io7m.jwhere.core.CatalogDiskID;
 
 public final class DirectoryEntryUp implements DirectoryEntryType
 {
-  private final CatalogDiskID        disk_index;
+  private final CatalogDiskID disk_index;
   private final CatalogDirectoryNode node;
   private final String               name;
   private final boolean              is_root;

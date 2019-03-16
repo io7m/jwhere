@@ -172,7 +172,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(new CatalogDiskName("soma"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
-      new CatalogDiskID(BigInteger.valueOf(25L)), meta.getDiskID());
+      CatalogDiskID.of(BigInteger.valueOf(25L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(4386893824L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
@@ -208,7 +208,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(new CatalogDiskName("data2"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
-      new CatalogDiskID(BigInteger.valueOf(179L)), meta.getDiskID());
+      CatalogDiskID.of(BigInteger.valueOf(179L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(4411650048L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
@@ -256,7 +256,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(new CatalogDiskName("archite_2"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
-      new CatalogDiskID(BigInteger.valueOf(174L)), meta.getDiskID());
+      CatalogDiskID.of(BigInteger.valueOf(174L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(4681787392L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
@@ -339,7 +339,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(new CatalogDiskName("dk"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
-      new CatalogDiskID(BigInteger.valueOf(10L)), meta.getDiskID());
+      CatalogDiskID.of(BigInteger.valueOf(10L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(10000L), meta.getSize());
 
     final CatalogDirectoryNode root = d.getFilesystemRoot();
@@ -411,10 +411,10 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(3L, (long) disks.size());
 
     Assert.assertTrue(
-      disks.containsKey(new CatalogDiskID(BigInteger.valueOf(179L))));
+      disks.containsKey(CatalogDiskID.of(BigInteger.valueOf(179L))));
     Assert.assertTrue(
-      disks.containsKey(new CatalogDiskID(BigInteger.valueOf(180L))));
+      disks.containsKey(CatalogDiskID.of(BigInteger.valueOf(180L))));
     Assert.assertTrue(
-      disks.containsKey(new CatalogDiskID(BigInteger.valueOf(181L))));
+      disks.containsKey(CatalogDiskID.of(BigInteger.valueOf(181L))));
   }
 }

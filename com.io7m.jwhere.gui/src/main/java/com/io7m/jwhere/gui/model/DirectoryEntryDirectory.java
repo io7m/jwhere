@@ -26,7 +26,7 @@ import com.io7m.jwhere.core.CatalogDiskID;
 
 public final class DirectoryEntryDirectory implements DirectoryEntryType
 {
-  private final CatalogDiskID        disk_index;
+  private final CatalogDiskID disk_index;
   private final CatalogDirectoryNode node;
   private final String               name;
 

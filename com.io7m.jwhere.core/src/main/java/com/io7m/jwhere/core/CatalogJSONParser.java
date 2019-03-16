@@ -287,7 +287,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
       new CatalogDiskName(CatalogJSONParserUtilities.getString(c, "disk-name"));
     final BigInteger size =
       CatalogJSONParserUtilities.getBigInteger(c, "disk-size");
-    final CatalogDiskID index = new CatalogDiskID(
+    final CatalogDiskID index = CatalogDiskID.of(
       CatalogJSONParserUtilities.getBigInteger(c, "disk-id"));
     final String fs_type =
       CatalogJSONParserUtilities.getString(c, "disk-filesystem-type");

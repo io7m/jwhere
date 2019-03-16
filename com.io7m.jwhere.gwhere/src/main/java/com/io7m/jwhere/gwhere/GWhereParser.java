@@ -98,7 +98,7 @@ public final class GWhereParser implements GWhereParserType
 
     final String disk_name = Objects.requireNonNull(header_segments[0], "header_segments[0]");
     final CatalogDiskID disk_index =
-      new CatalogDiskID(new BigInteger(Objects.requireNonNull(header_segments[1], "header_segments[1]")));
+      CatalogDiskID.of(new BigInteger(Objects.requireNonNull(header_segments[1], "header_segments[1]")));
     final String disk_type = Objects.requireNonNull(header_segments[4], "header_segments[4]");
     final BigInteger disk_size =
       new BigInteger(Objects.requireNonNull(header_segments[6], "header_segments[6]"));

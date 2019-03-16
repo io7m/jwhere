@@ -17,6 +17,7 @@
 package com.io7m.jwhere.gui.view;
 
 import java.util.Objects;
+
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.model.DirectoryEntryDirectory;

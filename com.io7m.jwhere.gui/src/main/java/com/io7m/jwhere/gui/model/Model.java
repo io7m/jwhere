@@ -338,12 +338,12 @@ public final class Model
     if (!disks.isEmpty()) {
       final CatalogDiskID last = disks.lastKey();
       final CatalogDiskID new_id =
-        new CatalogDiskID(last.getValue().add(BigInteger.ONE));
+        CatalogDiskID.of(last.value().add(BigInteger.ONE));
       Assertive.ensure(!disks.containsKey(new_id));
       return new_id;
     }
 
-    return new CatalogDiskID(BigInteger.ZERO);
+    return CatalogDiskID.of(BigInteger.ZERO);
   }
 
   /**

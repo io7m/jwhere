@@ -58,7 +58,7 @@ public final class CatalogDiskTest
       root,
       new CatalogDiskName("example"),
       "iso9660",
-      new CatalogDiskID(BigInteger.ZERO),
+      CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
 
     final CatalogDisk cd = db.build();
@@ -91,7 +91,7 @@ public final class CatalogDiskTest
       root,
       new CatalogDiskName("example"),
       "iso9660",
-      new CatalogDiskID(BigInteger.ZERO),
+      CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
 
     db.build();
@@ -134,7 +134,7 @@ public final class CatalogDiskTest
       root,
       new CatalogDiskName("example"),
       "iso9660",
-      new CatalogDiskID(BigInteger.ZERO),
+      CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
 
     db.addNode(root, "file0.txt", file0);
@@ -163,7 +163,7 @@ public final class CatalogDiskTest
       root,
       new CatalogDiskName("example"),
       "iso9660",
-      new CatalogDiskID(BigInteger.ZERO),
+      CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
 
     db.addNode(root, "d0", d0);
@@ -201,7 +201,7 @@ public final class CatalogDiskTest
       root,
       new CatalogDiskName("example"),
       "iso9660",
-      new CatalogDiskID(BigInteger.ZERO),
+      CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
 
     db.addNode(root, "d0", d0);
@@ -232,7 +232,7 @@ public final class CatalogDiskTest
       root,
       new CatalogDiskName("example"),
       "iso9660",
-      new CatalogDiskID(BigInteger.ZERO),
+      CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
     final CatalogDisk d = db.build();
 

@@ -44,7 +44,7 @@ final class CatalogDiskIDRenderer extends DefaultTableCellRenderer
     Assertive.require(value instanceof CatalogDiskID);
     final CatalogDiskID id = (CatalogDiskID) value;
 
-    this.setText(id.getValue().toString());
+    this.setText(id.value().toString());
     return this;
   }
 }

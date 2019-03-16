@@ -118,7 +118,7 @@ public final class CommandVerifyDisk extends CommandBase
 
       CommandVerifyDisk.LOG.debug("Opening {}", catalog_in_path);
       final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
-      final CatalogDiskID id = new CatalogDiskID(this.disk_index);
+      final CatalogDiskID id = CatalogDiskID.of(this.disk_index);
       final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
       if (!disks.containsKey(id)) {
         throw new NoSuchElementException(this.disk_index.toString());

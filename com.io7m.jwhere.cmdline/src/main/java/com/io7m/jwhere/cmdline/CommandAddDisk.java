@@ -137,7 +137,7 @@ public final class CommandAddDisk extends CommandBase
       CommandAddDisk.LOG.debug("Opening {}", catalog_in_path);
       final Catalog c = CommandBase.openCatalogForReading(p, catalog_in_path);
       final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
-      final CatalogDiskID id = new CatalogDiskID(this.disk_index);
+      final CatalogDiskID id = CatalogDiskID.of(this.disk_index);
       if (disks.containsKey(id)) {
         throw new CatalogDiskDuplicateIDException(
           String.format(

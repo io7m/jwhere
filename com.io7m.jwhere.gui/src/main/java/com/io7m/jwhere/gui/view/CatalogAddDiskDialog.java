@@ -18,6 +18,7 @@ package com.io7m.jwhere.gui.view;
 
 import com.io7m.jfunctional.ProcedureType;
 import java.util.Objects;
+
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.gui.ControllerType;
@@ -81,7 +82,7 @@ final class CatalogAddDiskDialog extends JDialog
       e -> {
         final Optional<BigInteger> id_opt = disk_id.getBigInteger();
         if (id_opt.isPresent()) {
-          final CatalogDiskID new_id = new CatalogDiskID(id_opt.get());
+          final CatalogDiskID new_id = CatalogDiskID.of(id_opt.get());
           final CatalogDiskName new_name =
             new CatalogDiskName(disk_name.getText());
           final Path new_path = Paths.get(disk_root.getText());

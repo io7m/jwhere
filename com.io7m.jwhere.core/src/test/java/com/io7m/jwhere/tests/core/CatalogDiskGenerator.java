@@ -70,7 +70,7 @@ public final class CatalogDiskGenerator implements Generator<CatalogDisk>
 
   @Override public CatalogDisk next()
   {
-    final CatalogDiskID index = new CatalogDiskID(this.long_gen.next());
+    final CatalogDiskID index = CatalogDiskID.of(this.long_gen.next());
     final BigInteger size = this.long_gen.next();
     final CatalogDiskName disk_name =
       new CatalogDiskName(this.string_gen.next());
