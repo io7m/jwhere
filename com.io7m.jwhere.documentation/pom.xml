@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -31,10 +30,12 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <outputDirectory>${project.build.directory}/documentation/</outputDirectory>
+              <outputDirectory>${project.build.directory}/documentation/
+              </outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/resources/com/io7m/jwhere/documentation/</directory>
+                  <directory>src/main/resources/com/io7m/jwhere/documentation/
+                  </directory>
                   <filtering>true</filtering>
                 </resource>
               </resources>
@@ -55,9 +56,13 @@
               <goal>transform</goal>
             </goals>
             <configuration>
-              <documentFile>${project.build.directory}/documentation/documentation.xml</documentFile>
-              <outputDirectory>${project.build.directory}/documentation/</outputDirectory>
-              <brandFile>${project.build.directory}/documentation/brand.xml</brandFile>
+              <documentFile>
+                ${project.build.directory}/documentation/documentation.xml
+              </documentFile>
+              <outputDirectory>${project.build.directory}/documentation/
+              </outputDirectory>
+              <brandFile>${project.build.directory}/documentation/brand.xml
+              </brandFile>
               <pagination>XHTML_SINGLE</pagination>
             </configuration>
           </execution>
@@ -68,9 +73,13 @@
               <goal>transform</goal>
             </goals>
             <configuration>
-              <documentFile>${project.build.directory}/documentation/documentation.xml</documentFile>
-              <outputDirectory>${project.build.directory}/documentation/</outputDirectory>
-              <brandFile>${project.build.directory}/documentation/brand.xml</brandFile>
+              <documentFile>
+                ${project.build.directory}/documentation/documentation.xml
+              </documentFile>
+              <outputDirectory>${project.build.directory}/documentation/
+              </outputDirectory>
+              <brandFile>${project.build.directory}/documentation/brand.xml
+              </brandFile>
               <pagination>XHTML_MULTI</pagination>
             </configuration>
           </execution>
@@ -90,16 +99,20 @@
               <goal>jar</goal>
             </goals>
             <configuration>
-              <bottom><![CDATA[Copyright &#169; {currentYear} &lt;code@io7m.com&gt; http://io7m.com]]></bottom>
+              <bottom>
+                <![CDATA[Copyright &#169; {currentYear} &lt;code@io7m.com&gt; http://io7m.com]]></bottom>
               <archive>
                 <manifestEntries>
                   <Specification-Title>${project.name}</Specification-Title>
-                  <Specification-Version>${project.version}</Specification-Version>
+                  <Specification-Version>${project.version}
+                  </Specification-Version>
                   <Specification-Vendor>io7m.com</Specification-Vendor>
                   <Implementation-Title>${project.name}</Implementation-Title>
-                  <Implementation-Version>${project.version}</Implementation-Version>
+                  <Implementation-Version>${project.version}
+                  </Implementation-Version>
                   <Implementation-Vendor>io7m.com</Implementation-Vendor>
-                  <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
+                  <Implementation-Vendor-Id>${project.groupId}
+                  </Implementation-Vendor-Id>
                   <Built-By>io7m</Built-By>
                 </manifestEntries>
               </archive>
@@ -113,10 +126,13 @@
               <goal>javadoc-no-fork</goal>
             </goals>
             <configuration>
-              <bottom><![CDATA[Copyright &#169; {currentYear} &lt;code@io7m.com&gt; http://io7m.com]]></bottom>
-              <outputDirectory>${project.build.directory}/apidocs</outputDirectory>
+              <bottom>
+                <![CDATA[Copyright &#169; {currentYear} &lt;code@io7m.com&gt; http://io7m.com]]></bottom>
+              <outputDirectory>${project.build.directory}/apidocs
+              </outputDirectory>
               <includeDependencySources>true</includeDependencySources>
-              <includeTransitiveDependencySources>true</includeTransitiveDependencySources>
+              <includeTransitiveDependencySources>true
+              </includeTransitiveDependencySources>
               <dependencySourceIncludes>
                 <dependencySourceSet>com.io7m.jwhere*</dependencySourceSet>
               </dependencySourceIncludes>
@@ -164,8 +180,12 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <directory>${project.build.directory}/${project.name}-${project.version}.zip/${project.name}-${project.version}/</directory>
-                <outputDirectory>${project.parent.build.directory}/staging/documentation/</outputDirectory>
+                <directory>
+                  ${project.build.directory}/${project.name}-${project.version}.zip/${project.name}-${project.version}/
+                </directory>
+                <outputDirectory>
+                  ${project.parent.build.directory}/staging/documentation/
+                </outputDirectory>
               </fileset>
             </configuration>
           </execution>

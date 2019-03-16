@@ -16,21 +16,21 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
 
+import java.util.Objects;
+
 /**
- * A directory entry in a given disk that corresponds to a link to a parent
- * directory.
+ * A directory entry in a given disk that corresponds to a link to a parent directory.
  */
 
 public final class DirectoryEntryUp implements DirectoryEntryType
 {
   private final CatalogDiskID disk_index;
   private final CatalogDirectoryNode node;
-  private final String               name;
-  private final boolean              is_root;
+  private final String name;
+  private final boolean is_root;
 
   /**
    * Construct a directory entry.
@@ -80,14 +80,16 @@ public final class DirectoryEntryUp implements DirectoryEntryType
     return this.node;
   }
 
-  @Override public <A, E extends Exception> A matchEntry(
+  @Override
+  public <A, E extends Exception> A matchEntry(
     final DirectoryEntryMatcherType<A, E> m)
     throws E
   {
     return m.onUp(this);
   }
 
-  @Override public String getName()
+  @Override
+  public String getName()
   {
     return this.name;
   }

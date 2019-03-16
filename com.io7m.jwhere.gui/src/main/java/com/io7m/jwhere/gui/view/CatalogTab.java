@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.ControllerType;
@@ -39,6 +38,7 @@ import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 final class CatalogTab extends JPanel
 {
@@ -48,8 +48,8 @@ final class CatalogTab extends JPanel
     LOG = LoggerFactory.getLogger(CatalogTab.class);
   }
 
-  private final CatalogTree    catalog_disk_list;
-  private final CatalogTable   catalog_table;
+  private final CatalogTree catalog_disk_list;
+  private final CatalogTable catalog_table;
   private final ControllerType controller;
 
   CatalogTab(
@@ -58,60 +58,10 @@ final class CatalogTab extends JPanel
     final ControllerType in_controller)
   {
     super();
-    this.controller = Objects.requireNonNull(in_controller, "in_controller");
+    this.controller = Objects.requireNonNull(in_controller, "controller");
 
     this.catalog_table = new CatalogTable(in_controller.catalogGetTableModel());
-    this.catalog_table.addMouseListener(
-      new MouseAdapter()
-      {
-        @Override public void mouseClicked(final MouseEvent e)
-        {
-          if (e.getClickCount() == 2) {
-            final JTable target = (JTable) e.getSource();
-            final int row = target.getSelectedRow();
-            if (row >= 0) {
-              final Object val = target.getValueAt(row, 0);
-              CatalogTab.LOG.debug("selected: {} ({})", val, val.getClass());
-
-              if (val instanceof CatalogDiskMetadata) {
-                final CatalogDiskMetadata meta = (CatalogDiskMetadata) val;
-                in_controller.catalogSelectDiskAtRoot(meta.getDiskID());
-                return;
-              }
-
-              if (val instanceof DirectoryEntryUp) {
-                handleDirectoryEntryUp((DirectoryEntryUp) val);
-                return;
-              }
-
-              if (val instanceof DirectoryEntryDirectory) {
-                final DirectoryEntryDirectory dir =
-                  (DirectoryEntryDirectory) val;
-                in_controller.catalogSelectDiskAtDirectory(
-                  dir.getDiskIndex(), dir.getNode());
-                return;
-              }
-
-              if (val instanceof DirectoryEntryFile) {
-                // Ignore for now.
-                return;
-              }
-
-              throw new UnreachableCodeException();
-            }
-          }
-        }
-
-        private void handleDirectoryEntryUp(final DirectoryEntryUp up)
-        {
-          if (up.isRoot()) {
-            in_controller.catalogSelectRoot();
-          } else {
-            in_controller.catalogSelectDiskAtDirectory(
-              up.getDiskIndex(), up.getNode());
-          }
-        }
-      });
+    this.catalog_table.addMouseListener(new TableMouseAdapter(in_controller));
 
     final JScrollPane table_scroller = new JScrollPane();
     table_scroller.setViewportView(this.catalog_table);
@@ -164,9 +114,9 @@ final class CatalogTab extends JPanel
 
   static final class CatalogTreePopupListener extends MouseAdapter
   {
-    private final CatalogTree    tree;
-    private final JPopupMenu     disk_popup;
-    private final JPopupMenu     catalog_popup;
+    private final CatalogTree tree;
+    private final JPopupMenu disk_popup;
+    private final JPopupMenu catalog_popup;
     private final ControllerType controller;
 
     CatalogTreePopupListener(
@@ -175,7 +125,7 @@ final class CatalogTab extends JPanel
       final StatusBar in_status,
       final CatalogTree in_tree)
     {
-      this.controller = Objects.requireNonNull(in_controller, "in_controller");
+      this.controller = Objects.requireNonNull(in_controller, "controller");
       this.tree = Objects.requireNonNull(in_tree, "in_tree");
 
       this.disk_popup = new JPopupMenu();
@@ -199,12 +149,14 @@ final class CatalogTab extends JPanel
       }
     }
 
-    @Override public void mousePressed(final MouseEvent e)
+    @Override
+    public void mousePressed(final MouseEvent e)
     {
       this.maybeShowPopup(e);
     }
 
-    @Override public void mouseReleased(final MouseEvent e)
+    @Override
+    public void mouseReleased(final MouseEvent e)
     {
       this.maybeShowPopup(e);
     }
@@ -233,6 +185,66 @@ final class CatalogTab extends JPanel
         if (node_value instanceof CatalogRootType) {
           this.catalog_popup.show(e.getComponent(), e.getX(), e.getY());
         }
+      }
+    }
+  }
+
+  private static final class TableMouseAdapter extends MouseAdapter
+  {
+    private final ControllerType controller;
+
+    TableMouseAdapter(
+      final ControllerType in_controller)
+    {
+      this.controller = Objects.requireNonNull(in_controller, "controller");
+    }
+
+    @Override
+    public void mouseClicked(final MouseEvent e)
+    {
+      if (e.getClickCount() == 2) {
+        final JTable target = (JTable) e.getSource();
+        final int row = target.getSelectedRow();
+        if (row >= 0) {
+          final Object val = target.getValueAt(row, 0);
+          CatalogTab.LOG.debug("selected: {} ({})", val, val.getClass());
+
+          if (val instanceof CatalogDiskMetadata) {
+            final CatalogDiskMetadata meta = (CatalogDiskMetadata) val;
+            this.controller.catalogSelectDiskAtRoot(meta.getDiskID());
+            return;
+          }
+
+          if (val instanceof DirectoryEntryUp) {
+            this.handleDirectoryEntryUp((DirectoryEntryUp) val);
+            return;
+          }
+
+          if (val instanceof DirectoryEntryDirectory) {
+            final DirectoryEntryDirectory dir =
+              (DirectoryEntryDirectory) val;
+            this.controller.catalogSelectDiskAtDirectory(
+              dir.getDiskIndex(), dir.getNode());
+            return;
+          }
+
+          if (val instanceof DirectoryEntryFile) {
+            // Ignore for now.
+            return;
+          }
+
+          throw new UnreachableCodeException();
+        }
+      }
+    }
+
+    private void handleDirectoryEntryUp(final DirectoryEntryUp up)
+    {
+      if (up.isRoot()) {
+        this.controller.catalogSelectRoot();
+      } else {
+        this.controller.catalogSelectDiskAtDirectory(
+          up.getDiskIndex(), up.getNode());
       }
     }
   }

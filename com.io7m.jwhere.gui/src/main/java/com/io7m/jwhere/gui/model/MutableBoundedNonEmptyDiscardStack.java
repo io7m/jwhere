@@ -16,16 +16,16 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import org.valid4j.Assertive;
 
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
- * A mutable bounded stack that discards the oldest elements on overflow and
- * always contains at least one element.
+ * A mutable bounded stack that discards the oldest elements on overflow and always contains at
+ * least one element.
  *
  * @param <T> The type of elements
  */
@@ -34,8 +34,8 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
   implements MutableBoundedNonEmptyDiscardStackType<T>
 {
   private final Deque<T> stack;
-  private final int      bound;
-  private       T        top;
+  private final int bound;
+  private T top;
 
   /**
    * Construct a stack.
@@ -56,18 +56,21 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     this.bound = in_bound;
   }
 
-  @Override public void clear(final T x)
+  @Override
+  public void clear(final T x)
   {
     this.top = Objects.requireNonNull(x, "x");
     this.stack.clear();
   }
 
-  @Override public T peek()
+  @Override
+  public T peek()
   {
     return this.top;
   }
 
-  @Override public T pop()
+  @Override
+  public T pop()
   {
     Assertive.require(
       this.size() > 1,
@@ -78,7 +81,8 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     return old_top;
   }
 
-  @Override public void push(final T x)
+  @Override
+  public void push(final T x)
   {
     Objects.requireNonNull(x, "x");
     if (this.size() == this.bound) {
@@ -88,7 +92,8 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     this.top = x;
   }
 
-  @Override public boolean equals(final Object o)
+  @Override
+  public boolean equals(final Object o)
   {
     if (this == o) {
       return true;
@@ -126,7 +131,8 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     return true;
   }
 
-  @Override public int hashCode()
+  @Override
+  public int hashCode()
   {
     int result = this.hashStack();
     result = 31 * result + this.bound;
@@ -145,7 +151,8 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
     return hash;
   }
 
-  @Override public int size()
+  @Override
+  public int size()
   {
     return 1 + this.stack.size();
   }

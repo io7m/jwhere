@@ -75,7 +75,7 @@ public final class CatalogFileHashes
   {
     final byte[] data = new byte[8192];
 
-    try (final InputStream is = Files.newInputStream(file)) {
+    try (InputStream is = Files.newInputStream(file)) {
       while (true) {
         final int r = is.read(data);
         if (r == -1) {
@@ -85,9 +85,9 @@ public final class CatalogFileHashes
       }
     }
 
-    final String hex = Hex.encodeHexString(md.digest());
+    final String hex = Hex.encodeHexString(md.digest()).toUpperCase();
     return CatalogFileHash.builder()
-      .setAlgorithm (md.getAlgorithm())
+      .setAlgorithm(md.getAlgorithm())
       .setValue(hex)
       .build();
   }

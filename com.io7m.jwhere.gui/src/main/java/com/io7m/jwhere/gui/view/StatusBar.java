@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
 import com.io7m.jwhere.gui.ControllerType;
 
 import javax.swing.JLabel;
@@ -28,11 +27,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Objects;
 
 final class StatusBar extends JPanel
 {
-  private final JLabel       text;
-  private final JLabel       error_icon;
+  private final JLabel text;
+  private final JLabel error_icon;
   private final JProgressBar progress;
 
   StatusBar(final ControllerType in_controller)

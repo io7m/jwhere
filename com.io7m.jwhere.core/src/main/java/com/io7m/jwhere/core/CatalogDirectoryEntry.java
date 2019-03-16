@@ -16,27 +16,28 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
 import net.jcip.annotations.Immutable;
 import org.valid4j.Assertive;
+
+import java.util.Objects;
 
 /**
  * A directory entry.
  */
 
-@Immutable public final class CatalogDirectoryEntry
+@Immutable
+public final class CatalogDirectoryEntry
 {
   private final CatalogDirectoryNode source;
-  private final String               name;
-  private final CatalogNodeType      target;
+  private final String name;
+  private final CatalogNodeType target;
 
   /**
    * Construct a directory entry.
    *
    * @param in_parent The parent directory
    * @param in_child  The new child node
-   * @param in_name   The name of the child node, which must be unique within
-   *                  the parent directory
+   * @param in_name   The name of the child node, which must be unique within the parent directory
    */
 
   public CatalogDirectoryEntry(
@@ -72,7 +73,8 @@ import org.valid4j.Assertive;
     return this.source;
   }
 
-  @Override public String toString()
+  @Override
+  public String toString()
   {
     final StringBuilder sb = new StringBuilder("CatalogDirectoryEntry{");
     sb.append("name='").append(this.name).append('\'');
@@ -91,7 +93,8 @@ import org.valid4j.Assertive;
     return this.target;
   }
 
-  @Override public boolean equals(final Object o)
+  @Override
+  public boolean equals(final Object o)
   {
     if (this == o) {
       return true;
@@ -102,11 +105,12 @@ import org.valid4j.Assertive;
 
     final CatalogDirectoryEntry that = (CatalogDirectoryEntry) o;
     return this.source.equals(that.source)
-           && this.name.equals(that.name)
-           && this.target.equals(that.target);
+      && this.name.equals(that.name)
+      && this.target.equals(that.target);
   }
 
-  @Override public int hashCode()
+  @Override
+  public int hashCode()
   {
     int result = this.source.hashCode();
     result = 31 * result + this.name.hashCode();

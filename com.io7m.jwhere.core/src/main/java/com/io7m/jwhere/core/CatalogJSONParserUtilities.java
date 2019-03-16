@@ -19,13 +19,13 @@ package com.io7m.jwhere.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
 
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -449,8 +449,7 @@ public final class CatalogJSONParserUtilities
    * @param n   A node
    * @param v   A default value
    *
-   * @return A boolean from key {@code key}, or {@code v} if the key does not
-   * exist
+   * @return A boolean from key {@code key}, or {@code v} if the key does not exist
    *
    * @throws CatalogJSONParseException On type errors
    */

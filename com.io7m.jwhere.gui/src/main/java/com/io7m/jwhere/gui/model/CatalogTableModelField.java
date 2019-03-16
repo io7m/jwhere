@@ -26,7 +26,7 @@ enum CatalogTableModelField
   FILESYSTEM("Filesystem", String.class),
   SIZE("Size", SizeBytes.class);
 
-  private final String   name;
+  private final String name;
   private final Class<?> type;
 
   CatalogTableModelField(

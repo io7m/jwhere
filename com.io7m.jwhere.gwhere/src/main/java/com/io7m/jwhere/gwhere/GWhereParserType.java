@@ -46,8 +46,7 @@ public interface GWhereParserType
    * @throws IOException                     On I/O errors
    * @throws GWhereParserException           On parse errors
    * @throws CatalogNodeException            On filesystem errors
-   * @throws CatalogDiskDuplicateIDException Iff two disks in the catalog have
-   *                                         the same ID
+   * @throws CatalogDiskDuplicateIDException Iff two disks in the catalog have the same ID
    */
 
   Catalog parseCatalog()

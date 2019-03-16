@@ -30,8 +30,7 @@ final class UnsavedChangesDialog
 
   static UnsavedChangesChoice showUnsavedChangesDialog(final JFrame frame)
   {
-    final Object[] options = {
-      "Save", "Discard", "Cancel", };
+    final Object[] options = {"Save", "Discard", "Cancel"};
 
     final int n = JOptionPane.showOptionDialog(
       frame,

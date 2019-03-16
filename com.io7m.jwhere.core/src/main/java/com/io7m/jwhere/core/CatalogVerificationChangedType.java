@@ -16,11 +16,11 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.valid4j.Assertive;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * An error indicating that a filesystem object has changed type.
@@ -29,7 +29,7 @@ import java.nio.file.Path;
 public final class CatalogVerificationChangedType
   implements CatalogVerificationReportItemErrorType
 {
-  private final Path            path;
+  private final Path path;
   private final CatalogNodeType node;
   private final CatalogNodeType node_now;
 
@@ -58,24 +58,28 @@ public final class CatalogVerificationChangedType
     return node.matchNode(
       new CatalogNodeMatcherType<String, UnreachableCodeException>()
       {
-        @Override public String onFile(final CatalogFileNodeType f)
+        @Override
+        public String onFile(final CatalogFileNodeType f)
         {
           return "file";
         }
 
-        @Override public String onDirectory(final CatalogDirectoryNodeType d)
+        @Override
+        public String onDirectory(final CatalogDirectoryNodeType d)
         {
           return "directory";
         }
       });
   }
 
-  @Override public Path path()
+  @Override
+  public Path path()
   {
     return this.path;
   }
 
-  @Override public String show()
+  @Override
+  public String show()
   {
     return String.format(
       "Node was previously a %s but is now a %s",

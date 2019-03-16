@@ -103,6 +103,10 @@ public interface CatalogFileNodeType extends CatalogNodeType
     return m.onFile(this);
   }
 
+  /**
+   * Check preconditions for the type.
+   */
+
   @Value.Check
   default void checkPreconditions()
   {

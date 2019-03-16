@@ -19,7 +19,6 @@ package com.io7m.jwhere.core;
 import com.io7m.immutables.styles.ImmutablesStyleType;
 import org.immutables.value.Value;
 
-import java.math.BigInteger;
 import java.util.Objects;
 
 /**

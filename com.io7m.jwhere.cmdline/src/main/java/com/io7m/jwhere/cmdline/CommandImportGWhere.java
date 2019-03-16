@@ -41,7 +41,7 @@ import java.util.zip.GZIPInputStream;
  */
 
 @Command(name = "import-gwhere",
-         description = "Import a GWhere catalog")
+  description = "Import a GWhere catalog")
 public final class CommandImportGWhere extends CommandBase
 {
   private static final Logger LOG;
@@ -55,8 +55,8 @@ public final class CommandImportGWhere extends CommandBase
    */
 
   @Option(name = "--catalog-compress",
-          arity = 1,
-          description = "The compression scheme to use for the catalog")
+    arity = 1,
+    description = "The compression scheme to use for the catalog")
   private final CatalogCompress catalog_compress =
     CatalogCompress.COMPRESS_GZIP;
 
@@ -65,17 +65,17 @@ public final class CommandImportGWhere extends CommandBase
    */
 
   @Option(name = "--catalog-output",
-          arity = 1,
-          description = "The path to the output catalog file",
-          required = true) private String catalog_out;
+    arity = 1,
+    description = "The path to the output catalog file",
+    required = true) private String catalog_out;
   /**
    * The filesystem root.
    */
 
   @Option(name = "--gwhere-catalog",
-          arity = 1,
-          description = "The path to a GWhere root",
-          required = true) private String gwhere;
+    arity = 1,
+    description = "The path to a GWhere root",
+    required = true) private String gwhere;
 
   /**
    * Construct a command.
@@ -86,7 +86,8 @@ public final class CommandImportGWhere extends CommandBase
 
   }
 
-  @Override public void run()
+  @Override
+  public void run()
   {
     super.setup();
 
@@ -100,8 +101,8 @@ public final class CommandImportGWhere extends CommandBase
       final Path catalog_out_path = new File(this.catalog_out).toPath();
 
       final Path gp = catalog_gw_path;
-      try (final InputStream is = Files.newInputStream(gp)) {
-        try (final GZIPInputStream z = new GZIPInputStream(is)) {
+      try (InputStream is = Files.newInputStream(gp)) {
+        try (GZIPInputStream z = new GZIPInputStream(is)) {
           final GWhereParserType gwp = GWhereParser.newParser(z);
           final Catalog c = gwp.parseCatalog();
           final CatalogJSONSerializerType s =

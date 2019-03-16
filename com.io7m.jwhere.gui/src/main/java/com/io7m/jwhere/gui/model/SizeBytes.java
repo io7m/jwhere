@@ -16,11 +16,10 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 /**
  * A size value in bytes.
@@ -77,7 +76,8 @@ public final class SizeBytes
     return this.value;
   }
 
-  @Override public boolean equals(final Object o)
+  @Override
+  public boolean equals(final Object o)
   {
     if (this == o) {
       return true;
@@ -90,19 +90,21 @@ public final class SizeBytes
     return this.value.equals(other.value);
   }
 
-  @Override public String toString()
+  @Override
+  public String toString()
   {
     return this.value.toString();
   }
 
-  @Override public int hashCode()
+  @Override
+  public int hashCode()
   {
     return this.value.hashCode();
   }
 
   /**
-   * @return The current byte value as a humanly readable string (as bytes,
-   * kilobytes, or megabytes depending on the size)
+   * @return The current byte value as a humanly readable string (as bytes, kilobytes, or megabytes
+   * depending on the size)
    */
 
   public String toHumanString()

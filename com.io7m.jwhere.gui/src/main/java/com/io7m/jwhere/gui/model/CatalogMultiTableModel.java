@@ -16,9 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -26,12 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.function.Supplier;
 
 /**
- * A table model that delegates to a {@link CatalogTableModel} or a {@link
- * CatalogDiskTableModel} based on whatever the user selected most recently.
+ * A table model that delegates to a {@link CatalogTableModel} or a {@link CatalogDiskTableModel}
+ * based on whatever the user selected most recently.
  */
 
 final class CatalogMultiTableModel extends AbstractTableModel
@@ -43,11 +42,10 @@ final class CatalogMultiTableModel extends AbstractTableModel
   }
 
 
-
-  private final CatalogTableModel      catalog_model;
-  private final CatalogDiskTableModel  disk_model;
+  private final CatalogTableModel catalog_model;
+  private final CatalogDiskTableModel disk_model;
   private final Supplier<CatalogState> state_get;
-  private       CatalogTarget          target;
+  private CatalogTarget target;
 
   CatalogMultiTableModel(
     final Supplier<CatalogState> in_state_get,
@@ -60,7 +58,8 @@ final class CatalogMultiTableModel extends AbstractTableModel
     this.target = CatalogTarget.CATALOG;
   }
 
-  @Override public int getRowCount()
+  @Override
+  public int getRowCount()
   {
     switch (this.target) {
       case CATALOG:
@@ -72,7 +71,8 @@ final class CatalogMultiTableModel extends AbstractTableModel
     throw new UnreachableCodeException();
   }
 
-  @Override public int getColumnCount()
+  @Override
+  public int getColumnCount()
   {
     switch (this.target) {
       case CATALOG:
@@ -84,7 +84,8 @@ final class CatalogMultiTableModel extends AbstractTableModel
     throw new UnreachableCodeException();
   }
 
-  @Override public Object getValueAt(
+  @Override
+  public Object getValueAt(
     final int row,
     final int col)
   {
@@ -129,7 +130,8 @@ final class CatalogMultiTableModel extends AbstractTableModel
     this.fireTableDataChanged();
   }
 
-  @Override public Class<?> getColumnClass(final int index)
+  @Override
+  public Class<?> getColumnClass(final int index)
   {
     switch (this.target) {
       case CATALOG:
@@ -141,7 +143,8 @@ final class CatalogMultiTableModel extends AbstractTableModel
     throw new UnreachableCodeException();
   }
 
-  @Override public String getColumnName(final int column)
+  @Override
+  public String getColumnName(final int column)
   {
     switch (this.target) {
       case CATALOG:
@@ -162,7 +165,8 @@ final class CatalogMultiTableModel extends AbstractTableModel
     }
   }
 
-  @Override public void fireTableDataChanged()
+  @Override
+  public void fireTableDataChanged()
   {
     this.disk_model.checkStillValid();
     super.fireTableDataChanged();

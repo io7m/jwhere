@@ -16,9 +16,8 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
-
 import java.time.Instant;
+import java.util.Objects;
 
 enum CatalogDiskTableModelField
 {
@@ -32,7 +31,7 @@ enum CatalogDiskTableModelField
   PERMISSIONS("Permissions", String.class),
   HASH("Hash", String.class);
 
-  private final String   name;
+  private final String name;
   private final Class<?> type;
 
   CatalogDiskTableModelField(

@@ -16,11 +16,11 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 
 import javax.swing.Icon;
+import java.util.Objects;
 
 final class CatalogDiskIcons
 {

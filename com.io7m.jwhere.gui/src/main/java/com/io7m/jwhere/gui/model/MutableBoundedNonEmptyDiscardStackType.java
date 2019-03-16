@@ -17,8 +17,8 @@
 package com.io7m.jwhere.gui.model;
 
 /**
- * The type of mutable bounded stacks that discard the oldest elements on
- * overflow and always contain at least one element.
+ * The type of mutable bounded stacks that discard the oldest elements on overflow and always
+ * contain at least one element.
  *
  * @param <T> The type of elements
  */
@@ -34,15 +34,13 @@ public interface MutableBoundedNonEmptyDiscardStackType<T>
   void clear(T x);
 
   /**
-   * @return The most recently pushed element, without removing it from the
-   * stack
+   * @return The most recently pushed element, without removing it from the stack
    */
 
   T peek();
 
   /**
-   * Pop the most recently pushed element from the stack. The stack size must be
-   * {@code > 1}.
+   * Pop the most recently pushed element from the stack. The stack size must be {@code > 1}.
    *
    * @return The element that was popped
    */
@@ -50,8 +48,8 @@ public interface MutableBoundedNonEmptyDiscardStackType<T>
   T pop();
 
   /**
-   * Push a new element to the stack, discarding the oldest element if the new
-   * stack size would be greater than the bound.
+   * Push a new element to the stack, discarding the oldest element if the new stack size would be
+   * greater than the bound.
    *
    * @param x The new element
    */

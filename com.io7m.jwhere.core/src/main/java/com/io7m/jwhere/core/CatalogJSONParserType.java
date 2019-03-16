@@ -29,19 +29,17 @@ import java.nio.file.Path;
 public interface CatalogJSONParserType
 {
   /**
-   * Parse a catalog from the given path. Some intelligence is used: If the path
-   * appears to be a compressed catalog, an attempt will be made to open it as
-   * such.
+   * Parse a catalog from the given path. Some intelligence is used: If the path appears to be a
+   * compressed catalog, an attempt will be made to open it as such.
    *
    * @param p The path
    *
    * @return A catalog
    *
-   * @throws CatalogJSONParseException          On parsing or validation errors
-   * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
-   *                                            same ID
-   * @throws IOException                        On I/O errors
+   * @throws CatalogJSONParseException       On parsing or validation errors
+   * @throws CatalogNodeException            On malformed disk errors
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the same ID
+   * @throws IOException                     On I/O errors
    */
 
   Catalog parseCatalogFromPath(Path p)
@@ -54,16 +52,14 @@ public interface CatalogJSONParserType
    * Parse a catalog from the given path using the given compression setting.
    *
    * @param p           The path
-   * @param compression The compression method used to compress the target
-   *                    catalog
+   * @param compression The compression method used to compress the target catalog
    *
    * @return A catalog
    *
-   * @throws CatalogJSONParseException          On parsing or validation errors
-   * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
-   *                                            same ID
-   * @throws IOException                        On I/O errors
+   * @throws CatalogJSONParseException       On parsing or validation errors
+   * @throws CatalogNodeException            On malformed disk errors
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the same ID
+   * @throws IOException                     On I/O errors
    */
 
   Catalog parseCatalogFromPathWithCompression(
@@ -81,11 +77,10 @@ public interface CatalogJSONParserType
    *
    * @return A catalog
    *
-   * @throws CatalogJSONParseException          On parsing or validation errors
-   * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
-   *                                            same ID
-   * @throws IOException                        On I/O errors
+   * @throws CatalogJSONParseException       On parsing or validation errors
+   * @throws CatalogNodeException            On malformed disk errors
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the same ID
+   * @throws IOException                     On I/O errors
    */
 
   Catalog parseCatalogFromStream(InputStream is)
@@ -101,10 +96,9 @@ public interface CatalogJSONParserType
    *
    * @return A catalog
    *
-   * @throws CatalogJSONParseException          On parsing or validation errors
-   * @throws CatalogNodeException               On malformed disk errors
-   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the
-   *                                            same ID
+   * @throws CatalogJSONParseException       On parsing or validation errors
+   * @throws CatalogNodeException            On malformed disk errors
+   * @throws CatalogDiskDuplicateIDException Iff two parsed disks have the same ID
    */
 
   Catalog parseCatalog(ObjectNode c)

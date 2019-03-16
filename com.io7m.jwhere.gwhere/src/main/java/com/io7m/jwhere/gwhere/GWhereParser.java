@@ -17,9 +17,6 @@
 package com.io7m.jwhere.gwhere;
 
 import com.io7m.jfunctional.Pair;
-
-import java.util.HashSet;
-import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
@@ -46,7 +43,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.EnumSet;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -64,8 +61,8 @@ public final class GWhereParser implements GWhereParserType
   }
 
   private final BufferedReader reader;
-  private       BigInteger     pos_line;
-  private       BigInteger     pos_column;
+  private BigInteger pos_line;
+  private BigInteger pos_column;
 
   private GWhereParser(final BufferedReader r)
   {
@@ -90,7 +87,8 @@ public final class GWhereParser implements GWhereParserType
     return new GWhereParser(r);
   }
 
-  @Override public CatalogDisk parseDisk()
+  @Override
+  public CatalogDisk parseDisk()
     throws IOException, GWhereParserException, CatalogNodeException
   {
     GWhereParser.LOG.debug("parsing disk");
@@ -100,7 +98,9 @@ public final class GWhereParser implements GWhereParserType
 
     final String disk_name = Objects.requireNonNull(header_segments[0], "header_segments[0]");
     final CatalogDiskID disk_index =
-      CatalogDiskID.of(new BigInteger(Objects.requireNonNull(header_segments[1], "header_segments[1]")));
+      CatalogDiskID.of(new BigInteger(Objects.requireNonNull(
+        header_segments[1],
+        "header_segments[1]")));
     final String disk_type = Objects.requireNonNull(header_segments[4], "header_segments[4]");
     final BigInteger disk_size =
       new BigInteger(Objects.requireNonNull(header_segments[6], "header_segments[6]"));
@@ -133,7 +133,8 @@ public final class GWhereParser implements GWhereParserType
     return db.build();
   }
 
-  @Override public Catalog parseCatalog()
+  @Override
+  public Catalog parseCatalog()
     throws
     IOException,
     GWhereParserException,
@@ -376,7 +377,8 @@ public final class GWhereParser implements GWhereParserType
     return line;
   }
 
-  private @Nullable String getLineOrEOF()
+  private @Nullable
+  String getLineOrEOF()
     throws IOException
   {
     final String line = this.reader.readLine();

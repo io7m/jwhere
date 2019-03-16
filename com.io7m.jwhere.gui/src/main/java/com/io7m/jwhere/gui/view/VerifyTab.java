@@ -17,8 +17,6 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jfunctional.ProcedureType;
-import java.util.Objects;
-
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.ControllerType;
@@ -37,6 +35,7 @@ import javax.swing.JTextField;
 import java.awt.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 
 final class VerifyTab extends JPanel
@@ -65,28 +64,7 @@ final class VerifyTab extends JPanel
 
     final JComboBox<CatalogDiskMetadata> disk_menu = new JComboBox<>();
     disk_menu.setModel(in_controller.catalogGetComboBoxModel());
-    disk_menu.setRenderer(
-      new DefaultListCellRenderer()
-      {
-        @Override public Component getListCellRendererComponent(
-          final JList<?> list,
-          final Object value,
-          final int index,
-          final boolean is_selected,
-          final boolean has_focus)
-        {
-          super.getListCellRendererComponent(
-            list, value, index, is_selected, has_focus);
-
-          if (value instanceof CatalogDiskMetadata) {
-            final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
-            this.setIcon(CatalogDiskIcons.getIconForDisk(meta));
-            this.setText(meta.getDiskName().value());
-          }
-
-          return this;
-        }
-      });
+    disk_menu.setRenderer(new DiskMenuCellRenderer());
 
     final JButton select = new JButton("Select...");
     final JButton verify = new JButton("Verify");
@@ -105,7 +83,9 @@ final class VerifyTab extends JPanel
 
     verify.addActionListener(
       e -> {
-        final CatalogDiskMetadata selected = Objects.requireNonNull((CatalogDiskMetadata) disk_menu.getSelectedItem(), "(CatalogDiskMetadata) disk_menu.getSelectedItem()");
+        final CatalogDiskMetadata selected = Objects.requireNonNull(
+          (CatalogDiskMetadata) disk_menu.getSelectedItem(),
+          "(CatalogDiskMetadata) disk_menu.getSelectedItem()");
 
         final CatalogDiskID id = selected.getDiskID();
         final Path path = Paths.get(mount.getText());
@@ -134,5 +114,33 @@ final class VerifyTab extends JPanel
     dg.row().grid(new JLabel("Mount")).add(mount, 3).add(select);
     dg.row().grid(new JLabel("Disk")).add(disk_menu, 3).add(verify);
     dg.row().grid().add(table_scroller);
+  }
+
+  private static final class DiskMenuCellRenderer extends DefaultListCellRenderer
+  {
+    DiskMenuCellRenderer()
+    {
+
+    }
+
+    @Override
+    public Component getListCellRendererComponent(
+      final JList<?> list,
+      final Object value,
+      final int index,
+      final boolean is_selected,
+      final boolean has_focus)
+    {
+      super.getListCellRendererComponent(
+        list, value, index, is_selected, has_focus);
+
+      if (value instanceof CatalogDiskMetadata) {
+        final CatalogDiskMetadata meta = (CatalogDiskMetadata) value;
+        this.setIcon(CatalogDiskIcons.getIconForDisk(meta));
+        this.setText(meta.getDiskName().value());
+      }
+
+      return this;
+    }
   }
 }

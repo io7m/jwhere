@@ -23,8 +23,8 @@ import javax.swing.DefaultButtonModel;
 import java.util.function.Consumer;
 
 /**
- * A button model that enables or disables the button based on the current saved
- * or unsaved status of the catalog.
+ * A button model that enables or disables the button based on the current saved or unsaved status
+ * of the catalog.
  */
 
 public final class UnsavedButtonModel extends DefaultButtonModel
@@ -41,7 +41,8 @@ public final class UnsavedButtonModel extends DefaultButtonModel
     c.catalogUnsavedChangesSubscribe(this);
   }
 
-  @Override public void accept(final UnsavedChanges c)
+  @Override
+  public void accept(final UnsavedChanges c)
   {
     this.setEnabled(c == UnsavedChanges.UNSAVED_CHANGES);
   }

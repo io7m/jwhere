@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.Catalog;
@@ -27,7 +26,6 @@ import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogFileHash;
-import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogFileNodeType;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
 import com.io7m.jwhere.core.CatalogNodeType;
@@ -39,21 +37,21 @@ import java.math.BigInteger;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.function.Supplier;
 
 /**
- * A table model that maps directories of a given disk to table rows and
- * columns.
+ * A table model that maps directories of a given disk to table rows and columns.
  */
 
 final class CatalogDiskTableModel extends AbstractTableModel
 {
-  private final     List<CatalogDirectoryEntry> current_entries;
-  private final     Supplier<CatalogState>      state_supplier;
-  private @Nullable CatalogDisk                 current_disk;
+  private final List<CatalogDirectoryEntry> current_entries;
+  private final Supplier<CatalogState> state_supplier;
+  private @Nullable CatalogDisk current_disk;
   private @Nullable CatalogDirectoryNodeType current_dir;
 
   CatalogDiskTableModel(final Supplier<CatalogState> supplier)
@@ -122,8 +120,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
   }
 
   /**
-   * Load the entries of the root directory of the given disk into the table
-   * model.
+   * Load the entries of the root directory of the given disk into the table model.
    *
    * @param disk The disk
    */
@@ -135,8 +132,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
   }
 
   /**
-   * Load the entries of the directory {@code node} of the given disk into the
-   * table model.
+   * Load the entries of the directory {@code node} of the given disk into the table model.
    *
    * @param disk The disk
    * @param node The directory
@@ -159,7 +155,8 @@ final class CatalogDiskTableModel extends AbstractTableModel
     CatalogDiskTableModel.makeEntries(graph, node, this.current_entries);
   }
 
-  @Override public String getColumnName(final int col)
+  @Override
+  public String getColumnName(final int col)
   {
     Assertive.require(col >= 0);
     Assertive.require(col < CatalogDiskTableModelField.values().length);
@@ -167,17 +164,20 @@ final class CatalogDiskTableModel extends AbstractTableModel
     return CatalogDiskTableModelField.values()[col].getName();
   }
 
-  @Override public int getRowCount()
+  @Override
+  public int getRowCount()
   {
     return this.current_entries.size();
   }
 
-  @Override public int getColumnCount()
+  @Override
+  public int getColumnCount()
   {
     return CatalogDiskTableModelField.values().length;
   }
 
-  @Override public Object getValueAt(
+  @Override
+  public Object getValueAt(
     final int row,
     final int col)
   {
@@ -194,47 +194,9 @@ final class CatalogDiskTableModel extends AbstractTableModel
     switch (CatalogDiskTableModelField.values()[col]) {
       case NAME:
         return CatalogDiskTableModel.check(
-          col, entry.getTarget().matchNode(
-            new CatalogNodeMatcherType<DirectoryEntryType,
-              UnreachableCodeException>()
-            {
-              @Override
-              public DirectoryEntryType onFile(final CatalogFileNodeType f)
-              {
-                Assertive.require(row > 0);
-                return new DirectoryEntryFile(entry.getName());
-              }
-
-              @Override public DirectoryEntryType onDirectory(
-                final CatalogDirectoryNodeType d)
-              {
-                if (row == 0) {
-                  return new DirectoryEntryUp(
-                    meta.getDiskID(),
-                    entry.getName(),
-                    entry.getSource(),
-                    d.equals(disk.getFilesystemRoot()));
-                }
-                return new DirectoryEntryDirectory(meta.getDiskID(), entry.getName(), d);
-              }
-            }));
+          col, entry.getTarget().matchNode(new NameGetter(row, entry, meta, disk)));
       case SIZE:
-        return CatalogDiskTableModel.check(
-          col, target.matchNode(
-            new CatalogNodeMatcherType<SizeBytes, UnreachableCodeException>()
-            {
-              @Override public SizeBytes onFile(
-                final CatalogFileNodeType f)
-              {
-                return new SizeBytes(f.size());
-              }
-
-              @Override public SizeBytes onDirectory(
-                final CatalogDirectoryNodeType d)
-              {
-                return new SizeBytes(BigInteger.ZERO);
-              }
-            }));
+        return CatalogDiskTableModel.check(col, target.matchNode(new SizeGetter()));
       case CREATION_TIME:
         return CatalogDiskTableModel.check(col, target.creationTime());
       case MODIFICATION_TIME:
@@ -249,33 +211,14 @@ final class CatalogDiskTableModel extends AbstractTableModel
         return CatalogDiskTableModel.check(
           col, PosixFilePermissions.toString(target.permissions()));
       case HASH:
-        return CatalogDiskTableModel.check(
-          col, target.matchNode(
-            new CatalogNodeMatcherType<String, UnreachableCodeException>()
-            {
-              @Override public String onFile(
-                final CatalogFileNodeType f)
-              {
-                final Optional<CatalogFileHash> h_opt = f.hash();
-                if (h_opt.isPresent()) {
-                  return h_opt.get().toString();
-                } else {
-                  return "";
-                }
-              }
-
-              @Override public String onDirectory(
-                final CatalogDirectoryNodeType d)
-              {
-                return "";
-              }
-            }));
+        return CatalogDiskTableModel.check(col, target.matchNode(new HashGetter()));
     }
 
     throw new UnreachableCodeException();
   }
 
-  @Override public Class<?> getColumnClass(final int col)
+  @Override
+  public Class<?> getColumnClass(final int col)
   {
     Assertive.require(col < CatalogDiskTableModelField.values().length);
     Assertive.require(col >= 0);
@@ -315,5 +258,98 @@ final class CatalogDiskTableModel extends AbstractTableModel
     this.current_dir = null;
     this.current_disk = null;
     this.current_entries.clear();
+  }
+
+  private static final class NameGetter
+    implements CatalogNodeMatcherType<DirectoryEntryType, UnreachableCodeException>
+  {
+    private final int row;
+    private final CatalogDirectoryEntry entry;
+    private final CatalogDiskMetadata meta;
+    private final CatalogDisk disk;
+
+    NameGetter(
+      final int in_row,
+      final CatalogDirectoryEntry in_entry,
+      final CatalogDiskMetadata in_meta,
+      final CatalogDisk in_disk)
+    {
+      this.row = in_row;
+      this.entry = in_entry;
+      this.meta = in_meta;
+      this.disk = in_disk;
+    }
+
+    @Override
+    public DirectoryEntryType onFile(final CatalogFileNodeType f)
+    {
+      Assertive.require(this.row > 0);
+      return new DirectoryEntryFile(this.entry.getName());
+    }
+
+    @Override
+    public DirectoryEntryType onDirectory(
+      final CatalogDirectoryNodeType d)
+    {
+      if (this.row == 0) {
+        return new DirectoryEntryUp(
+          this.meta.getDiskID(),
+          this.entry.getName(),
+          this.entry.getSource(),
+          d.equals(this.disk.getFilesystemRoot()));
+      }
+      return new DirectoryEntryDirectory(this.meta.getDiskID(), this.entry.getName(), d);
+    }
+  }
+
+  private static final class SizeGetter
+    implements CatalogNodeMatcherType<SizeBytes, UnreachableCodeException>
+  {
+    SizeGetter()
+    {
+
+    }
+
+    @Override
+    public SizeBytes onFile(
+      final CatalogFileNodeType f)
+    {
+      return new SizeBytes(f.size());
+    }
+
+    @Override
+    public SizeBytes onDirectory(
+      final CatalogDirectoryNodeType d)
+    {
+      return new SizeBytes(BigInteger.ZERO);
+    }
+  }
+
+  private static final class HashGetter
+    implements CatalogNodeMatcherType<String, UnreachableCodeException>
+  {
+    HashGetter()
+    {
+
+    }
+
+    @Override
+    public String onFile(
+      final CatalogFileNodeType f)
+    {
+      final Optional<CatalogFileHash> h_opt = f.hash();
+      if (h_opt.isPresent()) {
+        return h_opt.get().toString();
+      } else {
+        return "";
+      }
+    }
+
+    @Override
+    public String onDirectory(
+      final CatalogDirectoryNodeType d)
+    {
+      return "";
+    }
   }
 }

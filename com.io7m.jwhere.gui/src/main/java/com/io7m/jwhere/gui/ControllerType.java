@@ -19,7 +19,6 @@ package com.io7m.jwhere.gui;
 import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
-import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
@@ -59,21 +58,17 @@ public interface ControllerType
   /**
    * Open a catalog.
    *
-   * @param on_unsaved           A function that, when evaluated, indicates what
-   *                             should be done with any unsaved changes that
-   *                             may exist.
-   * @param on_no_save_file_name A function that, when evaluated, indicates the
-   *                             file name that will contain the saved catalog,
-   *                             iff unsaved changes are to be saved and no
-   *                             current catalog filename has been chosen.
-   * @param on_open_file         A function that, when evaluated, will return
-   *                             the filename of the catalog that will be
-   *                             opened.
-   * @param on_start_io          A procedure that, when evaluated, indicates
-   *                             that the operation has started.
-   * @param on_finish_io         A procedure that, when evaluated, indicates
-   *                             that the operation has started, passing it a
-   *                             non-empty optional exception in the case of
+   * @param on_unsaved           A function that, when evaluated, indicates what should be done with
+   *                             any unsaved changes that may exist.
+   * @param on_no_save_file_name A function that, when evaluated, indicates the file name that will
+   *                             contain the saved catalog, iff unsaved changes are to be saved and
+   *                             no current catalog filename has been chosen.
+   * @param on_open_file         A function that, when evaluated, will return the filename of the
+   *                             catalog that will be opened.
+   * @param on_start_io          A procedure that, when evaluated, indicates that the operation has
+   *                             started.
+   * @param on_finish_io         A procedure that, when evaluated, indicates that the operation has
+   *                             started, passing it a non-empty optional exception in the case of
    *                             failure.
    */
 
@@ -87,18 +82,16 @@ public interface ControllerType
   /**
    * Close the current catalog.
    *
-   * @param on_unsaved_changes A function that, when evaluated, indicates what
-   *                           should be done with any unsaved changes that may
-   *                           exist.
-   * @param on_want_save_file  A function that, when evaluated, indicates the
-   *                           file name that will contain the saved catalog,
-   *                           iff unsaved changes are to be saved and no
+   * @param on_unsaved_changes A function that, when evaluated, indicates what should be done with
+   *                           any unsaved changes that may exist.
+   * @param on_want_save_file  A function that, when evaluated, indicates the file name that will
+   *                           contain the saved catalog, iff unsaved changes are to be saved and no
    *                           current catalog filename has been chosen.
-   * @param on_start_io        A procedure that, when evaluated, indicates that
-   *                           the operation has started.
-   * @param on_finish_io       A procedure that, when evaluated, indicates that
-   *                           the operation has started, passing it a non-empty
-   *                           optional exception in the case of failure.
+   * @param on_start_io        A procedure that, when evaluated, indicates that the operation has
+   *                           started.
+   * @param on_finish_io       A procedure that, when evaluated, indicates that the operation has
+   *                           started, passing it a non-empty optional exception in the case of
+   *                           failure.
    */
 
   void catalogClose(
@@ -118,14 +111,14 @@ public interface ControllerType
   /**
    * Save the current catalog.
    *
-   * @param on_want_save_file A function that, when evaluated, indicates the
-   *                          file name that will contain the saved catalog, iff
-   *                          no current catalog filename has been chosen.
-   * @param on_start_io       A procedure that, when evaluated, indicates that
-   *                          the operation has started.
-   * @param on_finish_io      A procedure that, when evaluated, indicates that
-   *                          the operation has started, passing it a non-empty
-   *                          optional exception in the case of failure.
+   * @param on_want_save_file A function that, when evaluated, indicates the file name that will
+   *                          contain the saved catalog, iff no current catalog filename has been
+   *                          chosen.
+   * @param on_start_io       A procedure that, when evaluated, indicates that the operation has
+   *                          started.
+   * @param on_finish_io      A procedure that, when evaluated, indicates that the operation has
+   *                          started, passing it a non-empty optional exception in the case of
+   *                          failure.
    */
 
   void catalogSave(
@@ -134,16 +127,15 @@ public interface ControllerType
     ProcedureType<Optional<Throwable>> on_finish_io);
 
   /**
-   * Save the current catalog under a different name to the one that it is
-   * currently using.
+   * Save the current catalog under a different name to the one that it is currently using.
    *
-   * @param on_want_save_file A function that, when evaluated, indicates the
-   *                          file name that will contain the saved catalog.
-   * @param on_start_io       A procedure that, when evaluated, indicates that
-   *                          the operation has started.
-   * @param on_finish_io      A procedure that, when evaluated, indicates that
-   *                          the operation has started, passing it a non-empty
-   *                          optional exception in the case of failure.
+   * @param on_want_save_file A function that, when evaluated, indicates the file name that will
+   *                          contain the saved catalog.
+   * @param on_start_io       A procedure that, when evaluated, indicates that the operation has
+   *                          started.
+   * @param on_finish_io      A procedure that, when evaluated, indicates that the operation has
+   *                          started, passing it a non-empty optional exception in the case of
+   *                          failure.
    */
 
   void catalogSaveAs(
@@ -158,8 +150,8 @@ public interface ControllerType
   TreeModel catalogGetTreeModel();
 
   /**
-   * Load the root directory of disk {@code index} into the table model. The
-   * directory is required to exist in disk {@code index}.
+   * Load the root directory of disk {@code index} into the table model. The directory is required
+   * to exist in disk {@code index}.
    *
    * @param index The disk ID
    */
@@ -167,8 +159,8 @@ public interface ControllerType
   void catalogSelectDiskAtRoot(CatalogDiskID index);
 
   /**
-   * Load the directory {@code dir} for disk {@code index} into the table model.
-   * The directory is required to exist in disk {@code index}.
+   * Load the directory {@code dir} for disk {@code index} into the table model. The directory is
+   * required to exist in disk {@code index}.
    *
    * @param index The disk ID
    * @param dir   The directory
@@ -234,11 +226,10 @@ public interface ControllerType
    * @param disk_name    The name that will be used for the disk.
    * @param disk_id      The disk ID
    * @param path         The root of the filesystem
-   * @param on_start_io  A procedure that, when evaluated, indicates that the
-   *                     operation has started.
-   * @param on_finish_io A procedure that, when evaluated, indicates that the
-   *                     operation has started, passing it a non-empty optional
-   *                     exception in the case of failure.
+   * @param on_start_io  A procedure that, when evaluated, indicates that the operation has
+   *                     started.
+   * @param on_finish_io A procedure that, when evaluated, indicates that the operation has started,
+   *                     passing it a non-empty optional exception in the case of failure.
    */
 
   void catalogAddDisk(
@@ -249,23 +240,21 @@ public interface ControllerType
     ProcedureType<Optional<Throwable>> on_finish_io);
 
   /**
-   * @return A new disk ID that is guaranteed not to be equal to any other disk
-   * ID in the catalog at the time of the call
+   * @return A new disk ID that is guaranteed not to be equal to any other disk ID in the catalog at
+   * the time of the call
    */
 
   CatalogDiskID catalogGetFreshDiskID();
 
   /**
-   * Verify the disk {@code id}, which is assumed to be mounted at {@code
-   * path}.
+   * Verify the disk {@code id}, which is assumed to be mounted at {@code path}.
    *
    * @param id           The disk ID
    * @param path         The path
-   * @param on_start_io  A procedure that, when evaluated, indicates that the
-   *                     operation has started.
-   * @param on_finish_io A procedure that, when evaluated, indicates that the
-   *                     operation has started, passing it a non-empty optional
-   *                     exception in the case of failure.
+   * @param on_start_io  A procedure that, when evaluated, indicates that the operation has
+   *                     started.
+   * @param on_finish_io A procedure that, when evaluated, indicates that the operation has started,
+   *                     passing it a non-empty optional exception in the case of failure.
    */
 
   void catalogVerifyDisk(

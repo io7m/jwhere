@@ -17,8 +17,7 @@
 package com.io7m.jwhere.core;
 
 /**
- * An exception indicating an attempt to load a catalog that has two disks with
- * the same ID.
+ * An exception indicating an attempt to load a catalog that has two disks with the same ID.
  */
 
 public final class CatalogDiskDuplicateIDException extends CatalogException

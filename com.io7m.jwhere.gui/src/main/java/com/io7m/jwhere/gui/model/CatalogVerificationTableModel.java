@@ -65,31 +65,36 @@ final class CatalogVerificationTableModel extends AbstractTableModel
     this.fireTableDataChanged();
   }
 
-  @Override public int getRowCount()
+  @Override
+  public int getRowCount()
   {
     return this.data.size();
   }
 
-  @Override public int getColumnCount()
+  @Override
+  public int getColumnCount()
   {
     return CatalogVerificationTableModelField.values().length;
   }
 
-  @Override public Class<?> getColumnClass(final int col)
+  @Override
+  public Class<?> getColumnClass(final int col)
   {
     Assertive.require(col >= 0);
     Assertive.require(col < CatalogVerificationTableModelField.values().length);
     return CatalogVerificationTableModelField.values()[col].getType();
   }
 
-  @Override public String getColumnName(final int col)
+  @Override
+  public String getColumnName(final int col)
   {
     Assertive.require(col >= 0);
     Assertive.require(col < CatalogVerificationTableModelField.values().length);
     return CatalogVerificationTableModelField.values()[col].getName();
   }
 
-  @Override public Object getValueAt(
+  @Override
+  public Object getValueAt(
     final int row,
     final int col)
   {

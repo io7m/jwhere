@@ -19,9 +19,7 @@ package com.io7m.jwhere.gui;
 import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
@@ -46,6 +44,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -66,10 +65,10 @@ public final class Controller implements ControllerType
     LOG = LoggerFactory.getLogger(Controller.class);
   }
 
-  private final Model                         model;
-  private final ExecutorService               exec;
-  private final Map<Long, CatalogTask>        tasks;
-  private final AtomicLong                    task_ids;
+  private final Model model;
+  private final ExecutorService exec;
+  private final Map<Long, CatalogTask> tasks;
+  private final AtomicLong task_ids;
   private final DefaultListModel<CatalogTask> tasks_list_model;
 
   private Controller(final Model in_model)
@@ -100,17 +99,20 @@ public final class Controller implements ControllerType
     return new Controller(model);
   }
 
-  @Override public TableModel catalogGetTableModel()
+  @Override
+  public TableModel catalogGetTableModel()
   {
     return this.model.getCatalogTableModel();
   }
 
-  @Override public UnsavedChanges catalogIsUnsaved()
+  @Override
+  public UnsavedChanges catalogIsUnsaved()
   {
     return this.model.isCatalogUnsaved();
   }
 
-  @Override public void catalogOpen(
+  @Override
+  public void catalogOpen(
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
       on_want_save_file,
@@ -162,9 +164,8 @@ public final class Controller implements ControllerType
   }
 
   /**
-   * If there are unsaved changes, make all the requests necessary to get a
-   * filename for saving. Otherwise, throw {@link CancellationException} if the
-   * whole operation should be aborted.
+   * If there are unsaved changes, make all the requests necessary to get a filename for saving.
+   * Otherwise, throw {@link CancellationException} if the whole operation should be aborted.
    */
 
   private Optional<CatalogSaveSpecification> getSaveFileForUnsavedChanges(
@@ -225,7 +226,8 @@ public final class Controller implements ControllerType
     }
   }
 
-  @Override public void catalogClose(
+  @Override
+  public void catalogClose(
     final FunctionType<Unit, UnsavedChangesChoice> on_unsaved_changes,
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
       on_want_save_file,
@@ -269,13 +271,15 @@ public final class Controller implements ControllerType
     }
   }
 
-  @Override public void programExit(final int status)
+  @Override
+  public void programExit(final int status)
   {
     Controller.LOG.debug("exiting");
     System.exit(status);
   }
 
-  @Override public void catalogSave(
+  @Override
+  public void catalogSave(
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
       on_want_save_file,
     final Runnable on_start_io,
@@ -303,7 +307,8 @@ public final class Controller implements ControllerType
     }
   }
 
-  @Override public void catalogSaveAs(
+  @Override
+  public void catalogSaveAs(
     final FunctionType<Unit, Optional<CatalogSaveSpecification>>
       on_want_save_file,
     final Runnable on_start_io,
@@ -331,62 +336,73 @@ public final class Controller implements ControllerType
     }
   }
 
-  @Override public TreeModel catalogGetTreeModel()
+  @Override
+  public TreeModel catalogGetTreeModel()
   {
     return this.model.getCatalogTreeModel();
   }
 
-  @Override public void catalogSelectDiskAtRoot(final CatalogDiskID index)
+  @Override
+  public void catalogSelectDiskAtRoot(final CatalogDiskID index)
   {
     this.model.selectDiskAtRoot(index);
   }
 
-  @Override public void catalogSelectDiskAtDirectory(
+  @Override
+  public void catalogSelectDiskAtDirectory(
     final CatalogDiskID index,
     final CatalogDirectoryNodeType dir)
   {
     this.model.selectDiskAtDirectory(index, dir);
   }
 
-  @Override public void catalogSelectRoot()
+  @Override
+  public void catalogSelectRoot()
   {
     this.model.selectRoot();
   }
 
-  @Override public ListModel<CatalogTask> catalogGetTasksListModel()
+  @Override
+  public ListModel<CatalogTask> catalogGetTasksListModel()
   {
     return this.tasks_list_model;
   }
 
-  @Override public void catalogUnsavedChangesSubscribe(
+  @Override
+  public void catalogUnsavedChangesSubscribe(
     final Consumer<UnsavedChanges> listener)
   {
     this.model.catalogUnsavedChangesSubscribe(listener);
   }
 
-  @Override public void catalogUndoSubscribe(
+  @Override
+  public void catalogUndoSubscribe(
     final Consumer<UndoAvailable> listener)
   {
     this.model.catalogUndoSubscribe(listener);
   }
 
-  @Override public void catalogRedoSubscribe(
+  @Override
+  public void catalogRedoSubscribe(
     final Consumer<RedoAvailable> listener)
   {
     this.model.catalogRedoSubscribe(listener);
   }
 
-  @Override public void catalogRedo()
+  @Override
+  public void catalogRedo()
   {
     this.model.catalogRedo();
   }
 
-  @Override public void catalogUndo()
+  @Override
+  public void catalogUndo()
   {
     this.model.catalogUndo();
   }
 
-  @Override public void catalogAddDisk(
+  @Override
+  public void catalogAddDisk(
     final CatalogDiskName disk_name,
     final CatalogDiskID disk_id,
     final Path path,
@@ -407,12 +423,14 @@ public final class Controller implements ControllerType
         (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
   }
 
-  @Override public CatalogDiskID catalogGetFreshDiskID()
+  @Override
+  public CatalogDiskID catalogGetFreshDiskID()
   {
     return this.model.catalogGetFreshDiskID();
   }
 
-  @Override public void catalogVerifyDisk(
+  @Override
+  public void catalogVerifyDisk(
     final CatalogDiskID id,
     final Path path,
     final Runnable on_start_io,
@@ -432,12 +450,14 @@ public final class Controller implements ControllerType
         (ok, ex) -> on_finish_io.call(Optional.ofNullable(ex))));
   }
 
-  @Override public ComboBoxModel<CatalogDiskMetadata> catalogGetComboBoxModel()
+  @Override
+  public ComboBoxModel<CatalogDiskMetadata> catalogGetComboBoxModel()
   {
     return this.model.getCatalogComboBoxModel();
   }
 
-  @Override public TableModel catalogGetVerificationTableModel()
+  @Override
+  public TableModel catalogGetVerificationTableModel()
   {
     return this.model.getVerificationTableModel();
   }

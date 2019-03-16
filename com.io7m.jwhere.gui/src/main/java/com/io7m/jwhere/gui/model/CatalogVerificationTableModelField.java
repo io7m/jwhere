@@ -23,7 +23,7 @@ enum CatalogVerificationTableModelField
   NAME("Path", Path.class),
   RESULT("Result", String.class);
 
-  private final String   name;
+  private final String name;
   private final Class<?> type;
 
   CatalogVerificationTableModelField(

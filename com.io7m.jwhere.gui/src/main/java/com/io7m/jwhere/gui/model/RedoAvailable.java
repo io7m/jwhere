@@ -17,8 +17,7 @@
 package com.io7m.jwhere.gui.model;
 
 /**
- * An indication of whether or not the catalog has undone changes that can be
- * redone.
+ * An indication of whether or not the catalog has undone changes that can be redone.
  */
 
 public enum RedoAvailable

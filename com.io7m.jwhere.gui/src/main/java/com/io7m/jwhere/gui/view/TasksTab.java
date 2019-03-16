@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
 import com.io7m.jwhere.gui.CatalogTask;
 import com.io7m.jwhere.gui.ControllerType;
 import net.java.dev.designgridlayout.DesignGridLayout;
@@ -32,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import java.awt.Component;
+import java.util.Objects;
 
 final class TasksTab extends JPanel
 {
@@ -67,7 +67,8 @@ final class TasksTab extends JPanel
     tasks.setCellRenderer(
       new DefaultListCellRenderer()
       {
-        @Override public Component getListCellRendererComponent(
+        @Override
+        public Component getListCellRendererComponent(
           final JList<?> list,
           final Object value,
           final int index,

@@ -19,8 +19,8 @@ package com.io7m.jwhere.gui.model;
 import java.util.Optional;
 
 /**
- * The type of mutable bounded stacks that discard the oldest elements on
- * overflow and always contain at least one element.
+ * The type of mutable bounded stacks that discard the oldest elements on overflow and always
+ * contain at least one element.
  *
  * @param <T> The type of elements
  */
@@ -46,8 +46,8 @@ public interface MutableBoundedDiscardStackType<T>
   Optional<T> pop();
 
   /**
-   * Push an element onto the stack, discarding the oldest element on the stack
-   * if the resulting stack would be larger than the bound.
+   * Push an element onto the stack, discarding the oldest element on the stack if the resulting
+   * stack would be larger than the bound.
    *
    * @param x The new element
    */

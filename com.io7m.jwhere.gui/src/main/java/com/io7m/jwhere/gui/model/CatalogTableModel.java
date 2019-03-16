@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -24,6 +23,7 @@ import com.io7m.jwhere.core.CatalogDiskMetadata;
 import org.valid4j.Assertive;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.function.Supplier;
 
@@ -59,31 +59,36 @@ final class CatalogTableModel extends AbstractTableModel
     return c;
   }
 
-  @Override public int getRowCount()
+  @Override
+  public int getRowCount()
   {
     return this.state_get.get().getCatalogDiskCount();
   }
 
-  @Override public int getColumnCount()
+  @Override
+  public int getColumnCount()
   {
     return CatalogTableModelField.values().length;
   }
 
-  @Override public String getColumnName(final int col)
+  @Override
+  public String getColumnName(final int col)
   {
     Assertive.require(col >= 0);
     Assertive.require(col < CatalogTableModelField.values().length);
     return CatalogTableModelField.values()[col].getName();
   }
 
-  @Override public Class<?> getColumnClass(final int col)
+  @Override
+  public Class<?> getColumnClass(final int col)
   {
     Assertive.require(col >= 0);
     Assertive.require(col < CatalogTableModelField.values().length);
     return CatalogTableModelField.values()[col].getType();
   }
 
-  @Override public Object getValueAt(
+  @Override
+  public Object getValueAt(
     final int row,
     final int col)
   {

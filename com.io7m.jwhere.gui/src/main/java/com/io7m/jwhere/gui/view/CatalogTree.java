@@ -54,7 +54,8 @@ final class CatalogTree extends JTree
 
     }
 
-    @Override public Component getTreeCellRendererComponent(
+    @Override
+    public Component getTreeCellRendererComponent(
       final JTree tree,
       final Object value,
       final boolean sel,

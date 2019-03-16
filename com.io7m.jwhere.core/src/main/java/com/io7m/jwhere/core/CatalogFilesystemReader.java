@@ -115,85 +115,7 @@ public final class CatalogFilesystemReader
         root,
         EnumSet.noneOf(FileVisitOption.class),
         Integer.MAX_VALUE,
-        new FileVisitor<Path>()
-        {
-          @Override
-          public FileVisitResult preVisitDirectory(
-            final Path dir,
-            final BasicFileAttributes attrs)
-            throws IOException
-          {
-            try {
-              CatalogFilesystemReader.LOG.debug(
-                "preVisitDirectory: {}", dir);
-
-              final Path fn = dir.getFileName();
-              if (fn == null) {
-                Assertive.ensure(dir.equals(root));
-              } else {
-                if (!dir.equals(root)) {
-                  final CatalogDirectoryNode current = dirs.peek();
-                  final CatalogDirectoryNode new_dir =
-                    CatalogFilesystemReader.onDirectory(id_pool, dir);
-
-                  final String name = fn.toString();
-                  db.addNode(current, name, new_dir);
-                  dirs.push(new_dir);
-                }
-              }
-
-              return FileVisitResult.CONTINUE;
-            } catch (final CatalogNodeException e) {
-              throw new IOException(e);
-            }
-          }
-
-          @Override
-          public FileVisitResult visitFile(
-            final Path file,
-            final BasicFileAttributes attrs)
-            throws IOException
-          {
-            try {
-              CatalogFilesystemReader.LOG.debug("visitFile: {}", file);
-
-              if (attrs.isRegularFile()) {
-                final CatalogDirectoryNode current = dirs.peek();
-                final CatalogFileNode new_file =
-                  CatalogFilesystemReader.onFile(id_pool, file);
-                final String name = file.getFileName().toString();
-                db.addNode(current, name, new_file);
-              }
-
-              return FileVisitResult.CONTINUE;
-            } catch (final CatalogNodeException e) {
-              throw new IOException(e);
-            }
-          }
-
-          @Override
-          public FileVisitResult visitFileFailed(
-            final Path file,
-            final IOException exc)
-            throws IOException
-          {
-            throw exc;
-          }
-
-          @Override
-          public FileVisitResult postVisitDirectory(
-            final Path dir,
-            final IOException exc)
-            throws IOException
-          {
-            CatalogFilesystemReader.LOG.debug(
-              "postVisitDirectory: {}", dir);
-
-            Assertive.ensure(!dirs.isEmpty());
-            dirs.pop();
-            return FileVisitResult.CONTINUE;
-          }
-        });
+        new DiskCreator(root, dirs, id_pool, db));
 
       return db.build();
     } catch (final IOException e) {
@@ -224,7 +146,7 @@ public final class CatalogFilesystemReader
     final CatalogVerificationListenerType listener)
     throws IOException
   {
-    Objects.requireNonNull(d, "d");
+    Objects.requireNonNull(d, "disk");
     Objects.requireNonNull(settings, "settings");
     Objects.requireNonNull(root, "root");
     Objects.requireNonNull(listener, "listener");
@@ -245,94 +167,7 @@ public final class CatalogFilesystemReader
       root,
       EnumSet.noneOf(FileVisitOption.class),
       Integer.MAX_VALUE,
-      new FileVisitor<Path>()
-      {
-        @Override
-        public FileVisitResult preVisitDirectory(
-          final Path dir,
-          final BasicFileAttributes attrs)
-          throws IOException
-        {
-          CatalogFilesystemReader.LOG.debug(
-            "preVisitDirectory: {}", dir);
-
-          final Path path_rel = root.relativize(dir);
-
-          final List<String> path =
-            CatalogFilesystemReader.pathToStringList(path_rel);
-          CatalogFilesystemReader.LOG.debug("path: {}", path);
-
-          final Optional<CatalogNodeType> node_opt;
-          if (dir.equals(root)) {
-            node_opt = Optional.of(d.getFilesystemRoot());
-          } else {
-            node_opt = d.getNodeForPath(path);
-          }
-
-          if (!node_opt.isPresent()) {
-            logging_listener.onItemError(CatalogVerificationUncataloguedItem.builder().setPath(path_rel).build());
-            return FileVisitResult.CONTINUE;
-          }
-
-          final CatalogNodeType node = node_opt.get();
-          final CatalogDirectoryNode node_now =
-            CatalogFilesystemReader.onDirectory(id_pool, dir);
-
-          CatalogFilesystemReader.compareNodes(
-            settings, path_rel, node, node_now, logging_listener);
-
-          return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult visitFile(
-          final Path file,
-          final BasicFileAttributes attrs)
-          throws IOException
-        {
-          final Path path_rel = root.relativize(file);
-
-          final List<String> path =
-            CatalogFilesystemReader.pathToStringList(path_rel);
-          CatalogFilesystemReader.LOG.debug("path: {}", path);
-
-          final Optional<CatalogNodeType> node_opt = d.getNodeForPath(path);
-
-          if (!node_opt.isPresent()) {
-            logging_listener.onItemError(CatalogVerificationUncataloguedItem.builder().setPath(path_rel).build());
-            return FileVisitResult.CONTINUE;
-          }
-
-          final CatalogNodeType node = node_opt.get();
-          final CatalogFileNode node_now =
-            CatalogFilesystemReader.onFile(id_pool, file);
-
-          CatalogFilesystemReader.compareNodes(
-            settings, path_rel, node, node_now, logging_listener);
-
-          return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult visitFileFailed(
-          final Path file,
-          final IOException exc)
-          throws IOException
-        {
-          throw exc;
-        }
-
-        @Override
-        public FileVisitResult postVisitDirectory(
-          final Path dir,
-          final IOException exc)
-          throws IOException
-        {
-          CatalogFilesystemReader.LOG.debug(
-            "postVisitDirectory: {}", dir);
-          return FileVisitResult.CONTINUE;
-        }
-      });
+      new VerifyingPathVisitor(root, d, logging_listener, id_pool, settings));
 
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
       d.getFilesystemGraph();
@@ -375,40 +210,7 @@ public final class CatalogFilesystemReader
     final CatalogNodeType node_now,
     final LoggingListener rb)
   {
-    node.matchNode(
-      new CatalogNodeMatcherType<Unit, UnreachableCodeException>()
-      {
-        @Override
-        public Unit onFile(final CatalogFileNodeType file_then)
-        {
-          if (node_now instanceof CatalogFileNode) {
-            final CatalogFileNode file_now = (CatalogFileNode) node_now;
-            final Optional<CatalogFileHash> then_opt = file_then.hash();
-            final Optional<CatalogFileHash> now_opt = file_now.hash();
-
-            if (then_opt.isPresent()) {
-              final CatalogFileHash hash_then = then_opt.get();
-              final CatalogFileHash hash_now = now_opt.get();
-              if (!hash_then.equals(hash_now)) {
-                rb.onItemError(
-                  CatalogVerificationChangedHash.builder()
-                    .setPath(path)
-                    .setHashNow(hash_now)
-                    .setHashThen(hash_then)
-                    .build());
-              }
-            }
-          }
-
-          return Unit.unit();
-        }
-
-        @Override
-        public Unit onDirectory(final CatalogDirectoryNodeType d)
-        {
-          return Unit.unit();
-        }
-      });
+    node.matchNode(new CompareNodeHashesMatcher(node_now, rb, path));
   }
 
   private static void compareNodeTimes(
@@ -665,6 +467,263 @@ public final class CatalogFilesystemReader
     boolean pathIsReferenced(final Path p)
     {
       return this.reported_paths.contains(Objects.requireNonNull(p, "p"));
+    }
+  }
+
+  private static final class CompareNodeHashesMatcher
+    implements CatalogNodeMatcherType<Unit, UnreachableCodeException>
+  {
+    private final CatalogNodeType node_now;
+    private final LoggingListener listener;
+    private final Path path;
+
+    CompareNodeHashesMatcher(
+      final CatalogNodeType in_node_now,
+      final LoggingListener in_listener,
+      final Path in_path)
+    {
+      this.node_now = in_node_now;
+      this.listener = in_listener;
+      this.path = in_path;
+    }
+
+    @Override
+    public Unit onFile(final CatalogFileNodeType file_then)
+    {
+      if (this.node_now instanceof CatalogFileNode) {
+        final CatalogFileNode file_now = (CatalogFileNode) this.node_now;
+        final Optional<CatalogFileHash> then_opt = file_then.hash();
+        final Optional<CatalogFileHash> now_opt = file_now.hash();
+
+        if (then_opt.isPresent()) {
+          final CatalogFileHash hash_then = then_opt.get();
+          final CatalogFileHash hash_now = now_opt.get();
+          if (!hash_then.equals(hash_now)) {
+            this.listener.onItemError(
+              CatalogVerificationChangedHash.builder()
+                .setPath(this.path)
+                .setHashNow(hash_now)
+                .setHashThen(hash_then)
+                .build());
+          }
+        }
+      }
+
+      return Unit.unit();
+    }
+
+    @Override
+    public Unit onDirectory(final CatalogDirectoryNodeType d)
+    {
+      return Unit.unit();
+    }
+  }
+
+  private static final class VerifyingPathVisitor implements FileVisitor<Path>
+  {
+    private final Path root;
+    private final CatalogDisk disk;
+    private final LoggingListener logging_listener;
+    private final AtomicReference<BigInteger> id_pool;
+    private final CatalogVerificationReportSettings settings;
+
+    VerifyingPathVisitor(
+      final Path in_root,
+      final CatalogDisk in_disk,
+      final LoggingListener in_logging_listener,
+      final AtomicReference<BigInteger> in_id_pool,
+      final CatalogVerificationReportSettings in_settings)
+    {
+      this.root = in_root;
+      this.disk = in_disk;
+      this.logging_listener = in_logging_listener;
+      this.id_pool = in_id_pool;
+      this.settings = in_settings;
+    }
+
+    @Override
+    public FileVisitResult preVisitDirectory(
+      final Path dir,
+      final BasicFileAttributes attrs)
+      throws IOException
+    {
+      CatalogFilesystemReader.LOG.debug(
+        "preVisitDirectory: {}", dir);
+
+      final Path path_rel = this.root.relativize(dir);
+
+      final List<String> path =
+        CatalogFilesystemReader.pathToStringList(path_rel);
+      CatalogFilesystemReader.LOG.debug("path: {}", path);
+
+      final Optional<CatalogNodeType> node_opt;
+      if (dir.equals(this.root)) {
+        node_opt = Optional.of(this.disk.getFilesystemRoot());
+      } else {
+        node_opt = this.disk.getNodeForPath(path);
+      }
+
+      if (!node_opt.isPresent()) {
+        this.logging_listener.onItemError(CatalogVerificationUncataloguedItem.builder().setPath(
+          path_rel).build());
+        return FileVisitResult.CONTINUE;
+      }
+
+      final CatalogNodeType node = node_opt.get();
+      final CatalogDirectoryNode node_now =
+        CatalogFilesystemReader.onDirectory(this.id_pool, dir);
+
+      CatalogFilesystemReader.compareNodes(
+        this.settings, path_rel, node, node_now, this.logging_listener);
+
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFile(
+      final Path file,
+      final BasicFileAttributes attrs)
+      throws IOException
+    {
+      final Path path_rel = this.root.relativize(file);
+
+      final List<String> path =
+        CatalogFilesystemReader.pathToStringList(path_rel);
+      CatalogFilesystemReader.LOG.debug("path: {}", path);
+
+      final Optional<CatalogNodeType> node_opt = this.disk.getNodeForPath(path);
+
+      if (!node_opt.isPresent()) {
+        this.logging_listener.onItemError(CatalogVerificationUncataloguedItem.builder().setPath(
+          path_rel).build());
+        return FileVisitResult.CONTINUE;
+      }
+
+      final CatalogNodeType node = node_opt.get();
+      final CatalogFileNode node_now =
+        CatalogFilesystemReader.onFile(this.id_pool, file);
+
+      CatalogFilesystemReader.compareNodes(
+        this.settings, path_rel, node, node_now, this.logging_listener);
+
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFileFailed(
+      final Path file,
+      final IOException exc)
+      throws IOException
+    {
+      throw exc;
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(
+      final Path dir,
+      final IOException exc)
+      throws IOException
+    {
+      CatalogFilesystemReader.LOG.debug(
+        "postVisitDirectory: {}", dir);
+      return FileVisitResult.CONTINUE;
+    }
+  }
+
+  private static class DiskCreator implements FileVisitor<Path>
+  {
+    private final Path root;
+    private final Deque<CatalogDirectoryNode> directories;
+    private final AtomicReference<BigInteger> id_pool;
+    private final CatalogDiskBuilderType disk_builder;
+
+    DiskCreator(
+      final Path in_root,
+      final Deque<CatalogDirectoryNode> in_directories,
+      final AtomicReference<BigInteger> in_id_pool,
+      final CatalogDiskBuilderType in_disk_builder)
+    {
+      this.root = in_root;
+      this.directories = in_directories;
+      this.id_pool = in_id_pool;
+      this.disk_builder = in_disk_builder;
+    }
+
+    @Override
+    public FileVisitResult preVisitDirectory(
+      final Path dir,
+      final BasicFileAttributes attrs)
+      throws IOException
+    {
+      try {
+        CatalogFilesystemReader.LOG.debug(
+          "preVisitDirectory: {}", dir);
+
+        final Path fn = dir.getFileName();
+        if (fn == null) {
+          Assertive.ensure(dir.equals(this.root));
+        } else {
+          if (!dir.equals(this.root)) {
+            final CatalogDirectoryNode current = this.directories.peek();
+            final CatalogDirectoryNode new_dir =
+              CatalogFilesystemReader.onDirectory(this.id_pool, dir);
+
+            final String name = fn.toString();
+            this.disk_builder.addNode(current, name, new_dir);
+            this.directories.push(new_dir);
+          }
+        }
+
+        return FileVisitResult.CONTINUE;
+      } catch (final CatalogNodeException e) {
+        throw new IOException(e);
+      }
+    }
+
+    @Override
+    public FileVisitResult visitFile(
+      final Path file,
+      final BasicFileAttributes attrs)
+      throws IOException
+    {
+      try {
+        CatalogFilesystemReader.LOG.debug("visitFile: {}", file);
+
+        if (attrs.isRegularFile()) {
+          final CatalogDirectoryNode current = this.directories.peek();
+          final CatalogFileNode new_file =
+            CatalogFilesystemReader.onFile(this.id_pool, file);
+          final String name = file.getFileName().toString();
+          this.disk_builder.addNode(current, name, new_file);
+        }
+
+        return FileVisitResult.CONTINUE;
+      } catch (final CatalogNodeException e) {
+        throw new IOException(e);
+      }
+    }
+
+    @Override
+    public FileVisitResult visitFileFailed(
+      final Path file,
+      final IOException exc)
+      throws IOException
+    {
+      throw exc;
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(
+      final Path dir,
+      final IOException exc)
+      throws IOException
+    {
+      CatalogFilesystemReader.LOG.debug(
+        "postVisitDirectory: {}", dir);
+
+      Assertive.ensure(!this.directories.isEmpty());
+      this.directories.pop();
+      return FileVisitResult.CONTINUE;
     }
   }
 }

@@ -26,8 +26,8 @@ public interface CatalogDiskBuilderType
    * Add a node to the catalog.
    *
    * @param parent The parent directory
-   * @param name   The name of the directory entry, which is required to be
-   *               unique within the parent directory
+   * @param name   The name of the directory entry, which is required to be unique within the parent
+   *               directory
    * @param node   The directory entry
    *
    * @throws CatalogNodeException On errors

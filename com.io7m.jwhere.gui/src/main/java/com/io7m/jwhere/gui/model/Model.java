@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
@@ -47,6 +46,7 @@ import javax.swing.tree.TreeModel;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -64,12 +64,12 @@ public final class Model
     LOG = LoggerFactory.getLogger(Model.class);
   }
 
-  private final CatalogMultiTableModel             catalog_table_model;
-  private final CatalogTreeModel                   catalog_tree_model;
-  private final Revisions<CatalogState>            catalog_history;
-  private final CatalogComboBoxModel               catalog_combo_box_model;
-  private final CatalogVerificationTableModel      catalog_verification_model;
-  private       Optional<CatalogSaveSpecification> catalog_save_spec;
+  private final CatalogMultiTableModel catalog_table_model;
+  private final CatalogTreeModel catalog_tree_model;
+  private final Revisions<CatalogState> catalog_history;
+  private final CatalogComboBoxModel catalog_combo_box_model;
+  private final CatalogVerificationTableModel catalog_verification_model;
+  private Optional<CatalogSaveSpecification> catalog_save_spec;
 
   /**
    * Construct the model.
@@ -252,8 +252,7 @@ public final class Model
   }
 
   /**
-   * Load the directory {@code dir} of the disk {@code index} into the tabel
-   * model.
+   * Load the directory {@code dir} of the disk {@code index} into the tabel model.
    *
    * @param dir   The directory
    * @param index The disk ID
@@ -392,25 +391,7 @@ public final class Model
 
     cvm.reset();
     CatalogFilesystemReader.verifyDisk(
-      disk, settings, path, new CatalogVerificationListenerType()
-      {
-        @Override public void onItemVerified(
-          final CatalogVerificationReportItemOKType ok)
-        {
-          cvm.add(ok);
-        }
-
-        @Override public void onItemError(
-          final CatalogVerificationReportItemErrorType error)
-        {
-          cvm.add(error);
-        }
-
-        @Override public void onCompleted()
-        {
-          // Nothing
-        }
-      });
+      disk, settings, path, new VerificationListener(cvm));
   }
 
   /**
@@ -429,5 +410,36 @@ public final class Model
   public TableModel getVerificationTableModel()
   {
     return this.catalog_verification_model;
+  }
+
+  private static final class VerificationListener implements CatalogVerificationListenerType
+  {
+    private final CatalogVerificationTableModel model;
+
+    VerificationListener(
+      final CatalogVerificationTableModel in_model)
+    {
+      this.model = Objects.requireNonNull(in_model, "model");
+    }
+
+    @Override
+    public void onItemVerified(
+      final CatalogVerificationReportItemOKType ok)
+    {
+      this.model.add(ok);
+    }
+
+    @Override
+    public void onItemError(
+      final CatalogVerificationReportItemErrorType error)
+    {
+      this.model.add(error);
+    }
+
+    @Override
+    public void onCompleted()
+    {
+      // Nothing
+    }
   }
 }

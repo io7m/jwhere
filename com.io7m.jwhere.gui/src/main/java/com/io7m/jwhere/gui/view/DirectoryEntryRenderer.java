@@ -36,7 +36,8 @@ final class DirectoryEntryRenderer extends DefaultTableCellRenderer
     super();
   }
 
-  @Override public Component getTableCellRendererComponent(
+  @Override
+  public Component getTableCellRendererComponent(
     final JTable table,
     final Object value,
     final boolean is_selected,
@@ -51,28 +52,38 @@ final class DirectoryEntryRenderer extends DefaultTableCellRenderer
     final DirectoryEntryType entry = (DirectoryEntryType) value;
 
     this.setText(entry.getName());
-    entry.matchEntry(
-      new DirectoryEntryMatcherType<Unit, UnreachableCodeException>()
-      {
-        @Override public Unit onFile(final DirectoryEntryFile n)
-        {
-          DirectoryEntryRenderer.this.setIcon(Icons.getFile16());
-          return Unit.unit();
-        }
-
-        @Override public Unit onDirectory(final DirectoryEntryDirectory n)
-        {
-          DirectoryEntryRenderer.this.setIcon(Icons.getFolder16());
-          return Unit.unit();
-        }
-
-        @Override public Unit onUp(final DirectoryEntryUp n)
-        {
-          DirectoryEntryRenderer.this.setIcon(Icons.getFolderUp16());
-          return Unit.unit();
-        }
-      });
+    entry.matchEntry(new IconSetter());
 
     return this;
+  }
+
+  private final class IconSetter
+    implements DirectoryEntryMatcherType<Unit, UnreachableCodeException>
+  {
+    IconSetter()
+    {
+
+    }
+
+    @Override
+    public Unit onFile(final DirectoryEntryFile n)
+    {
+      DirectoryEntryRenderer.this.setIcon(Icons.getFile16());
+      return Unit.unit();
+    }
+
+    @Override
+    public Unit onDirectory(final DirectoryEntryDirectory n)
+    {
+      DirectoryEntryRenderer.this.setIcon(Icons.getFolder16());
+      return Unit.unit();
+    }
+
+    @Override
+    public Unit onUp(final DirectoryEntryUp n)
+    {
+      DirectoryEntryRenderer.this.setIcon(Icons.getFolderUp16());
+      return Unit.unit();
+    }
   }
 }

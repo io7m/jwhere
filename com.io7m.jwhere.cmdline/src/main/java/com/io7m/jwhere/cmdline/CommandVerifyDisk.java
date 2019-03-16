@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 @Command(name = "verify-disk",
-         description = "Verify a disk in a catalog")
+  description = "Verify a disk in a catalog")
 public final class CommandVerifyDisk extends CommandBase
 {
   private static final Logger LOG;
@@ -63,34 +64,34 @@ public final class CommandVerifyDisk extends CommandBase
    */
 
   @Option(name = "--catalog",
-          arity = 1,
-          description = "The path to the input catalog file",
-          required = true) private String catalog_in;
+    arity = 1,
+    description = "The path to the input catalog file",
+    required = true) private String catalog_in;
 
   /**
    * The filesystem root.
    */
 
   @Option(name = "--disk-root",
-          arity = 1,
-          description = "The path to a filesystem root",
-          required = true) private String root;
+    arity = 1,
+    description = "The path to a filesystem root",
+    required = true) private String root;
 
   /**
    * The ID of the disk to be verified.
    */
 
   @Option(name = "--disk-id",
-          arity = 1,
-          description = "The ID of the disk",
-          required = true) private BigInteger disk_index;
+    arity = 1,
+    description = "The ID of the disk",
+    required = true) private BigInteger disk_index;
 
   /**
    * Only show errors.
    */
 
   @Option(name = "--errors-only",
-          description = "Only show errors") private boolean only_errors;
+    description = "Only show errors") private boolean only_errors;
 
   /**
    * Construct a command.
@@ -101,7 +102,8 @@ public final class CommandVerifyDisk extends CommandBase
 
   }
 
-  @Override public void run()
+  @Override
+  public void run()
   {
     super.setup();
 
@@ -131,33 +133,7 @@ public final class CommandVerifyDisk extends CommandBase
           .build();
 
       CatalogFilesystemReader.verifyDisk(
-        disk, settings, root_path, new CatalogVerificationListenerType()
-        {
-          @Override
-          public void onItemVerified(
-            final
-            CatalogVerificationReportItemOKType ok)
-          {
-            System.out.printf("%s | OK | %s\n", ok.path(), ok.show());
-          }
-
-          @Override
-          public void onItemError(
-            final
-            CatalogVerificationReportItemErrorType error)
-          {
-            System.out.printf(
-              "%s | FAILED | %s\n",
-              error.path(),
-              error.show());
-            status.set(2);
-          }
-
-          @Override public void onCompleted()
-          {
-            // Nothing
-          }
-        });
+        disk, settings, root_path, new VerificationListener(status));
 
     } catch (final NoSuchElementException e) {
       CommandVerifyDisk.LOG.error(
@@ -199,4 +175,39 @@ public final class CommandVerifyDisk extends CommandBase
     System.exit(status.get());
   }
 
+  private static final class VerificationListener implements CatalogVerificationListenerType
+  {
+    private final AtomicInteger status;
+
+    VerificationListener(final AtomicInteger in_status)
+    {
+      this.status = Objects.requireNonNull(in_status, "status");
+    }
+
+    @Override
+    public void onItemVerified(
+      final
+      CatalogVerificationReportItemOKType ok)
+    {
+      System.out.printf("%s | OK | %s\n", ok.path(), ok.show());
+    }
+
+    @Override
+    public void onItemError(
+      final
+      CatalogVerificationReportItemErrorType error)
+    {
+      System.out.printf(
+        "%s | FAILED | %s\n",
+        error.path(),
+        error.show());
+      this.status.set(2);
+    }
+
+    @Override
+    public void onCompleted()
+    {
+      // Nothing
+    }
+  }
 }

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.jgrapht.graph.UnmodifiableGraph;
 
@@ -31,14 +30,14 @@ import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * The default implementation of the {@link CatalogJSONSerializerType}
- * interface.
+ * The default implementation of the {@link CatalogJSONSerializerType} interface.
  */
 
 public final class CatalogJSONSerializer implements CatalogJSONSerializerType
@@ -101,12 +100,14 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     return node.matchNode(
       new CatalogNodeMatcherType<ObjectNode, UnreachableCodeException>()
       {
-        @Override public ObjectNode onFile(final CatalogFileNodeType f)
+        @Override
+        public ObjectNode onFile(final CatalogFileNodeType f)
         {
           return CatalogJSONSerializer.serializeFile(jom, g, f, name);
         }
 
-        @Override public ObjectNode onDirectory(final CatalogDirectoryNodeType d)
+        @Override
+        public ObjectNode onDirectory(final CatalogDirectoryNodeType d)
         {
           return CatalogJSONSerializer.serializeDirectory(jom, g, d, name);
         }
@@ -156,19 +157,20 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     return new CatalogJSONSerializer();
   }
 
-  @Override public void serializeCatalogToPath(
+  @Override
+  public void serializeCatalogToPath(
     final Catalog c,
     final CatalogSaveSpecification s)
     throws IOException
   {
     switch (s.compress()) {
       case COMPRESS_NONE:
-        try (final OutputStream os = Files.newOutputStream(s.path())) {
+        try (OutputStream os = Files.newOutputStream(s.path())) {
           this.serializeCatalogToStream(c, os);
         }
         break;
       case COMPRESS_GZIP:
-        try (final OutputStream os = new GZIPOutputStream(
+        try (OutputStream os = new GZIPOutputStream(
           Files.newOutputStream(s.path()))) {
           this.serializeCatalogToStream(c, os);
         }
@@ -176,7 +178,8 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     }
   }
 
-  @Override public void serializeCatalogToStream(
+  @Override
+  public void serializeCatalogToStream(
     final Catalog c,
     final OutputStream os)
     throws IOException
@@ -189,7 +192,8 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     jw.writeValue(os, this.serializeCatalog(c));
   }
 
-  @Override public ObjectNode serializeCatalog(final Catalog c)
+  @Override
+  public ObjectNode serializeCatalog(final Catalog c)
   {
     Objects.requireNonNull(c, "c");
 
@@ -214,7 +218,8 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     return jroot;
   }
 
-  @Override public ObjectNode serializeDisk(final CatalogDisk d)
+  @Override
+  public ObjectNode serializeDisk(final CatalogDisk d)
   {
     Objects.requireNonNull(d, "d");
 

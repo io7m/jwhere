@@ -17,8 +17,7 @@
 package com.io7m.jwhere.core;
 
 /**
- * The type of items that can appear in verification reports that signify
- * errors.
+ * The type of items that can appear in verification reports that signify errors.
  */
 
 public interface CatalogVerificationReportItemErrorType

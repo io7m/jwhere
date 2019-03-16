@@ -17,8 +17,6 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jfunctional.ProcedureType;
-import java.util.Objects;
-
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.gui.ControllerType;
@@ -35,6 +33,7 @@ import javax.swing.JTextField;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 
 final class CatalogAddDiskDialog extends JDialog

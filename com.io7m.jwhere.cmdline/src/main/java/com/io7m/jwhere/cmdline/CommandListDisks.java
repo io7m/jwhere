@@ -55,9 +55,9 @@ public final class CommandListDisks extends CommandBase
    */
 
   @Option(name = "--catalog",
-          arity = 1,
-          description = "The path to a catalog file",
-          required = true) private String catalog;
+    arity = 1,
+    description = "The path to a catalog file",
+    required = true) private String catalog;
 
   /**
    * Construct a command.
@@ -68,7 +68,8 @@ public final class CommandListDisks extends CommandBase
 
   }
 
-  @Override public void run()
+  @Override
+  public void run()
   {
     super.setup();
 

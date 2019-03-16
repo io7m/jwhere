@@ -16,10 +16,10 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
-import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogDiskID;
+
+import java.util.Objects;
 
 /**
  * A directory entry in a given disk that corresponds to a directory.
@@ -29,7 +29,7 @@ public final class DirectoryEntryDirectory implements DirectoryEntryType
 {
   private final CatalogDiskID disk_index;
   private final CatalogDirectoryNodeType node;
-  private final String               name;
+  private final String name;
 
   /**
    * Construct an entry.
@@ -67,14 +67,16 @@ public final class DirectoryEntryDirectory implements DirectoryEntryType
     return this.node;
   }
 
-  @Override public <A, E extends Exception> A matchEntry(
+  @Override
+  public <A, E extends Exception> A matchEntry(
     final DirectoryEntryMatcherType<A, E> m)
     throws E
   {
     return m.onDirectory(this);
   }
 
-  @Override public String getName()
+  @Override
+  public String getName()
   {
     return this.name;
   }

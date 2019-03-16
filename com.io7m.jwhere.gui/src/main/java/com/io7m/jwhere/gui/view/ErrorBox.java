@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
 import net.java.dev.designgridlayout.DesignGridLayout;
@@ -32,6 +31,7 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * Error message functions.
@@ -150,7 +150,7 @@ final class ErrorBox
   private static String showStackTraceText(
     final Throwable e)
   {
-    try (final StringWriter writer = new StringWriter()) {
+    try (StringWriter writer = new StringWriter()) {
       writer.append(e.getMessage());
       writer.append("\n");
       writer.append("\n");

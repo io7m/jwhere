@@ -23,8 +23,7 @@ import javax.swing.DefaultButtonModel;
 import java.util.function.Consumer;
 
 /**
- * A button model that enables or disables the button based on the current undo
- * availability.
+ * A button model that enables or disables the button based on the current undo availability.
  */
 
 public final class UndoButtonModel extends DefaultButtonModel
@@ -41,7 +40,8 @@ public final class UndoButtonModel extends DefaultButtonModel
     c.catalogUndoSubscribe(this);
   }
 
-  @Override public void accept(final UndoAvailable c)
+  @Override
+  public void accept(final UndoAvailable c)
   {
     this.setEnabled(c == UndoAvailable.UNDO_AVAILABLE);
   }

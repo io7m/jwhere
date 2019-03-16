@@ -30,7 +30,8 @@ final class CatalogDiskIDRenderer extends DefaultTableCellRenderer
     super();
   }
 
-  @Override public Component getTableCellRendererComponent(
+  @Override
+  public Component getTableCellRendererComponent(
     final JTable table,
     final Object value,
     final boolean is_selected,

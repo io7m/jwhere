@@ -29,7 +29,7 @@ public final class GWhereUnreadableRootDirectoryException extends GWhereParserEx
    *
    * @param line   The line number
    * @param column The column number
-   * @param s         The exception message
+   * @param s      The exception message
    */
 
   public GWhereUnreadableRootDirectoryException(

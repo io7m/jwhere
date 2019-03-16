@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
 import net.jcip.annotations.Immutable;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -31,6 +30,7 @@ import java.nio.file.NotDirectoryException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +40,8 @@ import java.util.stream.Stream;
  * A catalogued disk.
  */
 
-@Immutable public final class CatalogDisk
+@Immutable
+public final class CatalogDisk
 {
   private static final Logger LOG;
 
@@ -49,8 +50,8 @@ import java.util.stream.Stream;
   }
 
   private final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph;
-  private final CatalogDirectoryNode                                      root;
-  private final CatalogDiskMetadata                                       meta;
+  private final CatalogDirectoryNode root;
+  private final CatalogDiskMetadata meta;
 
   private CatalogDisk(
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> in_g,
@@ -87,14 +88,14 @@ import java.util.stream.Stream;
 
     final CatalogDirectoryNode in_root =
       CatalogDirectoryNode.builder()
-      .setPermissions(d_root.permissions())
-      .setOwner(d_root.owner())
-      .setGroup(d_root.group())
-      .setId(d_root.id())
-      .setAccessTime(d_root.accessTime())
-      .setCreationTime(d_root.creationTime())
-      .setModificationTime(d_root.modificationTime())
-      .build();
+        .setPermissions(d_root.permissions())
+        .setOwner(d_root.owner())
+        .setGroup(d_root.group())
+        .setId(d_root.id())
+        .setAccessTime(d_root.accessTime())
+        .setCreationTime(d_root.creationTime())
+        .setModificationTime(d_root.modificationTime())
+        .build();
 
     return new CatalogDisk(
       d.getFilesystemGraph(), in_root, d.getMeta());
@@ -134,27 +135,21 @@ import java.util.stream.Stream;
     for (final CatalogDirectoryEntry e : edges) {
       if (e.getName().equals(name)) {
         return e.getTarget().matchNode(
-          new CatalogNodeMatcherType<Optional<CatalogNodeType>,
-            NotDirectoryException>()
+          new CatalogNodeMatcherType<Optional<CatalogNodeType>, NotDirectoryException>()
           {
             @Override
             public Optional<CatalogNodeType> onFile(final CatalogFileNodeType f)
               throws NotDirectoryException
             {
-              if (iter.hasNext()) {
-                throw new NotDirectoryException(name);
-              }
-              return Optional.of(f);
+              return getNodeForPathIteratorFile(f, iter, name);
             }
 
-            @Override public Optional<CatalogNodeType> onDirectory(
+            @Override
+            public Optional<CatalogNodeType> onDirectory(
               final CatalogDirectoryNodeType d)
               throws NotDirectoryException
             {
-              if (iter.hasNext()) {
-                return CatalogDisk.getNodeForPathIterator(g, d, iter);
-              }
-              return Optional.of(d);
+              return getNodeForPathIteratorDirectory(d, iter, g);
             }
           });
       }
@@ -163,7 +158,32 @@ import java.util.stream.Stream;
     return Optional.empty();
   }
 
-  @Override public String toString()
+  private static Optional<CatalogNodeType> getNodeForPathIteratorDirectory(
+    final CatalogDirectoryNodeType d,
+    final Iterator<String> iter,
+    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g)
+    throws NotDirectoryException
+  {
+    if (iter.hasNext()) {
+      return CatalogDisk.getNodeForPathIterator(g, d, iter);
+    }
+    return Optional.of(d);
+  }
+
+  private static Optional<CatalogNodeType> getNodeForPathIteratorFile(
+    final CatalogFileNodeType f,
+    final Iterator<String> iter,
+    final String name)
+    throws NotDirectoryException
+  {
+    if (iter.hasNext()) {
+      throw new NotDirectoryException(name);
+    }
+    return Optional.of(f);
+  }
+
+  @Override
+  public String toString()
   {
     final StringBuilder sb = new StringBuilder("CatalogDisk{");
     sb.append("graph=").append(this.graph);
@@ -173,7 +193,8 @@ import java.util.stream.Stream;
     return sb.toString();
   }
 
-  @Override public boolean equals(final Object o)
+  @Override
+  public boolean equals(final Object o)
   {
     if (this == o) {
       return true;
@@ -185,11 +206,12 @@ import java.util.stream.Stream;
     final CatalogDisk that = (CatalogDisk) o;
 
     return this.graph.equals(that.graph)
-           && this.root.equals(that.root)
-           && this.getMeta().equals(that.getMeta());
+      && this.root.equals(that.root)
+      && this.getMeta().equals(that.getMeta());
   }
 
-  @Override public int hashCode()
+  @Override
+  public int hashCode()
   {
     int result = this.graph.hashCode();
     result = 31 * result + this.root.hashCode();
@@ -259,8 +281,8 @@ import java.util.stream.Stream;
    *
    * @return A node, if one exists
    *
-   * @throws NotDirectoryException If an element of the path other than the
-   *                               final one does not refer to a directory
+   * @throws NotDirectoryException If an element of the path other than the final one does not refer
+   *                               to a directory
    */
 
   public Optional<CatalogNodeType> getNodeForPath(final List<String> p)
@@ -274,14 +296,12 @@ import java.util.stream.Stream;
   private static final class Builder implements CatalogDiskBuilderType
   {
     private final DirectedGraph<CatalogNodeType, CatalogDirectoryEntry> graph;
-    private final CatalogDirectoryNode                                  root;
-    private final String                                                type;
-    private final CatalogDiskID                                         index;
-    private final BigInteger                                            size;
-    private final CatalogDiskName
-                                                                        disk_name;
-    private       boolean
-                                                                        finished;
+    private final CatalogDirectoryNode root;
+    private final String type;
+    private final CatalogDiskID index;
+    private final BigInteger size;
+    private final CatalogDiskName disk_name;
+    private boolean finished;
 
     private Builder(
       final CatalogDirectoryNode in_root,
@@ -300,7 +320,8 @@ import java.util.stream.Stream;
       this.graph.addVertex(in_root);
     }
 
-    @Override public void addNode(
+    @Override
+    public void addNode(
       final CatalogDirectoryNode parent,
       final String name,
       final CatalogNodeType node)
@@ -360,7 +381,8 @@ import java.util.stream.Stream;
       }
     }
 
-    @Override public CatalogDisk build()
+    @Override
+    public CatalogDisk build()
     {
       Assertive.require(!this.finished, "Builders cannot be reused");
 

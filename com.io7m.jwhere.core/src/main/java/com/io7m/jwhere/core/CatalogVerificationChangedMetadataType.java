@@ -27,7 +27,8 @@ import java.nio.file.Path;
 
 @ImmutablesStyleType
 @Value.Immutable
-public interface CatalogVerificationChangedMetadataType extends CatalogVerificationReportItemErrorType
+public interface CatalogVerificationChangedMetadataType extends
+  CatalogVerificationReportItemErrorType
 {
   /**
    * @return The path of the file

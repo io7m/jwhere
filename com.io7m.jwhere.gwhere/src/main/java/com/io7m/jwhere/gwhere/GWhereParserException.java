@@ -16,10 +16,10 @@
 
 package com.io7m.jwhere.gwhere;
 
-import java.util.Objects;
 import com.io7m.jwhere.core.CatalogException;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  * The type of errors for parsers that consume {@code GWhere} data.

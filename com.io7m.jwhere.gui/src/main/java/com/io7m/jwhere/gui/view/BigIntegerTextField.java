@@ -16,13 +16,12 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
-
 import javax.swing.JTextField;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Optional;
 
 final class BigIntegerTextField extends JTextField
@@ -43,14 +42,16 @@ final class BigIntegerTextField extends JTextField
     this.addKeyListener(
       new KeyAdapter()
       {
-        @Override public void keyReleased(final KeyEvent e)
+        @Override
+        public void keyReleased(final KeyEvent e)
         {
           BigIntegerTextField.this.getBigInteger();
         }
       });
   }
 
-  @Override public void setBackground(final Color bg)
+  @Override
+  public void setBackground(final Color bg)
   {
     this.set_color = Objects.requireNonNull(bg, "bg");
     super.setBackground(bg);

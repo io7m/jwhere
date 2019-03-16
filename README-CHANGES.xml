@@ -18,7 +18,9 @@
     <c:item>
       <c:date>2015-12-24</c:date>
       <c:type-code-new/>
-      <c:summary>Add the ability to remove disks from a catalog to the command line interface.</c:summary>
+      <c:summary>Add the ability to remove disks from a catalog to the command
+        line interface.
+      </c:summary>
     </c:item>
   </c:release>
 

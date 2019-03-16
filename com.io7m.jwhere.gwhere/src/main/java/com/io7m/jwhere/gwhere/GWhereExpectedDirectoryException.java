@@ -19,8 +19,8 @@ package com.io7m.jwhere.gwhere;
 import java.math.BigInteger;
 
 /**
- * An exception indicating that a directory was expected, but some other
- * filesystem object was encountered.
+ * An exception indicating that a directory was expected, but some other filesystem object was
+ * encountered.
  */
 
 public final class GWhereExpectedDirectoryException
@@ -28,9 +28,10 @@ public final class GWhereExpectedDirectoryException
 {
   /**
    * Construct an exception
-   * @param line The line number
+   *
+   * @param line   The line number
    * @param column The column number
-   * @param s The exception message
+   * @param s      The exception message
    */
 
   public GWhereExpectedDirectoryException(

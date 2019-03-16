@@ -19,8 +19,7 @@ package com.io7m.jwhere.gwhere;
 import java.math.BigInteger;
 
 /**
- * An exception indicating that an archive line was expected, but something else
- * was encountered.
+ * An exception indicating that an archive line was expected, but something else was encountered.
  */
 
 public final class GWhereExpectedArchiveLineException

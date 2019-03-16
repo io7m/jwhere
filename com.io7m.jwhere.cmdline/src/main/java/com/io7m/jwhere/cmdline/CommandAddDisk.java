@@ -46,7 +46,7 @@ import java.util.SortedMap;
  */
 
 @Command(name = "add-disk",
-         description = "Catalog a disk and add it to a catalog")
+  description = "Catalog a disk and add it to a catalog")
 public final class CommandAddDisk extends CommandBase
 {
   private static final Logger LOG;
@@ -60,8 +60,8 @@ public final class CommandAddDisk extends CommandBase
    */
 
   @Option(name = "--catalog-compress",
-          arity = 1,
-          description = "The compression scheme to use for the catalog")
+    arity = 1,
+    description = "The compression scheme to use for the catalog")
   private final CatalogCompress catalog_compress =
     CatalogCompress.COMPRESS_GZIP;
 
@@ -70,43 +70,43 @@ public final class CommandAddDisk extends CommandBase
    */
 
   @Option(name = "--catalog-input",
-          arity = 1,
-          description = "The path to the input catalog file",
-          required = true) private String catalog_in;
+    arity = 1,
+    description = "The path to the input catalog file",
+    required = true) private String catalog_in;
   /**
    * The path to the output catalog.
    */
 
   @Option(name = "--catalog-output",
-          arity = 1,
-          description = "The path to the output catalog file",
-          required = true) private String catalog_out;
+    arity = 1,
+    description = "The path to the output catalog file",
+    required = true) private String catalog_out;
   /**
    * The filesystem root.
    */
 
   @Option(name = "--disk-root",
-          arity = 1,
-          description = "The path to a filesystem root",
-          required = true) private String root;
+    arity = 1,
+    description = "The path to a filesystem root",
+    required = true) private String root;
 
   /**
    * The name of a disk.
    */
 
   @Option(name = "--disk-name",
-          arity = 1,
-          description = "The name of the disk",
-          required = true) private String disk_name;
+    arity = 1,
+    description = "The name of the disk",
+    required = true) private String disk_name;
 
   /**
    * The ID of the disk to be created.
    */
 
   @Option(name = "--disk-id",
-          arity = 1,
-          description = "The ID of the disk",
-          required = true) private BigInteger disk_index;
+    arity = 1,
+    description = "The ID of the disk",
+    required = true) private BigInteger disk_index;
 
   /**
    * Construct a command.
@@ -117,7 +117,8 @@ public final class CommandAddDisk extends CommandBase
 
   }
 
-  @Override public void run()
+  @Override
+  public void run()
   {
     super.setup();
 

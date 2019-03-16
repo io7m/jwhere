@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -25,6 +24,7 @@ import org.valid4j.Assertive;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -32,9 +32,10 @@ import java.util.TreeMap;
  * The current immutable catalog state.
  */
 
-@Immutable public final class CatalogState
+@Immutable
+public final class CatalogState
 {
-  private final Catalog             catalog;
+  private final Catalog catalog;
   private final List<CatalogDiskID> catalog_disks;
 
   private CatalogState(final Catalog c)

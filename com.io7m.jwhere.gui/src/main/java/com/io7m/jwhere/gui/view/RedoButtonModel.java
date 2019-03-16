@@ -23,8 +23,7 @@ import javax.swing.DefaultButtonModel;
 import java.util.function.Consumer;
 
 /**
- * A button model that enables or disables the button based on the current redo
- * availability.
+ * A button model that enables or disables the button based on the current redo availability.
  */
 
 public final class RedoButtonModel extends DefaultButtonModel
@@ -41,7 +40,8 @@ public final class RedoButtonModel extends DefaultButtonModel
     c.catalogRedoSubscribe(this);
   }
 
-  @Override public void accept(final RedoAvailable c)
+  @Override
+  public void accept(final RedoAvailable c)
   {
     this.setEnabled(c == RedoAvailable.REDO_AVAILABLE);
   }

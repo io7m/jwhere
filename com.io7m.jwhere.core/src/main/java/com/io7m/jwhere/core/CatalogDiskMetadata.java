@@ -16,9 +16,8 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
-
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  * Disk metadata.
@@ -27,9 +26,9 @@ import java.math.BigInteger;
 public final class CatalogDiskMetadata
 {
   private final CatalogDiskName disk_name;
-  private final String          fs_type;
-  private final CatalogDiskID   index;
-  private final BigInteger      size;
+  private final String fs_type;
+  private final CatalogDiskID index;
+  private final BigInteger size;
 
   /**
    * Disk metadata.
@@ -70,7 +69,8 @@ public final class CatalogDiskMetadata
     return this.fs_type;
   }
 
-  @Override public boolean equals(final Object o)
+  @Override
+  public boolean equals(final Object o)
   {
     if (this == o) {
       return true;
@@ -81,12 +81,13 @@ public final class CatalogDiskMetadata
 
     final CatalogDiskMetadata that = (CatalogDiskMetadata) o;
     return this.disk_name.equals(that.disk_name)
-           && this.fs_type.equals(that.fs_type)
-           && this.index.equals(that.index)
-           && this.getSize().equals(that.getSize());
+      && this.fs_type.equals(that.fs_type)
+      && this.index.equals(that.index)
+      && this.getSize().equals(that.getSize());
   }
 
-  @Override public String toString()
+  @Override
+  public String toString()
   {
     final StringBuilder sb = new StringBuilder("CatalogDiskMetadata{");
     sb.append("disk_name=").append(this.disk_name);
@@ -97,7 +98,8 @@ public final class CatalogDiskMetadata
     return sb.toString();
   }
 
-  @Override public int hashCode()
+  @Override
+  public int hashCode()
   {
     int result = this.disk_name.hashCode();
     result = 31 * result + this.fs_type.hashCode();

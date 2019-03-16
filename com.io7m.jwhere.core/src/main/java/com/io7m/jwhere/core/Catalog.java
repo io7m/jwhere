@@ -17,7 +17,6 @@
 package com.io7m.jwhere.core;
 
 import java.util.Objects;
-
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -54,7 +53,8 @@ public final class Catalog
     return new Catalog(new TreeMap<>(c.disks));
   }
 
-  @Override public String toString()
+  @Override
+  public String toString()
   {
     final StringBuilder sb = new StringBuilder("Catalog{");
     sb.append("disks=").append(this.disks);
@@ -62,7 +62,8 @@ public final class Catalog
     return sb.toString();
   }
 
-  @Override public boolean equals(final Object o)
+  @Override
+  public boolean equals(final Object o)
   {
     if (this == o) {
       return true;
@@ -75,7 +76,8 @@ public final class Catalog
     return this.getDisks().equals(catalog.getDisks());
   }
 
-  @Override public int hashCode()
+  @Override
+  public int hashCode()
   {
     return this.getDisks().hashCode();
   }

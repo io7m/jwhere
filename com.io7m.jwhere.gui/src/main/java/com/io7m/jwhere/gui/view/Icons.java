@@ -31,7 +31,7 @@ import java.util.WeakHashMap;
 
 final class Icons
 {
-  private static final Logger                 LOG;
+  private static final Logger LOG;
   private static final Map<String, ImageIcon> ICON_CACHE;
 
   static {
@@ -69,8 +69,7 @@ final class Icons
     if (Icons.ICON_CACHE.containsKey(name)) {
       return Icons.ICON_CACHE.get(name);
     } else {
-      try (final InputStream stream = Icons.class.getResourceAsStream(
-        name)) {
+      try (InputStream stream = Icons.class.getResourceAsStream(name)) {
         final BufferedImage image = ImageIO.read(stream);
         final ImageIcon icon = new ImageIcon(image);
         Icons.ICON_CACHE.put(name, icon);

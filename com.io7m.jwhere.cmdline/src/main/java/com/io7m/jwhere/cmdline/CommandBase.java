@@ -42,7 +42,7 @@ public abstract class CommandBase implements Runnable
   private boolean debug;
 
   @Option(name = "--wait-for-stdin",
-          description = "Wait for a single byte on stdin before executing.")
+    description = "Wait for a single byte on stdin before executing.")
   private boolean wait_profiler;
 
   protected static Catalog openCatalogForReading(

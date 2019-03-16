@@ -16,10 +16,10 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
 import com.io7m.jwhere.gui.ControllerType;
 
 import javax.swing.JPanel;
+import java.util.Objects;
 
 final class SearchTab extends JPanel
 {

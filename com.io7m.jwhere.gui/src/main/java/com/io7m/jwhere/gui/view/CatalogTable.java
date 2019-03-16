@@ -16,8 +16,6 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
-
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.model.DirectoryEntryDirectory;
@@ -31,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
+import java.util.Objects;
 
 final class CatalogTable extends JTable
 {

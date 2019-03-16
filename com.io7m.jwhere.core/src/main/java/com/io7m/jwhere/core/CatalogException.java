@@ -17,7 +17,7 @@
 package com.io7m.jwhere.core;
 
 /**
- * The type of exceptions raised throughout the <tt>jwhere</tt> package.
+ * The type of exceptions raised throughout the {@code jwhere} package.
  */
 
 public abstract class CatalogException extends Exception

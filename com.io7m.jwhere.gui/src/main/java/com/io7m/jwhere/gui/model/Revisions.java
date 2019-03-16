@@ -16,27 +16,25 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * A versioned data structure storing revisions of a given immutable value, with
- * undo and redo support.
+ * A versioned data structure storing revisions of a given immutable value, with undo and redo
+ * support.
  *
- * Essentially, the structure maintains a bounded stack of {@code N} revisions.
- * Each new value pushed into the history removes the oldest revision. Up to
- * {@code N} revisions can be "undone" by popping the most recent revision from
- * the stack. An "undone" operation can be "redone" by pushing the popped
- * revision back onto the stack. The structure assigns a monotonically
- * increasing version number to each new revision. The current revision can be
- * marked as "saved" (with the initial revision implicitly being marked as
- * such), and each new revision from that point on is considered to be "unsaved"
- * data, until the next time a revision is "saved".
+ * Essentially, the structure maintains a bounded stack of {@code N} revisions. Each new value
+ * pushed into the history removes the oldest revision. Up to {@code N} revisions can be "undone" by
+ * popping the most recent revision from the stack. An "undone" operation can be "redone" by pushing
+ * the popped revision back onto the stack. The structure assigns a monotonically increasing version
+ * number to each new revision. The current revision can be marked as "saved" (with the initial
+ * revision implicitly being marked as such), and each new revision from that point on is considered
+ * to be "unsaved" data, until the next time a revision is "saved".
  *
  * @param <T> The type of values
  */
@@ -50,15 +48,15 @@ public final class Revisions<T>
   }
 
   private final MutableBoundedNonEmptyDiscardStack<Element<T>> history;
-  private final MutableBoundedDiscardStack<Element<T>>         redo;
-  private final ObservableValue<UnsavedChanges>                watch_unsaved;
-  private final ObservableValue<UndoAvailable>                 watch_undo;
-  private final ObservableValue<RedoAvailable>                 watch_redo;
-  private       BigInteger                                     saved;
+  private final MutableBoundedDiscardStack<Element<T>> redo;
+  private final ObservableValue<UnsavedChanges> watch_unsaved;
+  private final ObservableValue<UndoAvailable> watch_undo;
+  private final ObservableValue<RedoAvailable> watch_redo;
+  private BigInteger saved;
 
   /**
-   * Construct a new version history with the starting value of {@code initial}
-   * and storing {@code count} undo and redo versions.
+   * Construct a new version history with the starting value of {@code initial} and storing {@code
+   * count} undo and redo versions.
    *
    * @param initial The initial value
    * @param count   The number of undo and redo versions
@@ -117,8 +115,8 @@ public final class Revisions<T>
   }
 
   /**
-   * Unsubscribe the given consumer of unsaved changes events. Has no effect if
-   * the consumer is not already subscribed.
+   * Unsubscribe the given consumer of unsaved changes events. Has no effect if the consumer is not
+   * already subscribed.
    *
    * @param o The consumer of events
    */
@@ -129,8 +127,8 @@ public final class Revisions<T>
   }
 
   /**
-   * Unsubscribe the given consumer of undo state change events. Has no effect
-   * if the consumer is not already subscribed.
+   * Unsubscribe the given consumer of undo state change events. Has no effect if the consumer is
+   * not already subscribed.
    *
    * @param o The consumer of events
    */
@@ -141,8 +139,8 @@ public final class Revisions<T>
   }
 
   /**
-   * Unsubscribe the given consumer of redo state change events. Has no effect
-   * if the consumer is not already subscribed.
+   * Unsubscribe the given consumer of redo state change events. Has no effect if the consumer is
+   * not already subscribed.
    *
    * @param o The consumer of events
    */
@@ -233,8 +231,8 @@ public final class Revisions<T>
   }
 
   /**
-   * @return An indication of whether or not changes have been made since the
-   * last time {@link #save()} was called.
+   * @return An indication of whether or not changes have been made since the last time {@link
+   * #save()} was called.
    */
 
   public UnsavedChanges hasUnsavedChanges()
@@ -263,8 +261,7 @@ public final class Revisions<T>
   }
 
   /**
-   * @return An indication of whether or not changes have been made that can be
-   * undone.
+   * @return An indication of whether or not changes have been made that can be undone.
    */
 
   public UndoAvailable hasUndo()
@@ -277,8 +274,7 @@ public final class Revisions<T>
   }
 
   /**
-   * @return An indication of whether or not undo operations have been performed
-   * that can be redone.
+   * @return An indication of whether or not undo operations have been performed that can be redone.
    */
 
   public RedoAvailable hasRedo()
@@ -300,9 +296,10 @@ public final class Revisions<T>
     this.broadcast();
   }
 
-  @Immutable private static final class Element<T>
+  @Immutable
+  private static final class Element<T>
   {
-    private final T          value;
+    private final T value;
     private final BigInteger revision;
 
     Element(

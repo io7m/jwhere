@@ -17,7 +17,6 @@
 package com.io7m.jwhere.gui;
 
 import java.util.Objects;
-
 import java.util.concurrent.Future;
 
 /**
@@ -26,8 +25,8 @@ import java.util.concurrent.Future;
 
 public final class CatalogTask
 {
-  private final Long      id;
-  private final String    name;
+  private final Long id;
+  private final String name;
   private final Future<?> future;
 
   CatalogTask(
@@ -67,7 +66,8 @@ public final class CatalogTask
     return this.name;
   }
 
-  @Override public String toString()
+  @Override
+  public String toString()
   {
     final StringBuilder sb = new StringBuilder("Task{");
     sb.append("id=").append(this.id);

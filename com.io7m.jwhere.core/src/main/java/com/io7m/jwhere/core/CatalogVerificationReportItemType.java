@@ -16,10 +16,10 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
 import com.io7m.jnull.Nullable;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * The type of items that can appear in verification reports.

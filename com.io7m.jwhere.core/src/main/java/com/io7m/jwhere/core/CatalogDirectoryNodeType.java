@@ -90,6 +90,10 @@ public interface CatalogDirectoryNodeType extends CatalogNodeType
     return m.onDirectory(this);
   }
 
+  /**
+   * Check preconditions for the type.
+   */
+
   @Value.Check
   default void checkPreconditions()
   {

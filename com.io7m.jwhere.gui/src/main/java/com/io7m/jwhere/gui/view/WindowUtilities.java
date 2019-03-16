@@ -28,6 +28,11 @@ import java.awt.event.WindowEvent;
 
 final class WindowUtilities
 {
+  private WindowUtilities()
+  {
+    throw new UnreachableCodeException();
+  }
+
   /**
    * Send a {@link WindowEvent#WINDOW_CLOSING} event to the given dialog.
    */
@@ -49,10 +54,5 @@ final class WindowUtilities
   {
     final WindowEvent ev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
     frame.dispatchEvent(ev);
-  }
-
-  private WindowUtilities()
-  {
-    throw new UnreachableCodeException();
   }
 }

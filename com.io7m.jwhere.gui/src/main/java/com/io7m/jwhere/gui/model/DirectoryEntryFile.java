@@ -38,14 +38,16 @@ public final class DirectoryEntryFile implements DirectoryEntryType
     this.name = Objects.requireNonNull(in_name, "in_name");
   }
 
-  @Override public <A, E extends Exception> A matchEntry(
+  @Override
+  public <A, E extends Exception> A matchEntry(
     final DirectoryEntryMatcherType<A, E> m)
     throws E
   {
     return m.onFile(this);
   }
 
-  @Override public String getName()
+  @Override
+  public String getName()
   {
     return this.name;
   }

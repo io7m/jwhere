@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -25,6 +24,7 @@ import org.valid4j.Assertive;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.function.Supplier;
 
@@ -32,20 +32,22 @@ final class CatalogComboBoxModel extends AbstractListModel<CatalogDiskMetadata>
   implements ComboBoxModel<CatalogDiskMetadata>
 {
   private final Supplier<CatalogState> supplier;
-  private       Object                 selection;
-  private       int                    size_last;
+  private Object selection;
+  private int size_last;
 
   CatalogComboBoxModel(final Supplier<CatalogState> in_supplier)
   {
     this.supplier = Objects.requireNonNull(in_supplier, "in_supplier");
   }
 
-  @Override public int getSize()
+  @Override
+  public int getSize()
   {
     return this.supplier.get().getCatalogDiskCount();
   }
 
-  @Override public CatalogDiskMetadata getElementAt(final int index)
+  @Override
+  public CatalogDiskMetadata getElementAt(final int index)
   {
     final CatalogState state = this.supplier.get();
 
@@ -72,12 +74,14 @@ final class CatalogComboBoxModel extends AbstractListModel<CatalogDiskMetadata>
     this.fireContentsChanged(this, 0, new_size - 1);
   }
 
-  @Override public Object getSelectedItem()
+  @Override
+  public Object getSelectedItem()
   {
     return this.selection;
   }
 
-  @Override public void setSelectedItem(final Object x)
+  @Override
+  public void setSelectedItem(final Object x)
   {
     this.selection = x;
   }

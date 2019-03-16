@@ -16,10 +16,9 @@
 
 package com.io7m.jwhere.gui.model;
 
-import java.util.Objects;
-
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -32,11 +31,11 @@ import java.util.function.Supplier;
 public final class ObservableValue<T>
 {
   private final List<Consumer<T>> observers;
-  private final Supplier<T>       supplier;
+  private final Supplier<T> supplier;
 
   /**
-   * Construct an observable value that will evaluate {@code s} every time
-   * {@link #broadcast()} is called.
+   * Construct an observable value that will evaluate {@code s} every time {@link #broadcast()} is
+   * called.
    *
    * @param s The state function
    */
@@ -63,8 +62,8 @@ public final class ObservableValue<T>
   }
 
   /**
-   * Add the observer {@code c} to the list of observers. The observer {@code c}
-   * will immediately receive the current state value.
+   * Add the observer {@code c} to the list of observers. The observer {@code c} will immediately
+   * receive the current state value.
    *
    * @param c The new observer
    */
@@ -79,8 +78,8 @@ public final class ObservableValue<T>
   }
 
   /**
-   * Remove the observer {@code c} from the list of observers. Has no effect if
-   * the observer is not in the list.
+   * Remove the observer {@code c} from the list of observers. Has no effect if the observer is not
+   * in the list.
    *
    * @param c The observer
    */

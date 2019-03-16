@@ -17,8 +17,7 @@
 package com.io7m.jwhere.core;
 
 /**
- * An exception indicating an attempt to add a file or directory to a filesystem
- * more than once.
+ * An exception indicating an attempt to add a file or directory to a filesystem more than once.
  */
 
 public final class CatalogNodeDuplicateException extends CatalogNodeException

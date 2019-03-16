@@ -16,13 +16,13 @@
 
 package com.io7m.jwhere.gui.view;
 
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
+import java.util.Objects;
 
 final class CatalogVerificationTable extends JTable
 {
