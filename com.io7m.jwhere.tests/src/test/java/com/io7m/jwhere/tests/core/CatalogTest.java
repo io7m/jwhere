@@ -20,8 +20,12 @@ import com.io7m.jwhere.core.Catalog;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public final class CatalogTest
 {
@@ -64,5 +68,17 @@ public final class CatalogTest
       });
   }
 
+  @Test
+  public void testEquals()
+  {
+    final SortedMap<Integer, Integer> map0 = new TreeMap<>();
+    map0.put(Integer.valueOf(23), Integer.valueOf(24));
+    final SortedMap<Integer, Integer> map1 = new TreeMap<>();
+    map1.put(Integer.valueOf(19), Integer.valueOf(27));
 
+    EqualsVerifier.forClass(Catalog.class)
+      .withNonnullFields("disks")
+      .withPrefabValues(SortedMap.class, map0, map1)
+      .verify();
+  }
 }

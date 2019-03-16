@@ -16,7 +16,10 @@
 
 package com.io7m.jwhere.tests.core;
 
+import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogCompress;
+import com.io7m.jwhere.core.CatalogDirectoryEntry;
+import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogIgnoreAccessTime;
 import com.io7m.jwhere.core.CatalogVerificationMetadataField;
@@ -53,6 +56,9 @@ public final class JWBruteForceEqualityTest
     com.io7m.jwhere.core.CatalogVerificationReportSettings.class,
     com.io7m.jwhere.core.CatalogVerificationUncataloguedItem.class,
     com.io7m.jwhere.core.CatalogVerificationVanishedItem.class,
+
+    CatalogDiskMetadata.class,
+    CatalogDirectoryEntry.class,
   };
 
   private static void checkClassEquality(
@@ -118,7 +124,13 @@ public final class JWBruteForceEqualityTest
     final Class<?> clazz)
     throws Exception
   {
-    final var interface_type = clazz.getInterfaces()[0];
+    final var interfaces = clazz.getInterfaces();
+    if (interfaces.length == 0) {
+      return;
+    }
+
+    final var interface_type = interfaces[0];
+
     final var mock = Mockito.mock(interface_type, new SensibleAnswers());
     final var copy_method = clazz.getMethod("copyOf", interface_type);
     final var copy = copy_method.invoke(clazz, mock);
