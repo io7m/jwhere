@@ -17,7 +17,6 @@
 package com.io7m.jwhere.tests.core;
 
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
-import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
 import org.junit.Assert;
@@ -28,20 +27,20 @@ public final class CatalogDirectoryEntryTest
   @Test
   public void testEqualsCases()
   {
-    final Generator<CatalogDirectoryEntry> gen =
+    final var gen =
       CatalogDirectoryEntryGenerator.getDefault();
 
     QuickCheck.forAllVerbose(
-      gen, new AbstractCharacteristic<CatalogDirectoryEntry>()
+      gen, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final CatalogDirectoryEntry cd)
           throws Throwable
         {
-          final CatalogDirectoryEntry ce = gen.next();
-          final CatalogDirectoryEntry cf = new CatalogDirectoryEntry(
+          final var ce = gen.next();
+          final var cf = new CatalogDirectoryEntry(
             cd.getSource(), cd.getTarget(), cd.getName());
-          final CatalogDirectoryEntry cg = new CatalogDirectoryEntry(
+          final var cg = new CatalogDirectoryEntry(
             cd.getSource(), cd.getTarget(), cd.getName());
 
           // Reflexivity

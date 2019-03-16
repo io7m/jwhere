@@ -37,7 +37,7 @@ public final class UserNameGenerator implements Generator<String>
     this.text_noslash_gen =
       () -> UserNameGenerator.this.text_gen.next().replaceAll("/", "");
 
-    this.veto_gen = new VetoableGenerator<String>(
+    this.veto_gen = new VetoableGenerator<>(
       UserNameGenerator.this.text_noslash_gen)
     {
       @Override

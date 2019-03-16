@@ -18,7 +18,6 @@ package com.io7m.jwhere.tests.core;
 
 import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogFileHashes;
-import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
 import org.hamcrest.core.StringContains;
@@ -32,7 +31,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public abstract class CatalogFileHashContract
@@ -45,12 +43,12 @@ public abstract class CatalogFileHashContract
   public final void testFromFileDirectory()
     throws Exception
   {
-    try (FileSystem fs = this.getFileSystem()) {
-      final Path p = fs.getPath("xyz");
+    try (var fs = this.getFileSystem()) {
+      final var p = fs.getPath("xyz");
       Files.createDirectory(p);
 
       this.expected.expect(FileSystemException.class);
-      this.expected.expectMessage(new StringContains("is a directory"));
+      this.expected.expectMessage(new StringContains("is not a file"));
       CatalogFileHashes.fromFile(p);
     }
   }
@@ -59,8 +57,8 @@ public abstract class CatalogFileHashContract
   public final void testFromFileNonexistent()
     throws Exception
   {
-    try (FileSystem fs = this.getFileSystem()) {
-      final Path p = fs.getPath("nonexistent");
+    try (var fs = this.getFileSystem()) {
+      final var p = fs.getPath("nonexistent");
       this.expected.expect(NoSuchFileException.class);
       this.expected.expectMessage(new StringContains("nonexistent"));
       CatalogFileHashes.fromFile(p);
@@ -71,12 +69,12 @@ public abstract class CatalogFileHashContract
   public final void testFromFileHashCorrect()
     throws Exception
   {
-    try (FileSystem fs = this.getFileSystem()) {
-      final Path p = fs.getPath("hello.txt");
+    try (var fs = this.getFileSystem()) {
+      final var p = fs.getPath("hello.txt");
       Files.write(
         p, "Hello".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
-      final CatalogFileHash h = CatalogFileHashes.fromFile(p);
+      final var h = CatalogFileHashes.fromFile(p);
       Assert.assertEquals(
         "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"
           .toUpperCase(),
@@ -88,20 +86,20 @@ public abstract class CatalogFileHashContract
   @Test
   public final void testEqualsCases()
   {
-    final Generator<CatalogFileHash> gen =
+    final var gen =
       CatalogFileHashGenerator.getDefault();
 
     QuickCheck.forAllVerbose(
-      gen, new AbstractCharacteristic<CatalogFileHash>()
+      gen, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final CatalogFileHash cd)
           throws Throwable
         {
-          final CatalogFileHash ce = gen.next();
-          final CatalogFileHash cf =
+          final var ce = gen.next();
+          final var cf =
             CatalogFileHash.copyOf(cd);
-          final CatalogFileHash cg =
+          final var cg =
             CatalogFileHash.copyOf(cd);
 
           // Reflexivity

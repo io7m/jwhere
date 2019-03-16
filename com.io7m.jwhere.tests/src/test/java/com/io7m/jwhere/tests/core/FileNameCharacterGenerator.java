@@ -53,9 +53,9 @@ public final class FileNameCharacterGenerator implements Generator<Character>
   @Override
   public Character next()
   {
-    final Random r = new Random();
+    final var r = new Random();
     while (true) {
-      final int c = r.nextInt(Character.MAX_VALUE);
+      final var c = r.nextInt(Character.MAX_VALUE);
       if (Character.isValidCodePoint(c) && !this.disallowed_codepoints.contains(
         Integer.valueOf(c))) {
         return Character.valueOf((char) c);

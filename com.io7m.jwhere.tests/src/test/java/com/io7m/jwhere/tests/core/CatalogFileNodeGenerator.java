@@ -60,7 +60,7 @@ public final class CatalogFileNodeGenerator
 
   public static Generator<CatalogFileNode> getDefault()
   {
-    final Random r = new Random();
+    final var r = new Random();
 
     final Generator<Boolean> bool_gen = () -> Boolean.valueOf(r.nextBoolean());
     final Generator<String> user_gen = new UserNameGenerator();
@@ -72,10 +72,10 @@ public final class CatalogFileNodeGenerator
     final Generator<Instant> time_gen =
       () -> Instant.ofEpochMilli(long_gen.next().longValue());
 
-    final StringGenerator text_gen = new StringGenerator();
-    final CatalogFileHashGenerator hash_gen =
+    final var text_gen = new StringGenerator();
+    final var hash_gen =
       new CatalogFileHashGenerator(text_gen);
-    final CatalogOptionalFileHashGenerator opt_hash_gen =
+    final var opt_hash_gen =
       new CatalogOptionalFileHashGenerator(hash_gen, bool_gen);
 
     return new CatalogFileNodeGenerator(
@@ -91,15 +91,15 @@ public final class CatalogFileNodeGenerator
   @Override
   public CatalogFileNode next()
   {
-    final Set<PosixFilePermission> perms = this.perm_gen.next();
-    final String owner = this.user_gen.next();
-    final String group = this.group_gen.next();
-    final BigInteger inode = this.long_gen.next();
-    final Instant access = this.time_gen.next();
-    final Instant creation = this.time_gen.next();
-    final Instant modify = this.time_gen.next();
-    final BigInteger size = this.long_gen.next();
-    final Optional<CatalogFileHash> hash = this.hash_gen.next();
+    final var perms = this.perm_gen.next();
+    final var owner = this.user_gen.next();
+    final var group = this.group_gen.next();
+    final var inode = this.long_gen.next();
+    final var access = this.time_gen.next();
+    final var creation = this.time_gen.next();
+    final var modify = this.time_gen.next();
+    final var size = this.long_gen.next();
+    final var hash = this.hash_gen.next();
 
     return CatalogFileNode.builder()
       .setPermissions(perms)

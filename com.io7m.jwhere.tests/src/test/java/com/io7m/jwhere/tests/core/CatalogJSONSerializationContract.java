@@ -16,7 +16,6 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogCompress;
 import com.io7m.jwhere.core.CatalogDisk;
@@ -30,9 +29,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
 
 public abstract class CatalogJSONSerializationContract<S extends
   CatalogJSONSerializerType, P extends CatalogJSONParserType>
@@ -50,22 +46,22 @@ public abstract class CatalogJSONSerializationContract<S extends
   @Test
   public final void testSerializationDiskRoundTrip()
   {
-    final S s = this.getSerializer();
-    final P p = this.getParser();
-    final Generator<CatalogDisk> g = CatalogDiskGenerator.getDefault();
+    final var s = this.getSerializer();
+    final var p = this.getParser();
+    final var g = CatalogDiskGenerator.getDefault();
 
     QuickCheck.forAll(
-      10, g, new AbstractCharacteristic<CatalogDisk>()
+      10, g, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final CatalogDisk d0)
           throws Throwable
         {
-          final ObjectNode s0 = s.serializeDisk(d0);
-          final CatalogDisk d1 = p.parseDisk(s0);
+          final var s0 = s.serializeDisk(d0);
+          final var d1 = p.parseDisk(s0);
           Assert.assertEquals(d0, d1);
-          final ObjectNode s1 = s.serializeDisk(d1);
-          final CatalogDisk d2 = p.parseDisk(s1);
+          final var s1 = s.serializeDisk(d1);
+          final var d2 = p.parseDisk(s1);
           Assert.assertEquals(d0, d2);
         }
       });
@@ -75,21 +71,21 @@ public abstract class CatalogJSONSerializationContract<S extends
   public final void testSerializationCatalogRoundTrip()
     throws Exception
   {
-    final S s = this.getSerializer();
-    final P p = this.getParser();
+    final var s = this.getSerializer();
+    final var p = this.getParser();
     final Generator<Catalog> g = CatalogGenerator.getDefault();
 
     QuickCheck.forAll(
-      3, g, new AbstractCharacteristic<Catalog>()
+      3, g, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final Catalog c0)
           throws Throwable
         {
-          final ObjectNode s0 = s.serializeCatalog(c0);
-          final Catalog c1 = p.parseCatalog(s0);
-          final ObjectNode s1 = s.serializeCatalog(c1);
-          final Catalog c2 = p.parseCatalog(s1);
+          final var s0 = s.serializeCatalog(c0);
+          final var c1 = p.parseCatalog(s0);
+          final var s1 = s.serializeCatalog(c1);
+          final var c2 = p.parseCatalog(s1);
           Assert.assertEquals(c0, c1);
           Assert.assertEquals(c0, c2);
         }
@@ -100,18 +96,18 @@ public abstract class CatalogJSONSerializationContract<S extends
   public final void testSerializationCatalogRoundTripCompressStream()
     throws Exception
   {
-    final S s = this.getSerializer();
-    final P p = this.getParser();
+    final var s = this.getSerializer();
+    final var p = this.getParser();
     final Generator<Catalog> g = CatalogGenerator.getDefault();
 
-    try (final FileSystem fs = CatalogTestFilesystems.makeEmptyUnixFilesystem
+    try (final var fs = CatalogTestFilesystems.makeEmptyUnixFilesystem
       ()) {
 
-      final Path root = fs.getRootDirectories().iterator().next();
-      final Path file = root.resolve("file.txt");
+      final var root = fs.getRootDirectories().iterator().next();
+      final var file = root.resolve("file.txt");
 
       QuickCheck.forAll(
-        3, g, new AbstractCharacteristic<Catalog>()
+        3, g, new AbstractCharacteristic<>()
         {
           @Override
           protected void doSpecify(final Catalog c0)
@@ -124,7 +120,7 @@ public abstract class CatalogJSONSerializationContract<S extends
                 .setPath(file)
                 .build());
 
-            final Catalog c1 = p.parseCatalogFromPathWithCompression(
+            final var c1 = p.parseCatalogFromPathWithCompression(
               file, CatalogCompress.COMPRESS_GZIP);
 
             s.serializeCatalogToPath(
@@ -134,7 +130,7 @@ public abstract class CatalogJSONSerializationContract<S extends
                 .setPath(file)
                 .build());
 
-            final Catalog c2 = p.parseCatalogFromPathWithCompression(
+            final var c2 = p.parseCatalogFromPathWithCompression(
               file, CatalogCompress.COMPRESS_GZIP);
 
             Assert.assertEquals(c0, c1);
@@ -148,18 +144,18 @@ public abstract class CatalogJSONSerializationContract<S extends
   public final void testSerializationCatalogRoundTripUncompressedStream()
     throws Exception
   {
-    final S s = this.getSerializer();
-    final P p = this.getParser();
+    final var s = this.getSerializer();
+    final var p = this.getParser();
     final Generator<Catalog> g = CatalogGenerator.getDefault();
 
-    try (final FileSystem fs = CatalogTestFilesystems.makeEmptyUnixFilesystem
+    try (final var fs = CatalogTestFilesystems.makeEmptyUnixFilesystem
       ()) {
 
-      final Path root = fs.getRootDirectories().iterator().next();
-      final Path file = root.resolve("file.txt");
+      final var root = fs.getRootDirectories().iterator().next();
+      final var file = root.resolve("file.txt");
 
       QuickCheck.forAll(
-        3, g, new AbstractCharacteristic<Catalog>()
+        3, g, new AbstractCharacteristic<>()
         {
           @Override
           protected void doSpecify(final Catalog c0)
@@ -171,7 +167,7 @@ public abstract class CatalogJSONSerializationContract<S extends
                 .setPath(file)
                 .build());
 
-            final Catalog c1 = p.parseCatalogFromPathWithCompression(
+            final var c1 = p.parseCatalogFromPathWithCompression(
               file, CatalogCompress.COMPRESS_NONE);
 
             s.serializeCatalogToPath(
@@ -180,7 +176,7 @@ public abstract class CatalogJSONSerializationContract<S extends
                 .setPath(file)
                 .build());
 
-            final Catalog c2 = p.parseCatalogFromPathWithCompression(
+            final var c2 = p.parseCatalogFromPathWithCompression(
               file, CatalogCompress.COMPRESS_NONE);
 
             Assert.assertEquals(c0, c1);

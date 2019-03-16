@@ -58,11 +58,11 @@ public final class CatalogDiskGenerator implements Generator<CatalogDisk>
 
   public static Generator<CatalogDisk> getDefault()
   {
-    final Generator<CatalogDirectoryNode> in_dir_gen =
+    final var in_dir_gen =
       CatalogDirectoryNodeGenerator.getDefault();
     final Generator<BigInteger> in_long_gen = new BigIntegerGenerator();
     final Generator<String> in_string_gen = new StringGenerator();
-    final Generator<CatalogNodeType> in_node_gen =
+    final var in_node_gen =
       CatalogNodeGenerator.getDefault();
     return new CatalogDiskGenerator(
       in_dir_gen, in_long_gen, in_string_gen, in_node_gen);
@@ -71,17 +71,17 @@ public final class CatalogDiskGenerator implements Generator<CatalogDisk>
   @Override
   public CatalogDisk next()
   {
-    final CatalogDiskID index = CatalogDiskID.of(this.long_gen.next());
-    final BigInteger size = this.long_gen.next();
-    final CatalogDiskName disk_name =
+    final var index = CatalogDiskID.of(this.long_gen.next());
+    final var size = this.long_gen.next();
+    final var disk_name =
       CatalogDiskName.of(this.string_gen.next());
-    final String fs_type = this.string_gen.next();
-    final CatalogDirectoryNode root = this.dir_gen.next();
+    final var fs_type = this.string_gen.next();
+    final var root = this.dir_gen.next();
 
-    final CatalogDiskBuilderType db =
+    final var db =
       CatalogDisk.newDiskBuilder(root, disk_name, fs_type, index, size);
 
-    final int depth = this.depth_gen.nextInt();
+    final var depth = this.depth_gen.nextInt();
     this.populateDirectory(db, root, depth);
 
     return db.build();
@@ -96,10 +96,10 @@ public final class CatalogDiskGenerator implements Generator<CatalogDisk>
       return;
     }
 
-    final int breadth = this.breadth_gen.nextInt();
-    for (int index = 0; index < breadth; ++index) {
-      final CatalogNodeType node = this.node_gen.next();
-      final String name = this.file_gen.next();
+    final var breadth = this.breadth_gen.nextInt();
+    for (var index = 0; index < breadth; ++index) {
+      final var node = this.node_gen.next();
+      final var name = this.file_gen.next();
       try {
         db.addNode(dir, name, node);
       } catch (final CatalogNodeException e) {

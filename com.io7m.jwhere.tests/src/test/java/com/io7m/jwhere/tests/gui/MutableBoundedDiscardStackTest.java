@@ -39,8 +39,8 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testPopEmpty()
   {
-    final MutableBoundedDiscardStack<Integer> stack =
-      new MutableBoundedDiscardStack<>(5);
+    final var stack =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     Assert.assertEquals(Optional.empty(), stack.pop());
   }
@@ -48,8 +48,8 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testPeekEmpty()
   {
-    final MutableBoundedDiscardStack<Integer> stack =
-      new MutableBoundedDiscardStack<>(5);
+    final var stack =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     Assert.assertEquals(Optional.empty(), stack.peek());
   }
@@ -57,8 +57,8 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testPushPop()
   {
-    final MutableBoundedDiscardStack<Integer> stack =
-      new MutableBoundedDiscardStack<>(5);
+    final var stack =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     stack.push(Integer.valueOf(0));
     stack.push(Integer.valueOf(1));
@@ -83,8 +83,8 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testPushPopOverflow()
   {
-    final MutableBoundedDiscardStack<Integer> stack =
-      new MutableBoundedDiscardStack<>(5);
+    final var stack =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     stack.push(Integer.valueOf(0));
     stack.push(Integer.valueOf(1));
@@ -115,8 +115,8 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testClear()
   {
-    final MutableBoundedDiscardStack<Integer> stack =
-      new MutableBoundedDiscardStack<>(5);
+    final var stack =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     stack.push(Integer.valueOf(0));
     stack.push(Integer.valueOf(1));
@@ -134,10 +134,10 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testEqualsNot_0()
   {
-    final MutableBoundedDiscardStack<Integer> s0 =
-      new MutableBoundedDiscardStack<>(5);
-    final MutableBoundedDiscardStack<Integer> s1 =
-      new MutableBoundedDiscardStack<>(4);
+    final var s0 =
+      new MutableBoundedDiscardStack<Integer>(5);
+    final var s1 =
+      new MutableBoundedDiscardStack<Integer>(4);
 
     Assert.assertNotEquals(s0, s1);
   }
@@ -145,10 +145,10 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testEqualsNot_1()
   {
-    final MutableBoundedDiscardStack<Integer> s0 =
-      new MutableBoundedDiscardStack<>(5);
-    final MutableBoundedDiscardStack<Integer> s1 =
-      new MutableBoundedDiscardStack<>(5);
+    final var s0 =
+      new MutableBoundedDiscardStack<Integer>(5);
+    final var s1 =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     s0.push(Integer.valueOf(0));
     s1.push(Integer.valueOf(1));
@@ -159,8 +159,8 @@ public final class MutableBoundedDiscardStackTest
   @Test
   public void testEquals()
   {
-    final MutableBoundedDiscardStack<Integer> s0 =
-      new MutableBoundedDiscardStack<>(5);
+    final var s0 =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     s0.push(Integer.valueOf(0));
     s0.push(Integer.valueOf(1));
@@ -168,8 +168,8 @@ public final class MutableBoundedDiscardStackTest
     s0.push(Integer.valueOf(3));
     s0.push(Integer.valueOf(4));
 
-    final MutableBoundedDiscardStack<Integer> s1 =
-      new MutableBoundedDiscardStack<>(5);
+    final var s1 =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     s1.push(Integer.valueOf(0));
     s1.push(Integer.valueOf(1));
@@ -177,11 +177,11 @@ public final class MutableBoundedDiscardStackTest
     s1.push(Integer.valueOf(3));
     s1.push(Integer.valueOf(4));
 
-    final MutableBoundedDiscardStack<Integer> s2 =
-      new MutableBoundedDiscardStack<>(5);
+    final var s2 =
+      new MutableBoundedDiscardStack<Integer>(5);
 
-    final MutableBoundedDiscardStack<Integer> s3 =
-      new MutableBoundedDiscardStack<>(5);
+    final var s3 =
+      new MutableBoundedDiscardStack<Integer>(5);
 
     s3.push(Integer.valueOf(0));
     s3.push(Integer.valueOf(1));

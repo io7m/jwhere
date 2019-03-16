@@ -17,20 +17,15 @@
 package com.io7m.jwhere.tests.core;
 
 import com.io7m.jaffirm.core.PreconditionViolationException;
-import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
-import com.io7m.jwhere.core.CatalogDiskBuilderType;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogNodeDuplicateDirectoryEntryException;
 import com.io7m.jwhere.core.CatalogNodeDuplicateException;
-import com.io7m.jwhere.core.CatalogNodeType;
-import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
-import org.jgrapht.graph.UnmodifiableGraph;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,17 +48,17 @@ public final class CatalogDiskTest
   {
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
-    final CatalogDirectoryNode root = this.getRoot(c);
+    final var root = this.getRoot(c);
 
-    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+    final var db = CatalogDisk.newDiskBuilder(
       root,
       CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
 
-    final CatalogDisk cd = db.build();
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
+    final var cd = db.build();
+    final var g =
       cd.getFilesystemGraph();
 
     Assert.assertEquals(1L, (long) g.vertexSet().size());
@@ -88,9 +83,9 @@ public final class CatalogDiskTest
   {
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
-    final CatalogDirectoryNode root = this.getRoot(c);
+    final var root = this.getRoot(c);
 
-    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+    final var db = CatalogDisk.newDiskBuilder(
       root,
       CatalogDiskName.of("example"),
       "iso9660",
@@ -110,9 +105,9 @@ public final class CatalogDiskTest
   {
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
-    final CatalogDirectoryNode root = this.getRoot(c);
+    final var root = this.getRoot(c);
 
-    final CatalogFileNode file0 =
+    final var file0 =
       CatalogFileNode.builder()
         .setPermissions(new HashSet<>())
         .setOwner("root")
@@ -125,7 +120,7 @@ public final class CatalogDiskTest
         .setHash(Optional.empty())
         .build();
 
-    final CatalogFileNode file1 =
+    final var file1 =
       CatalogFileNode.builder()
         .setPermissions(new HashSet<>())
         .setOwner("root")
@@ -138,7 +133,7 @@ public final class CatalogDiskTest
         .setHash(Optional.empty())
         .build();
 
-    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+    final var db = CatalogDisk.newDiskBuilder(
       root,
       CatalogDiskName.of("example"),
       "iso9660",
@@ -157,9 +152,9 @@ public final class CatalogDiskTest
   {
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
-    final CatalogDirectoryNode root = this.getRoot(c);
+    final var root = this.getRoot(c);
 
-    final CatalogDirectoryNode d0 = CatalogDirectoryNode.builder()
+    final var d0 = CatalogDirectoryNode.builder()
       .setPermissions(new HashSet<>())
       .setGroup("root")
       .setOwner("root")
@@ -169,7 +164,7 @@ public final class CatalogDiskTest
       .setCreationTime(c.instant())
       .build();
 
-    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+    final var db = CatalogDisk.newDiskBuilder(
       root,
       CatalogDiskName.of("example"),
       "iso9660",
@@ -188,9 +183,9 @@ public final class CatalogDiskTest
   {
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
-    final CatalogDirectoryNode root = this.getRoot(c);
+    final var root = this.getRoot(c);
 
-    final CatalogDirectoryNode d0 = CatalogDirectoryNode.builder()
+    final var d0 = CatalogDirectoryNode.builder()
       .setPermissions(new HashSet<>())
       .setGroup("root")
       .setOwner("root")
@@ -200,7 +195,7 @@ public final class CatalogDiskTest
       .setCreationTime(c.instant())
       .build();
 
-    final CatalogDirectoryNode d1 = CatalogDirectoryNode.builder()
+    final var d1 = CatalogDirectoryNode.builder()
       .setPermissions(new HashSet<>())
       .setGroup("root")
       .setOwner("root")
@@ -210,7 +205,7 @@ public final class CatalogDiskTest
       .setCreationTime(c.instant())
       .build();
 
-    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+    final var db = CatalogDisk.newDiskBuilder(
       root,
       CatalogDiskName.of("example"),
       "iso9660",
@@ -219,7 +214,7 @@ public final class CatalogDiskTest
 
     db.addNode(root, "d0", d0);
 
-    final CatalogDisk d = db.build();
+    final var d = db.build();
 
     this.expected.expect(NoSuchElementException.class);
     d.getPathForNode(d1);
@@ -231,9 +226,9 @@ public final class CatalogDiskTest
   {
     final Clock c = new ConstantClock(Instant.ofEpochSecond(1000L));
 
-    final CatalogDirectoryNode root = this.getRoot(c);
+    final var root = this.getRoot(c);
 
-    final CatalogDirectoryNode d0 = CatalogDirectoryNode.builder()
+    final var d0 = CatalogDirectoryNode.builder()
       .setPermissions(new HashSet<>())
       .setGroup("root")
       .setOwner("root")
@@ -243,15 +238,15 @@ public final class CatalogDiskTest
       .setCreationTime(c.instant())
       .build();
 
-    final CatalogDiskBuilderType db = CatalogDisk.newDiskBuilder(
+    final var db = CatalogDisk.newDiskBuilder(
       root,
       CatalogDiskName.of("example"),
       "iso9660",
       CatalogDiskID.of(BigInteger.ZERO),
       BigInteger.ONE);
-    final CatalogDisk d = db.build();
+    final var d = db.build();
 
-    final Optional<CatalogNodeType> r_opt =
+    final var r_opt =
       d.getNodeForPath(Collections.singletonList("nonexistent"));
     Assert.assertFalse(r_opt.isPresent());
   }
@@ -259,18 +254,18 @@ public final class CatalogDiskTest
   @Test
   public void testEqualsCases()
   {
-    final Generator<CatalogDisk> gen = CatalogDiskGenerator.getDefault();
+    final var gen = CatalogDiskGenerator.getDefault();
 
     QuickCheck.forAllVerbose(
-      5, gen, new AbstractCharacteristic<CatalogDisk>()
+      5, gen, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final CatalogDisk cd)
           throws Throwable
         {
-          final CatalogDisk ce = gen.next();
-          final CatalogDisk cf = CatalogDisk.fromDisk(cd);
-          final CatalogDisk cg = CatalogDisk.fromDisk(cd);
+          final var ce = gen.next();
+          final var cf = CatalogDisk.fromDisk(cd);
+          final var cg = CatalogDisk.fromDisk(cd);
 
           // Reflexivity
           Assert.assertEquals(cd, cd);

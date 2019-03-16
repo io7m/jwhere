@@ -35,11 +35,11 @@ public final class CatalogTestFilesystems
   static FileSystem makeEmptyUnixFilesystem()
   {
     try {
-      final String user = "root";
-      final MemoryFileSystemBuilder base = MemoryFileSystemBuilder.newEmpty();
+      final var user = "root";
+      final var base = MemoryFileSystemBuilder.newEmpty();
       base.addRoot("/");
       base.setCurrentWorkingDirectory("/");
-      base.setSeprator("/");
+      base.setSeparator("/");
       base.addUser(user);
       base.addGroup(user);
       base.addFileAttributeView(PosixFileAttributeView.class);
@@ -56,10 +56,10 @@ public final class CatalogTestFilesystems
   static FileSystem makeEmptyDOSFilesystem()
   {
     try {
-      final String user = "Administrator";
-      final MemoryFileSystemBuilder base = MemoryFileSystemBuilder.newEmpty();
+      final var user = "Administrator";
+      final var base = MemoryFileSystemBuilder.newEmpty();
       base.addRoot("C:\\");
-      base.setSeprator("\\");
+      base.setSeparator("\\");
       base.addUser(user);
       base.addGroup(user);
       base.addFileAttributeView(DosFileAttributeView.class);

@@ -72,8 +72,8 @@ public class CatalogTestFilesystemGenerator
       }
 
       assert fs != null;
-      final int depth = this.depth_gen.nextInt();
-      final Path root = fs.getRootDirectories().iterator().next();
+      final var depth = this.depth_gen.nextInt();
+      final var root = fs.getRootDirectories().iterator().next();
       final SortedMap<Path, CatalogFileHash> hashes = new TreeMap<>();
       final SortedSet<Path> directories = new TreeSet<>();
       directories.add(root);
@@ -95,14 +95,14 @@ public class CatalogTestFilesystemGenerator
       return;
     }
 
-    final int breadth = this.breadth_gen.nextInt();
-    for (int index = 0; index < breadth; ++index) {
-      final boolean file = this.random.nextBoolean();
-      final Path p = current_dir.resolve(this.file_gen.next());
+    final var breadth = this.breadth_gen.nextInt();
+    for (var index = 0; index < breadth; ++index) {
+      final var file = this.random.nextBoolean();
+      final var p = current_dir.resolve(this.file_gen.next());
 
       if (file) {
         Files.write(p, this.data_gen.next());
-        final CatalogFileHash hash = CatalogFileHashes.fromFile(p);
+        final var hash = CatalogFileHashes.fromFile(p);
         hashes.put(p, hash);
       } else {
         Files.createDirectories(p);

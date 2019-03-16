@@ -32,7 +32,7 @@ public final class RevisionsTest
   @Test
   public void testEmpty()
   {
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     Assert.assertEquals(UndoAvailable.UNDO_UNAVAILABLE, r.hasUndo());
     Assert.assertEquals(RedoAvailable.REDO_UNAVAILABLE, r.hasRedo());
@@ -45,7 +45,7 @@ public final class RevisionsTest
   @Test
   public void testNewUndo()
   {
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     Assert.assertEquals(UndoAvailable.UNDO_UNAVAILABLE, r.hasUndo());
     Assert.assertEquals(RedoAvailable.REDO_UNAVAILABLE, r.hasRedo());
@@ -85,7 +85,7 @@ public final class RevisionsTest
   @Test
   public void testReset()
   {
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     Assert.assertEquals(UndoAvailable.UNDO_UNAVAILABLE, r.hasUndo());
     Assert.assertEquals(RedoAvailable.REDO_UNAVAILABLE, r.hasRedo());
@@ -116,7 +116,7 @@ public final class RevisionsTest
   @Test
   public void testUndoRedo()
   {
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     r.newRevision(Integer.valueOf(10));
     r.undo();
@@ -148,8 +148,8 @@ public final class RevisionsTest
   @Test
   public void testSubscribeUnsaved()
   {
-    final AtomicInteger calls = new AtomicInteger(0);
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var calls = new AtomicInteger(0);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     final Consumer<UnsavedChanges> subscriber = u -> {
       calls.incrementAndGet();
@@ -174,8 +174,8 @@ public final class RevisionsTest
   @Test
   public void testSubscribeUndo()
   {
-    final AtomicInteger calls = new AtomicInteger(0);
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var calls = new AtomicInteger(0);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     final Consumer<UndoAvailable> subscriber = u -> {
       calls.incrementAndGet();
@@ -200,8 +200,8 @@ public final class RevisionsTest
   @Test
   public void testSubscribeRedo()
   {
-    final AtomicInteger calls = new AtomicInteger(0);
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var calls = new AtomicInteger(0);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     final Consumer<RedoAvailable> subscriber = u -> {
       calls.incrementAndGet();
@@ -230,7 +230,7 @@ public final class RevisionsTest
   @Test
   public void testSave()
   {
-    final Revisions<Integer> r = new Revisions<>(Integer.valueOf(0), 5);
+    final var r = new Revisions<>(Integer.valueOf(0), 5);
 
     r.newRevision(Integer.valueOf(10));
 

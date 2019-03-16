@@ -42,7 +42,7 @@ public final class CatalogNodeGenerator implements Generator<CatalogNodeType>
 
   public static Generator<CatalogNodeType> getDefault()
   {
-    final Random r = new Random();
+    final var r = new Random();
     final Generator<Boolean> bool_gen = () -> Boolean.valueOf(r.nextBoolean());
     return new CatalogNodeGenerator(
       bool_gen,

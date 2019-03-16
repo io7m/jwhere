@@ -20,7 +20,6 @@ import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskMetadata;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.generator.support.IntegerGenerator;
 
@@ -52,11 +51,11 @@ public final class CatalogGenerator implements Generator<Catalog>
   {
     final SortedMap<CatalogDiskID, CatalogDisk> disks = new TreeMap<>();
 
-    final int count = this.count_gen.next().intValue();
-    for (int index = 0; index < count; ++index) {
-      final CatalogDisk d = this.disk_gen.next();
-      final CatalogDiskMetadata meta = d.getMeta();
-      final CatalogDiskID disk_index = meta.getDiskID();
+    final var count = this.count_gen.next().intValue();
+    for (var index = 0; index < count; ++index) {
+      final var d = this.disk_gen.next();
+      final var meta = d.getMeta();
+      final var disk_index = meta.getDiskID();
       Preconditions.checkPrecondition(
         disks.containsKey(disk_index) == false,
         "Disk map must contain disk index");

@@ -37,7 +37,7 @@ public final class GroupNameGenerator implements Generator<String>
     this.text_noslash_gen =
       () -> GroupNameGenerator.this.text_gen.next().replaceAll("/", "");
 
-    this.veto_gen = new VetoableGenerator<String>(
+    this.veto_gen = new VetoableGenerator<>(
       GroupNameGenerator.this.text_noslash_gen)
     {
       @Override

@@ -37,7 +37,7 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testPushPop()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> stack =
+    final var stack =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     stack.push(Integer.valueOf(1));
@@ -62,7 +62,7 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testPushPopOverflow()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> stack =
+    final var stack =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     stack.push(Integer.valueOf(1));
@@ -93,7 +93,7 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testClear()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> stack =
+    final var stack =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     stack.push(Integer.valueOf(1));
@@ -112,7 +112,7 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testEquals()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+    final var s0 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     s0.push(Integer.valueOf(1));
@@ -120,7 +120,7 @@ public final class MutableBoundedNonEmptyDiscardStackTest
     s0.push(Integer.valueOf(3));
     s0.push(Integer.valueOf(4));
 
-    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+    final var s1 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     s1.push(Integer.valueOf(1));
@@ -128,10 +128,10 @@ public final class MutableBoundedNonEmptyDiscardStackTest
     s1.push(Integer.valueOf(3));
     s1.push(Integer.valueOf(4));
 
-    final MutableBoundedNonEmptyDiscardStack<Integer> s2 =
+    final var s2 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
-    final MutableBoundedNonEmptyDiscardStack<Integer> s3 =
+    final var s3 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     s3.push(Integer.valueOf(1));
@@ -161,9 +161,9 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testEqualsNot_0()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+    final var s0 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
-    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+    final var s1 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 4);
 
     Assert.assertNotEquals(s0, s1);
@@ -172,9 +172,9 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testEqualsNot_1()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+    final var s0 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
-    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+    final var s1 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     s0.push(Integer.valueOf(0));
@@ -186,9 +186,9 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testEqualsNot_2()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+    final var s0 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
-    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+    final var s1 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     s0.push(Integer.valueOf(0));
@@ -199,9 +199,9 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testEqualsNot_3()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+    final var s0 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
-    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+    final var s1 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
 
     s0.push(Integer.valueOf(0));
@@ -215,9 +215,9 @@ public final class MutableBoundedNonEmptyDiscardStackTest
   @Test
   public void testEqualsNot_4()
   {
-    final MutableBoundedNonEmptyDiscardStack<Integer> s0 =
+    final var s0 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(0), 5);
-    final MutableBoundedNonEmptyDiscardStack<Integer> s1 =
+    final var s1 =
       new MutableBoundedNonEmptyDiscardStack<>(Integer.valueOf(1), 5);
 
     s0.push(Integer.valueOf(0));

@@ -18,24 +18,20 @@ package com.io7m.jwhere.tests.gwhere;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
-import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogJSONSerializer;
-import com.io7m.jwhere.core.CatalogJSONSerializerType;
 import com.io7m.jwhere.core.CatalogNodeType;
 import com.io7m.jwhere.gwhere.GWhereExpectedDirectoryException;
 import com.io7m.jwhere.gwhere.GWhereParserType;
 import com.io7m.jwhere.gwhere.GWhereUnexpectedEOFException;
 import com.io7m.jwhere.gwhere.GWhereUnreadablePermissionsException;
 import com.io7m.jwhere.gwhere.GWhereUnreadableRootDirectoryException;
-import org.jgrapht.graph.UnmodifiableGraph;
+import org.jgrapht.graph.AsUnmodifiableGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -50,7 +46,6 @@ import java.time.Instant;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.SortedMap;
 
 public abstract class GWhereParserContract<P extends GWhereParserType>
 {
@@ -68,18 +63,18 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
 
   private static void checkEdgeInvariants(
     final CatalogDirectoryNode root,
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g)
+    final AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g)
   {
-    final DepthFirstIterator<CatalogNodeType, CatalogDirectoryEntry> di =
+    final var di =
       new DepthFirstIterator<>(g);
     while (di.hasNext()) {
-      final CatalogNodeType k = di.next();
-      final Set<CatalogDirectoryEntry> ie = g.incomingEdgesOf(k);
+      final var k = di.next();
+      final var ie = g.incomingEdgesOf(k);
       if (k.equals(root)) {
         Assert.assertEquals(0L, (long) ie.size());
       } else {
         Assert.assertEquals(1L, (long) ie.size());
-        final CatalogDirectoryEntry ee = ie.iterator().next();
+        final var ee = ie.iterator().next();
         Assert.assertNotEquals(".", ee.getName());
         Assert.assertNotEquals("..", ee.getName());
       }
@@ -89,10 +84,10 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   private static void dumpDisk(final CatalogDisk d)
     throws JsonProcessingException
   {
-    final CatalogJSONSerializerType jp = CatalogJSONSerializer.newSerializer();
-    final ObjectMapper jom = new ObjectMapper();
-    final ObjectWriter jw = jom.writerWithDefaultPrettyPrinter();
-    GWhereParserContract.LOG.debug(
+    final var jp = CatalogJSONSerializer.newSerializer();
+    final var jom = new ObjectMapper();
+    final var jw = jom.writerWithDefaultPrettyPrinter();
+    LOG.debug(
       "{}", jw.writeValueAsString(jp.serializeDisk(d)));
   }
 
@@ -104,7 +99,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   {
     this.expected.expect(GWhereUnexpectedEOFException.class);
 
-    final P p = this.getParser("empty.ctg");
+    final var p = this.getParser("empty.ctg");
     p.parseDisk();
   }
 
@@ -114,7 +109,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   {
     this.expected.expect(GWhereExpectedDirectoryException.class);
 
-    final P p = this.getParser("bad-root-file.ctg");
+    final var p = this.getParser("bad-root-file.ctg");
     p.parseDisk();
   }
 
@@ -124,7 +119,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   {
     this.expected.expect(GWhereUnreadableRootDirectoryException.class);
 
-    final P p = this.getParser("bad-root-named.ctg");
+    final var p = this.getParser("bad-root-named.ctg");
     p.parseDisk();
   }
 
@@ -134,7 +129,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   {
     this.expected.expect(GWhereUnexpectedEOFException.class);
 
-    final P p = this.getParser("bad-root-missing.ctg");
+    final var p = this.getParser("bad-root-missing.ctg");
     p.parseDisk();
   }
 
@@ -144,7 +139,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   {
     this.expected.expect(GWhereUnreadablePermissionsException.class);
 
-    final P p = this.getParser("bad-root-perms-0.ctg");
+    final var p = this.getParser("bad-root-perms-0.ctg");
     p.parseDisk();
   }
 
@@ -154,7 +149,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   {
     this.expected.expect(GWhereUnreadablePermissionsException.class);
 
-    final P p = this.getParser("bad-root-perms-1.ctg");
+    final var p = this.getParser("bad-root-perms-1.ctg");
     p.parseDisk();
   }
 
@@ -164,7 +159,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   {
     this.expected.expect(GWhereUnreadablePermissionsException.class);
 
-    final P p = this.getParser("bad-root-perms-2.ctg");
+    final var p = this.getParser("bad-root-perms-2.ctg");
     p.parseDisk();
   }
 
@@ -172,17 +167,17 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   public final void testParserSimpleOne()
     throws Exception
   {
-    final P p = this.getParser("one.ctg");
-    final CatalogDisk d = p.parseDisk();
+    final var p = this.getParser("one.ctg");
+    final var d = p.parseDisk();
 
-    final CatalogDiskMetadata meta = d.getMeta();
+    final var meta = d.getMeta();
     Assert.assertEquals(CatalogDiskName.of("soma"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(25L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(4386893824L), meta.getSize());
 
-    final CatalogDirectoryNode root = d.getFilesystemRoot();
+    final var root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.owner());
     Assert.assertEquals("root", root.group());
     Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
@@ -209,17 +204,17 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   public final void testParserReal0()
     throws Exception
   {
-    final P p = this.getParser("real-0.ctg");
-    final CatalogDisk d = p.parseDisk();
+    final var p = this.getParser("real-0.ctg");
+    final var d = p.parseDisk();
 
-    final CatalogDiskMetadata meta = d.getMeta();
+    final var meta = d.getMeta();
     Assert.assertEquals(CatalogDiskName.of("data2"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(179L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(4411650048L), meta.getSize());
 
-    final CatalogDirectoryNode root = d.getFilesystemRoot();
+    final var root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.owner());
     Assert.assertEquals("root", root.group());
     Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
@@ -241,15 +236,15 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(
       Instant.parse("2013-07-31T22:22:17Z"), root.creationTime());
 
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
+    final var g =
       d.getFilesystemGraph();
-    GWhereParserContract.checkEdgeInvariants(root, g);
+    checkEdgeInvariants(root, g);
 
-    final Set<CatalogDirectoryEntry> files = g.outgoingEdgesOf(root);
+    final var files = g.outgoingEdgesOf(root);
     Assert.assertEquals(9L, (long) files.size());
 
-    for (final CatalogDirectoryEntry e : files) {
-      final CatalogNodeType f = g.getEdgeTarget(e);
+    for (final var e : files) {
+      final var f = g.getEdgeTarget(e);
       Assert.assertEquals(CatalogFileNode.class, f.getClass());
     }
   }
@@ -258,17 +253,17 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   public final void testParserReal1()
     throws Exception
   {
-    final P p = this.getParser("real-1.ctg");
-    final CatalogDisk d = p.parseDisk();
+    final var p = this.getParser("real-1.ctg");
+    final var d = p.parseDisk();
 
-    final CatalogDiskMetadata meta = d.getMeta();
+    final var meta = d.getMeta();
     Assert.assertEquals(CatalogDiskName.of("archite_2"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(174L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(4681787392L), meta.getSize());
 
-    final CatalogDirectoryNode root = d.getFilesystemRoot();
+    final var root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.owner());
     Assert.assertEquals("root", root.group());
     Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
@@ -290,23 +285,23 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(
       Instant.parse("2012-08-04T22:56:20Z"), root.creationTime());
 
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
+    final var g =
       d.getFilesystemGraph();
 
     Assert.assertEquals(26L, (long) g.vertexSet().size());
-    GWhereParserContract.checkEdgeInvariants(root, g);
+    checkEdgeInvariants(root, g);
 
-    final Set<CatalogDirectoryEntry> files = g.outgoingEdgesOf(root);
+    final var files = g.outgoingEdgesOf(root);
     Assert.assertEquals(3L, (long) files.size());
 
     final Set<String> names = new HashSet<>(3);
-    for (final CatalogDirectoryEntry e : files) {
+    for (final var e : files) {
       names.add(e.getName());
 
       if ("catalog.gz".equals(e.getName())) {
-        final CatalogNodeType file = e.getTarget();
+        final var file = e.getTarget();
         Assert.assertEquals(CatalogFileNode.class, file.getClass());
-        final CatalogFileNode ffile = (CatalogFileNode) file;
+        final var ffile = (CatalogFileNode) file;
         Assert.assertEquals("root", ffile.owner());
         Assert.assertEquals("root", ffile.group());
         Assert.assertEquals(BigInteger.valueOf(417761L), ffile.size());
@@ -314,7 +309,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
       }
 
       if ("arch".equals(e.getName())) {
-        final CatalogNodeType file = e.getTarget();
+        final var file = e.getTarget();
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
         Assert.assertEquals("root", file.owner());
         Assert.assertEquals("root", file.group());
@@ -322,7 +317,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
       }
 
       if ("vls".equals(e.getName())) {
-        final CatalogNodeType file = e.getTarget();
+        final var file = e.getTarget();
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
         Assert.assertEquals("root", file.owner());
         Assert.assertEquals("root", file.group());
@@ -335,24 +330,24 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertTrue(names.contains("arch"));
     Assert.assertTrue(names.contains("vls"));
 
-    GWhereParserContract.dumpDisk(d);
+    dumpDisk(d);
   }
 
   @Test
   public final void testParserReal2()
     throws Exception
   {
-    final P p = this.getParser("real-2.ctg");
-    final CatalogDisk d = p.parseDisk();
+    final var p = this.getParser("real-2.ctg");
+    final var d = p.parseDisk();
 
-    final CatalogDiskMetadata meta = d.getMeta();
+    final var meta = d.getMeta();
     Assert.assertEquals(CatalogDiskName.of("dk"), meta.getDiskName());
     Assert.assertEquals("iso9660", meta.getFilesystemType());
     Assert.assertEquals(
       CatalogDiskID.of(BigInteger.valueOf(10L)), meta.getDiskID());
     Assert.assertEquals(BigInteger.valueOf(10000L), meta.getSize());
 
-    final CatalogDirectoryNode root = d.getFilesystemRoot();
+    final var root = d.getFilesystemRoot();
     Assert.assertEquals("root", root.owner());
     Assert.assertEquals("root", root.group());
     Assert.assertEquals(BigInteger.valueOf(1472L), root.id());
@@ -374,23 +369,23 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
     Assert.assertEquals(
       Instant.parse("2012-08-04T22:56:20Z"), root.creationTime());
 
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g =
+    final var g =
       d.getFilesystemGraph();
 
     Assert.assertEquals(3L, (long) g.vertexSet().size());
-    GWhereParserContract.checkEdgeInvariants(root, g);
+    checkEdgeInvariants(root, g);
 
-    final Set<CatalogDirectoryEntry> files = g.outgoingEdgesOf(root);
+    final var files = g.outgoingEdgesOf(root);
     Assert.assertEquals(2L, (long) files.size());
 
     final Set<String> names = new HashSet<>(2);
-    for (final CatalogDirectoryEntry e : files) {
+    for (final var e : files) {
       names.add(e.getName());
 
       if ("catalog.gz".equals(e.getName())) {
-        final CatalogNodeType file = e.getTarget();
+        final var file = e.getTarget();
         Assert.assertEquals(CatalogFileNode.class, file.getClass());
-        final CatalogFileNode ffile = (CatalogFileNode) file;
+        final var ffile = (CatalogFileNode) file;
         Assert.assertEquals("root", ffile.owner());
         Assert.assertEquals("root", ffile.group());
         Assert.assertEquals(BigInteger.valueOf(417761L), ffile.size());
@@ -398,7 +393,7 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
       }
 
       if ("empty".equals(e.getName())) {
-        final CatalogNodeType file = e.getTarget();
+        final var file = e.getTarget();
         Assert.assertEquals(CatalogDirectoryNode.class, file.getClass());
         Assert.assertEquals("root", file.owner());
         Assert.assertEquals("root", file.group());
@@ -415,10 +410,10 @@ public abstract class GWhereParserContract<P extends GWhereParserType>
   public final void testParserCatalogReal0()
     throws Exception
   {
-    final P p = this.getParser("archive-real-0.ctg");
-    final Catalog c = p.parseCatalog();
+    final var p = this.getParser("archive-real-0.ctg");
+    final var c = p.parseCatalog();
 
-    final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
+    final var disks = c.getDisks();
     Assert.assertEquals(3L, (long) disks.size());
 
     Assert.assertTrue(

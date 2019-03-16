@@ -37,7 +37,7 @@ public final class FileNameGenerator implements Generator<String>
     this.text_noslash_gen =
       () -> FileNameGenerator.this.text_gen.next().replaceAll("/", "");
 
-    this.veto_gen = new VetoableGenerator<String>(
+    this.veto_gen = new VetoableGenerator<>(
       FileNameGenerator.this.text_noslash_gen)
     {
       @Override

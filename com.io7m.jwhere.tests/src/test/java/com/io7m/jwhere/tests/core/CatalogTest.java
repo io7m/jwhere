@@ -31,15 +31,15 @@ public final class CatalogTest
     final Generator<Catalog> gen = CatalogGenerator.getDefault();
 
     QuickCheck.forAllVerbose(
-      5, gen, new AbstractCharacteristic<Catalog>()
+      5, gen, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final Catalog cd)
           throws Throwable
         {
-          final Catalog ce = gen.next();
-          final Catalog cf = Catalog.fromCatalog(cd);
-          final Catalog cg = Catalog.fromCatalog(cd);
+          final var ce = gen.next();
+          final var cf = Catalog.fromCatalog(cd);
+          final var cg = Catalog.fromCatalog(cd);
 
           // Reflexivity
           Assert.assertEquals(cd, cd);

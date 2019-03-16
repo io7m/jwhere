@@ -45,9 +45,9 @@ public final class PathListGenerator implements Generator<List<String>>
   @Override
   public List<String> next()
   {
-    final int length = this.length_gen.next().intValue();
+    final var length = this.length_gen.next().intValue();
     final List<String> list = new ArrayList<>(length);
-    for (int index = 0; index < length; ++index) {
+    for (var index = 0; index < length; ++index) {
       list.add(this.name_gen.next());
     }
     return list;

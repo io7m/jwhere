@@ -32,7 +32,7 @@ public final class ObservableValueTest
   @Test
   public void testObservablePartial()
   {
-    final ObservableValue<Integer> v = new ObservableValue<>(
+    final var v = new ObservableValue<Integer>(
       () -> {
         throw new IllegalStateException("ZOOM!");
       });
@@ -45,29 +45,29 @@ public final class ObservableValueTest
   @Test
   public void testObservableAddRemove()
   {
-    final AtomicInteger x = new AtomicInteger(0);
-    final AtomicInteger calls = new AtomicInteger(0);
+    final var x = new AtomicInteger(0);
+    final var calls = new AtomicInteger(0);
 
-    final ObservableValue<Integer> v =
+    final var v =
       new ObservableValue<>(() -> Integer.valueOf(x.get()));
 
     final Consumer<Integer> c0 = (z) -> {
-      final Integer k0 = Integer.valueOf(x.get());
-      final Integer k1 = z;
+      final var k0 = Integer.valueOf(x.get());
+      final var k1 = z;
       calls.incrementAndGet();
       Assert.assertEquals(k0, k1);
     };
 
     final Consumer<Integer> c1 = (z) -> {
-      final Integer k0 = Integer.valueOf(x.get());
-      final Integer k1 = z;
+      final var k0 = Integer.valueOf(x.get());
+      final var k1 = z;
       calls.incrementAndGet();
       Assert.assertEquals(k0, k1);
     };
 
     final Consumer<Integer> c2 = (z) -> {
-      final Integer k0 = Integer.valueOf(x.get());
-      final Integer k1 = z;
+      final var k0 = Integer.valueOf(x.get());
+      final var k1 = z;
       calls.incrementAndGet();
       Assert.assertEquals(k0, k1);
     };

@@ -30,23 +30,23 @@ public final class SizeBytesTest
   @Test
   public void testEquals()
   {
-    final LongGenerator lg = new LongGenerator();
+    final var lg = new LongGenerator();
     QuickCheck.forAll(
-      lg, new AbstractCharacteristic<Long>()
+      lg, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final Long any)
           throws Throwable
         {
-          final BigInteger v0 = BigInteger.valueOf(any.longValue());
-          final BigInteger v1 = BigInteger.valueOf(any.longValue());
-          final BigInteger v2 = BigInteger.valueOf(any.longValue());
-          final BigInteger v3 = BigInteger.valueOf(lg.next().longValue());
+          final var v0 = BigInteger.valueOf(any.longValue());
+          final var v1 = BigInteger.valueOf(any.longValue());
+          final var v2 = BigInteger.valueOf(any.longValue());
+          final var v3 = BigInteger.valueOf(lg.next().longValue());
 
-          final SizeBytes s0 = new SizeBytes(v0);
-          final SizeBytes s1 = new SizeBytes(v1);
-          final SizeBytes s2 = new SizeBytes(v2);
-          final SizeBytes s3 = new SizeBytes(v3);
+          final var s0 = new SizeBytes(v0);
+          final var s1 = new SizeBytes(v1);
+          final var s2 = new SizeBytes(v2);
+          final var s3 = new SizeBytes(v3);
 
           // Reflexive
           Assert.assertEquals(s0, s0);
@@ -74,19 +74,19 @@ public final class SizeBytesTest
   @Test
   public void testValue()
   {
-    final LongGenerator lg = new LongGenerator();
+    final var lg = new LongGenerator();
     QuickCheck.forAll(
-      lg, new AbstractCharacteristic<Long>()
+      lg, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final Long any)
           throws Throwable
         {
-          final BigInteger v0 = BigInteger.valueOf(any.longValue());
-          final BigInteger v1 = BigInteger.valueOf(lg.next().longValue());
+          final var v0 = BigInteger.valueOf(any.longValue());
+          final var v1 = BigInteger.valueOf(lg.next().longValue());
 
-          final SizeBytes s0 = new SizeBytes(v0);
-          final SizeBytes s1 = new SizeBytes(v1);
+          final var s0 = new SizeBytes(v0);
+          final var s1 = new SizeBytes(v1);
 
           Assert.assertEquals(s0.getValue(), v0);
           Assert.assertEquals(s1.getValue(), v1);

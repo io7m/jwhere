@@ -42,19 +42,19 @@ public final class CatalogDirectoryEntryGenerator
 
   public static Generator<CatalogDirectoryEntry> getDefault()
   {
-    final Generator<CatalogDirectoryNode> dg =
+    final var dg =
       CatalogDirectoryNodeGenerator.getDefault();
     final Generator<String> ng = new FileNameGenerator();
-    final Generator<CatalogNodeType> nog = CatalogNodeGenerator.getDefault();
+    final var nog = CatalogNodeGenerator.getDefault();
     return new CatalogDirectoryEntryGenerator(dg, ng, nog);
   }
 
   @Override
   public CatalogDirectoryEntry next()
   {
-    final CatalogDirectoryNode source = this.dir_gen.next();
-    final CatalogNodeType target = this.node_gen.next();
-    final String name = this.name_gen.next();
+    final var source = this.dir_gen.next();
+    final var target = this.node_gen.next();
+    final var name = this.name_gen.next();
     return new CatalogDirectoryEntry(source, target, name);
   }
 }

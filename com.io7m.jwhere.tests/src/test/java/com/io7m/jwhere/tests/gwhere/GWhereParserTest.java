@@ -19,15 +19,13 @@ package com.io7m.jwhere.tests.gwhere;
 import com.io7m.jwhere.gwhere.GWhereParser;
 import com.io7m.jwhere.gwhere.GWhereParserType;
 
-import java.io.InputStream;
-
 public final class GWhereParserTest
   extends GWhereParserContract<GWhereParserType>
 {
   @Override
   protected GWhereParserType getParser(final String file)
   {
-    final InputStream s = GWhereParserTest.class.getResourceAsStream(file);
+    final var s = GWhereParserTest.class.getResourceAsStream(file);
     return GWhereParser.newParser(s);
   }
 }

@@ -18,10 +18,10 @@ package com.io7m.jwhere.core;
 
 import com.io7m.jaffirm.core.Preconditions;
 import net.jcip.annotations.Immutable;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
-import org.jgrapht.graph.UnmodifiableGraph;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.AsUnmodifiableGraph;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +47,12 @@ public final class CatalogDisk
     LOG = LoggerFactory.getLogger(CatalogDisk.class);
   }
 
-  private final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph;
+  private final AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph;
   private final CatalogDirectoryNode root;
   private final CatalogDiskMetadata meta;
 
   private CatalogDisk(
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> in_g,
+    final AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> in_g,
     final CatalogDirectoryNode in_root,
     final CatalogDiskMetadata in_meta)
   {
@@ -95,8 +95,7 @@ public final class CatalogDisk
         .setModificationTime(d_root.modificationTime())
         .build();
 
-    return new CatalogDisk(
-      d.getFilesystemGraph(), in_root, d.getMeta());
+    return new CatalogDisk(d.getFilesystemGraph(), in_root, d.getMeta());
   }
 
   /**
@@ -123,7 +122,7 @@ public final class CatalogDisk
   }
 
   private static Optional<CatalogNodeType> getNodeForPathIterator(
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
+    final Graph<CatalogNodeType, CatalogDirectoryEntry> g,
     final CatalogDirectoryNodeType node,
     final Iterator<String> iter)
     throws NotDirectoryException
@@ -159,7 +158,7 @@ public final class CatalogDisk
   private static Optional<CatalogNodeType> getNodeForPathIteratorDirectory(
     final CatalogDirectoryNodeType d,
     final Iterator<String> iter,
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g)
+    final Graph<CatalogNodeType, CatalogDirectoryEntry> g)
     throws NotDirectoryException
   {
     if (iter.hasNext()) {
@@ -241,11 +240,10 @@ public final class CatalogDisk
     Objects.requireNonNull(node, "node");
 
     if (this.graph.containsVertex(node)) {
-      final var dsp =
-        new DijkstraShortestPath<>(this.graph, this.root, node);
+      final var dsp = new DijkstraShortestPath<>(this.graph);
+      final var path = dsp.getPath(this.root, node);
 
-      final var edge_stream =
-        dsp.getPathEdgeList().stream();
+      final var edge_stream = path.getEdgeList().stream();
       return edge_stream.map(CatalogDirectoryEntry::getName)
         .collect(Collectors.toList());
     } else {
@@ -257,8 +255,7 @@ public final class CatalogDisk
    * @return The directed acyclic graph representing the filesystem
    */
 
-  public UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry>
-  getFilesystemGraph()
+  public AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> getFilesystemGraph()
   {
     return this.graph;
   }
@@ -293,7 +290,7 @@ public final class CatalogDisk
 
   private static final class Builder implements CatalogDiskBuilderType
   {
-    private final DirectedGraph<CatalogNodeType, CatalogDirectoryEntry> graph;
+    private final Graph<CatalogNodeType, CatalogDirectoryEntry> graph;
     private final CatalogDirectoryNode root;
     private final String type;
     private final CatalogDiskID index;
@@ -386,7 +383,7 @@ public final class CatalogDisk
 
       try {
         return new CatalogDisk(
-          new UnmodifiableGraph<>(this.graph),
+          new AsUnmodifiableGraph<>(this.graph),
           this.root,
           new CatalogDiskMetadata(
             this.disk_name, this.type, this.index, this.size));

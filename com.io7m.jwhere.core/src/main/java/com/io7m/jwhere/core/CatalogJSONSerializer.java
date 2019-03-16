@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.junreachable.UnreachableCodeException;
-import org.jgrapht.graph.UnmodifiableGraph;
+import org.jgrapht.graph.AsUnmodifiableGraph;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,7 +42,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
 
   private static ObjectNode serializeFile(
     final ObjectMapper jom,
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
+    final AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
     final CatalogFileNodeType node,
     final String name)
   {
@@ -86,7 +86,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
 
   private static ObjectNode serializeNode(
     final ObjectMapper jom,
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
+    final AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
     final CatalogNodeType node,
     final String name)
   {
@@ -109,7 +109,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
 
   private static ObjectNode serializeDirectory(
     final ObjectMapper jom,
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
+    final AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> g,
     final CatalogDirectoryNodeType node,
     final String name)
   {

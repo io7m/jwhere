@@ -33,7 +33,7 @@ public final class PosixFilePermissionSetGeneratorTest
       new PosixFilePermissionSetGenerator();
 
     QuickCheck.forAllVerbose(
-      gen, new AbstractCharacteristic<Set<PosixFilePermission>>()
+      gen, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final Set<PosixFilePermission> any)

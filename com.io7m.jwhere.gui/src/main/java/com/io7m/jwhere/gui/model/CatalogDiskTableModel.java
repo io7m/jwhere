@@ -27,7 +27,7 @@ import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogFileNodeType;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
 import com.io7m.jwhere.core.CatalogNodeType;
-import org.jgrapht.graph.UnmodifiableGraph;
+import org.jgrapht.graph.AsUnmodifiableGraph;
 
 import javax.swing.table.AbstractTableModel;
 import java.math.BigInteger;
@@ -56,7 +56,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
   }
 
   private static void makeEntries(
-    final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph,
+    final AsUnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph,
     final CatalogNodeType node,
     final List<CatalogDirectoryEntry> entries)
   {

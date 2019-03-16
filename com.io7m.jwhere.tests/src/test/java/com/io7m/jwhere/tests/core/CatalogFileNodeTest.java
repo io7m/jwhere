@@ -22,7 +22,6 @@ import com.io7m.jwhere.core.CatalogDirectoryNodeType;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogFileNodeType;
 import com.io7m.jwhere.core.CatalogNodeMatcherType;
-import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
 import org.junit.Assert;
@@ -43,16 +42,16 @@ public final class CatalogFileNodeTest
   @Test
   public void testMatching()
   {
-    final Generator<CatalogFileNode> gen =
+    final var gen =
       CatalogFileNodeGenerator.getDefault();
     QuickCheck.forAll(
-      gen, new AbstractCharacteristic<CatalogFileNode>()
+      gen, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final CatalogFileNode cd)
           throws Throwable
         {
-          final Boolean r = cd.matchNode(
+          final var r = cd.matchNode(
             new CatalogNodeMatcherType<Boolean, RuntimeException>()
             {
               @Override
@@ -78,18 +77,18 @@ public final class CatalogFileNodeTest
   @Test
   public void testEqualsCases()
   {
-    final Generator<CatalogFileNode> gen =
+    final var gen =
       CatalogFileNodeGenerator.getDefault();
     QuickCheck.forAll(
-      gen, new AbstractCharacteristic<CatalogFileNode>()
+      gen, new AbstractCharacteristic<>()
       {
         @Override
         protected void doSpecify(final CatalogFileNode cd)
           throws Throwable
         {
-          final CatalogFileNode ce = gen.next();
-          final CatalogFileNode cf = CatalogFileNode.copyOf(cd);
-          final CatalogFileNode cg = CatalogFileNode.copyOf(cd);
+          final var ce = gen.next();
+          final var cf = CatalogFileNode.copyOf(cd);
+          final var cg = CatalogFileNode.copyOf(cd);
 
           // Reflexivity
           Assert.assertEquals(cd, cd);
