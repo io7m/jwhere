@@ -1,50 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<c:changelog xmlns:c="http://schemas.io7m.com/changelog/2.0.0">
-  <c:project>io7m-jwhere</c:project>
-
-  <c:release c:ticket-system="com.github.io7m.jwhere">
-    <c:date>2015-12-24</c:date>
-    <c:version>0.5.1</c:version>
-    <c:item>
-      <c:date>2015-12-24</c:date>
-      <c:type-code-fix/>
-      <c:summary>Fix broken (and missing) remove command.</c:summary>
-    </c:item>
-  </c:release>
-
-  <c:release c:ticket-system="com.github.io7m.jwhere">
-    <c:date>2015-12-24</c:date>
-    <c:version>0.5.0</c:version>
-    <c:item>
-      <c:date>2015-12-24</c:date>
-      <c:type-code-new/>
-      <c:summary>Add the ability to remove disks from a catalog to the command line interface.</c:summary>
-    </c:item>
-  </c:release>
-
-  <c:release c:ticket-system="com.github.io7m.jwhere">
-    <c:date>2015-11-24</c:date>
-    <c:version>0.4.0</c:version>
-    <c:item>
-      <c:date>2015-11-24</c:date>
-      <c:type-code-new/>
-      <c:ticket>6</c:ticket>
-      <c:summary>Use exit codes in command-line frontend.</c:summary>
-    </c:item>
-  </c:release>
-
-  <c:release c:ticket-system="com.github.io7m.jwhere">
-    <c:date>2015-10-04</c:date>
-    <c:version>0.1.0</c:version>
-    <c:item>
-      <c:date>2015-10-04</c:date>
-      <c:type-code-new/>
-      <c:summary>Initial release.</c:summary>
-    </c:item>
-  </c:release>
-
-  <c:ticket-system xml:id="com.github.io7m.jwhere">
-    <c:ticket-url>https://github.com/io7m/jwhere/issues/</c:ticket-url>
-  </c:ticket-system>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<c:changelog project="com.io7m.jwhere" xmlns:c="urn:com.io7m.changelog:4.0">
+  <c:releases>
+    <c:release date="2015-10-04T00:00:00+00:00" ticket-system="com.github.io7m.jwhere" version="0.1.0">
+      <c:changes>
+        <c:change date="2015-10-04T00:00:00+00:00" summary="Initial release."/>
+      </c:changes>
+    </c:release>
+    <c:release date="2015-11-24T00:00:00+00:00" ticket-system="com.github.io7m.jwhere" version="0.4.0">
+      <c:changes>
+        <c:change date="2015-11-24T00:00:00+00:00" summary="Use exit codes in command-line frontend.">
+          <c:tickets>
+            <c:ticket id="6"/>
+          </c:tickets>
+        </c:change>
+      </c:changes>
+    </c:release>
+    <c:release date="2015-12-24T00:00:00+00:00" ticket-system="com.github.io7m.jwhere" version="0.5.0">
+      <c:changes>
+        <c:change date="2015-12-24T00:00:00+00:00" summary="Add the ability to remove disks from a catalog to the command line interface."/>
+      </c:changes>
+    </c:release>
+    <c:release date="2015-12-24T00:00:00+00:00" ticket-system="com.github.io7m.jwhere" version="0.5.1">
+      <c:changes>
+        <c:change date="2015-12-24T00:00:00+00:00" summary="Fix broken (and missing) remove command."/>
+      </c:changes>
+    </c:release>
+    <c:release date="2019-03-16T18:31:44+00:00" ticket-system="com.github.io7m.jwhere" version="0.6.0">
+      <c:changes/>
+    </c:release>
+  </c:releases>
+  <c:ticket-systems>
+    <c:ticket-system default="false" id="com.github.io7m.jwhere" url="https://github.com/io7m/jwhere/issues/"/>
+  </c:ticket-systems>
 </c:changelog>
