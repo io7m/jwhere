@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ final class CatalogVerificationTable extends JTable
   CatalogVerificationTable(final TableModel in_model)
   {
     super(in_model);
-    NullCheck.notNull(in_model);
+    Objects.requireNonNull(in_model, "in_model");
 
     this.getTableHeader().setReorderingAllowed(false);
 

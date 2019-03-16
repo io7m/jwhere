@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import org.valid4j.Assertive;
 
 import java.util.Deque;
@@ -76,7 +76,7 @@ public final class MutableBoundedDiscardStack<T>
 
   @Override public void push(final T x)
   {
-    NullCheck.notNull(x);
+    Objects.requireNonNull(x, "x");
     if (this.size() == this.bound) {
       this.stack.removeLast();
     }

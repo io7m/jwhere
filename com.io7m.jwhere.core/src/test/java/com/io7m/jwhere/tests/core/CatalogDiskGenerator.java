@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
@@ -47,10 +47,10 @@ public final class CatalogDiskGenerator implements Generator<CatalogDisk>
     final Generator<String> in_string_gen,
     final Generator<CatalogNodeType> in_node_gen)
   {
-    this.dir_gen = NullCheck.notNull(in_dir_gen);
-    this.long_gen = NullCheck.notNull(in_long_gen);
-    this.string_gen = NullCheck.notNull(in_string_gen);
-    this.node_gen = NullCheck.notNull(in_node_gen);
+    this.dir_gen = Objects.requireNonNull(in_dir_gen, "in_dir_gen");
+    this.long_gen = Objects.requireNonNull(in_long_gen, "in_long_gen");
+    this.string_gen = Objects.requireNonNull(in_string_gen, "in_string_gen");
+    this.node_gen = Objects.requireNonNull(in_node_gen, "in_node_gen");
     this.depth_gen = new IntegerGenerator(1, 3);
     this.breadth_gen = new IntegerGenerator(0, 20);
     this.file_gen = new FileNameGenerator();

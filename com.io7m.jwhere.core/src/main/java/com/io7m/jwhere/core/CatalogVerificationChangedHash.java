@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.nio.file.Path;
 
@@ -44,9 +44,9 @@ public final class CatalogVerificationChangedHash
     final CatalogFileHash in_hash_then,
     final CatalogFileHash in_hash_now)
   {
-    this.path = NullCheck.notNull(in_path);
-    this.hash_then = NullCheck.notNull(in_hash_then);
-    this.hash_now = NullCheck.notNull(in_hash_now);
+    this.path = Objects.requireNonNull(in_path, "in_path");
+    this.hash_then = Objects.requireNonNull(in_hash_then, "in_hash_then");
+    this.hash_now = Objects.requireNonNull(in_hash_now, "in_hash_now");
   }
 
   @Override public Path getPath()

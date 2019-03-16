@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.nio.file.Path;
 
@@ -37,7 +37,7 @@ public final class CatalogVerificationOKItem
 
   public CatalogVerificationOKItem(final Path in_path)
   {
-    this.path = NullCheck.notNull(in_path);
+    this.path = Objects.requireNonNull(in_path, "in_path");
   }
 
   @Override public Path getPath()

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDirectoryEntry;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogNodeType;
@@ -34,9 +34,9 @@ public final class CatalogDirectoryEntryGenerator
     final Generator<String> in_name_gen,
     final Generator<CatalogNodeType> in_node_gen)
   {
-    this.dir_gen = NullCheck.notNull(in_dir_gen);
-    this.name_gen = NullCheck.notNull(in_name_gen);
-    this.node_gen = NullCheck.notNull(in_node_gen);
+    this.dir_gen = Objects.requireNonNull(in_dir_gen, "in_dir_gen");
+    this.name_gen = Objects.requireNonNull(in_name_gen, "in_name_gen");
+    this.node_gen = Objects.requireNonNull(in_node_gen, "in_node_gen");
   }
 
   public static Generator<CatalogDirectoryEntry> getDefault()

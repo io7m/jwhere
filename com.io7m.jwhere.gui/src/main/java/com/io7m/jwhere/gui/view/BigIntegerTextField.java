@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import javax.swing.JTextField;
 import java.awt.Color;
@@ -52,7 +52,7 @@ final class BigIntegerTextField extends JTextField
 
   @Override public void setBackground(final Color bg)
   {
-    this.set_color = NullCheck.notNull(bg);
+    this.set_color = Objects.requireNonNull(bg, "bg");
     super.setBackground(bg);
   }
 

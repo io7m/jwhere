@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -39,7 +39,7 @@ import java.util.TreeMap;
 
   private CatalogState(final Catalog c)
   {
-    this.catalog = NullCheck.notNull(c);
+    this.catalog = Objects.requireNonNull(c, "c");
 
     final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
     final List<CatalogDiskID> rows = new ArrayList<>(disks.size());

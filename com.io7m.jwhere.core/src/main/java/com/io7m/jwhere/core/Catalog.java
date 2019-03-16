@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -37,7 +37,7 @@ public final class Catalog
 
   public Catalog(final SortedMap<CatalogDiskID, CatalogDisk> in_disks)
   {
-    this.disks = NullCheck.notNull(in_disks);
+    this.disks = Objects.requireNonNull(in_disks, "in_disks");
   }
 
   /**
@@ -50,7 +50,7 @@ public final class Catalog
 
   public static Catalog fromCatalog(final Catalog c)
   {
-    NullCheck.notNull(c);
+    Objects.requireNonNull(c, "c");
     return new Catalog(new TreeMap<>(c.disks));
   }
 

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.Catalog;
@@ -57,7 +57,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
   CatalogDiskTableModel(final Supplier<CatalogState> supplier)
   {
     this.current_entries = new ArrayList<>(128);
-    this.state_supplier = NullCheck.notNull(supplier);
+    this.state_supplier = Objects.requireNonNull(supplier, "supplier");
   }
 
   private static void makeEntries(
@@ -128,7 +128,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
 
   public void openDiskAtRoot(final CatalogDisk disk)
   {
-    NullCheck.notNull(disk);
+    Objects.requireNonNull(disk, "disk");
     this.openDiskAtDirectory(disk, disk.getFilesystemRoot());
   }
 
@@ -144,8 +144,8 @@ final class CatalogDiskTableModel extends AbstractTableModel
     final CatalogDisk disk,
     final CatalogDirectoryNode node)
   {
-    NullCheck.notNull(disk);
-    NullCheck.notNull(node);
+    Objects.requireNonNull(disk, "disk");
+    Objects.requireNonNull(node, "node");
 
     final UnmodifiableGraph<CatalogNodeType, CatalogDirectoryEntry> graph =
       disk.getFilesystemGraph();
@@ -184,7 +184,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
     Assertive.require(row >= 0);
     Assertive.require(row < this.current_entries.size());
 
-    final CatalogDisk disk = NullCheck.notNull(this.current_disk);
+    final CatalogDisk disk = Objects.requireNonNull(this.current_disk, "this.current_disk");
     final CatalogDirectoryEntry entry = this.current_entries.get(row);
     final CatalogNodeType target = entry.getTarget();
     final CatalogDiskMetadata meta = disk.getMeta();
@@ -289,7 +289,7 @@ final class CatalogDiskTableModel extends AbstractTableModel
     final SortedMap<CatalogDiskID, CatalogDisk> disks = c.getDisks();
 
     if (this.current_disk != null) {
-      final CatalogDirectoryNode dir = NullCheck.notNull(this.current_dir);
+      final CatalogDirectoryNode dir = Objects.requireNonNull(this.current_dir, "this.current_dir");
 
       final CatalogDiskMetadata meta = this.current_disk.getMeta();
       final CatalogDiskID disk_id = meta.getDiskID();

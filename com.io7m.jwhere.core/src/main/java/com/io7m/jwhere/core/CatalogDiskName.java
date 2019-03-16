@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 /**
  * The name of a disk.
@@ -34,7 +34,7 @@ public final class CatalogDiskName
 
   public CatalogDiskName(final String in_value)
   {
-    this.value = NullCheck.notNull(in_value);
+    this.value = Objects.requireNonNull(in_value, "in_value");
   }
 
   /**

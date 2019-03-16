@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import net.jcip.annotations.Immutable;
 import org.valid4j.Assertive;
 
@@ -44,9 +44,9 @@ import org.valid4j.Assertive;
     final CatalogNodeType in_child,
     final String in_name)
   {
-    this.target = NullCheck.notNull(in_child);
-    this.name = NullCheck.notNull(in_name);
-    this.source = NullCheck.notNull(in_parent);
+    this.target = Objects.requireNonNull(in_child, "in_child");
+    this.name = Objects.requireNonNull(in_name, "in_name");
+    this.source = Objects.requireNonNull(in_parent, "in_parent");
 
     Assertive.require(!in_name.isEmpty(), "Filenames cannot be empty");
     Assertive.require(

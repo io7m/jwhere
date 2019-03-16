@@ -19,7 +19,7 @@ package com.io7m.jwhere.gui.view;
 import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogSaveSpecification;
 import com.io7m.jwhere.gui.ControllerType;
 import com.io7m.jwhere.gui.model.UnsavedChanges;
@@ -80,7 +80,7 @@ public final class MainWindow extends JFrame
   {
     super();
 
-    this.controller = NullCheck.notNull(in_controller);
+    this.controller = Objects.requireNonNull(in_controller, "in_controller");
 
     /**
      * Create status bar.

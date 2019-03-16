@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -37,8 +37,8 @@ public final class CatalogGenerator implements Generator<Catalog>
     final Generator<Integer> in_count_gen,
     final Generator<CatalogDisk> in_disk_gen)
   {
-    this.count_gen = NullCheck.notNull(in_count_gen);
-    this.disk_gen = NullCheck.notNull(in_disk_gen);
+    this.count_gen = Objects.requireNonNull(in_count_gen, "in_count_gen");
+    this.disk_gen = Objects.requireNonNull(in_disk_gen, "in_disk_gen");
   }
 
   public static CatalogGenerator getDefault()

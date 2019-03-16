@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.util.concurrent.Future;
 
@@ -35,9 +35,9 @@ public final class CatalogTask
     final Long in_id,
     final String in_name)
   {
-    this.future = NullCheck.notNull(in_future);
-    this.id = NullCheck.notNull(in_id);
-    this.name = NullCheck.notNull(in_name);
+    this.future = Objects.requireNonNull(in_future, "in_future");
+    this.id = Objects.requireNonNull(in_id, "in_id");
+    this.name = Objects.requireNonNull(in_name, "in_name");
   }
 
   /**

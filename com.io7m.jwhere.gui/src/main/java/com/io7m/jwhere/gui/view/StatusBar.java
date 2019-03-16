@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.gui.ControllerType;
 
 import javax.swing.JLabel;
@@ -37,7 +37,7 @@ final class StatusBar extends JPanel
 
   StatusBar(final ControllerType in_controller)
   {
-    NullCheck.notNull(in_controller);
+    Objects.requireNonNull(in_controller, "in_controller");
 
     this.setBorder(new LineBorder(this.getBackground(), 1));
     this.setPreferredSize(new Dimension(this.getWidth(), 24));

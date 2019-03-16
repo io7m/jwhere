@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
@@ -53,9 +53,9 @@ final class CatalogMultiTableModel extends AbstractTableModel
     final CatalogTableModel in_catalog_model,
     final CatalogDiskTableModel in_disk_model)
   {
-    this.state_get = NullCheck.notNull(in_state_get);
-    this.catalog_model = NullCheck.notNull(in_catalog_model);
-    this.disk_model = NullCheck.notNull(in_disk_model);
+    this.state_get = Objects.requireNonNull(in_state_get, "in_state_get");
+    this.catalog_model = Objects.requireNonNull(in_catalog_model, "in_catalog_model");
+    this.disk_model = Objects.requireNonNull(in_disk_model, "in_disk_model");
     this.target = CatalogTarget.CATALOG;
   }
 
@@ -101,8 +101,8 @@ final class CatalogMultiTableModel extends AbstractTableModel
     final CatalogDiskID index,
     final CatalogDirectoryNode dir)
   {
-    NullCheck.notNull(index);
-    NullCheck.notNull(dir);
+    Objects.requireNonNull(index, "index");
+    Objects.requireNonNull(dir, "dir");
 
     final CatalogState state = this.state_get.get();
     final SortedMap<CatalogDiskID, CatalogDisk> disks =
@@ -116,7 +116,7 @@ final class CatalogMultiTableModel extends AbstractTableModel
 
   public void openDiskAtRoot(final CatalogDiskID index)
   {
-    NullCheck.notNull(index);
+    Objects.requireNonNull(index, "index");
 
     final CatalogState state = this.state_get.get();
     final SortedMap<CatalogDiskID, CatalogDisk> disks =

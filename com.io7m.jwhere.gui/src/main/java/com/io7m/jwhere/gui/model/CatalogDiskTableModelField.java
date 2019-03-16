@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.time.Instant;
 
@@ -39,8 +39,8 @@ enum CatalogDiskTableModelField
     final String in_name,
     final Class<?> in_type)
   {
-    this.name = NullCheck.notNull(in_name);
-    this.type = NullCheck.notNull(in_type);
+    this.name = Objects.requireNonNull(in_name, "in_name");
+    this.type = Objects.requireNonNull(in_type, "in_type");
   }
 
   public Class<?> getType()

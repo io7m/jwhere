@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.valid4j.Assertive;
 
@@ -46,9 +46,9 @@ public final class CatalogVerificationChangedType
     final CatalogNodeType in_node,
     final CatalogNodeType in_node_now)
   {
-    this.path = NullCheck.notNull(in_path);
-    this.node = NullCheck.notNull(in_node);
-    this.node_now = NullCheck.notNull(in_node_now);
+    this.path = Objects.requireNonNull(in_path, "in_path");
+    this.node = Objects.requireNonNull(in_node, "in_node");
+    this.node_now = Objects.requireNonNull(in_node_now, "in_node_now");
 
     Assertive.require(!this.node.getClass().equals(this.node_now.getClass()));
   }

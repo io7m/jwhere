@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.ControllerType;
@@ -58,7 +58,7 @@ final class CatalogTab extends JPanel
     final ControllerType in_controller)
   {
     super();
-    this.controller = NullCheck.notNull(in_controller);
+    this.controller = Objects.requireNonNull(in_controller, "in_controller");
 
     this.catalog_table = new CatalogTable(in_controller.catalogGetTableModel());
     this.catalog_table.addMouseListener(
@@ -175,8 +175,8 @@ final class CatalogTab extends JPanel
       final StatusBar in_status,
       final CatalogTree in_tree)
     {
-      this.controller = NullCheck.notNull(in_controller);
-      this.tree = NullCheck.notNull(in_tree);
+      this.controller = Objects.requireNonNull(in_controller, "in_controller");
+      this.tree = Objects.requireNonNull(in_tree, "in_tree");
 
       this.disk_popup = new JPopupMenu();
       this.catalog_popup = new JPopupMenu();

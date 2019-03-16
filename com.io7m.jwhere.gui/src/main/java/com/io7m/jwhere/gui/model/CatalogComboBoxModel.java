@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -37,7 +37,7 @@ final class CatalogComboBoxModel extends AbstractListModel<CatalogDiskMetadata>
 
   CatalogComboBoxModel(final Supplier<CatalogState> in_supplier)
   {
-    this.supplier = NullCheck.notNull(in_supplier);
+    this.supplier = Objects.requireNonNull(in_supplier, "in_supplier");
   }
 
   @Override public int getSize()

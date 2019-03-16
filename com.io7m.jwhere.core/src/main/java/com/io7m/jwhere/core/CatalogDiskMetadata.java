@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.math.BigInteger;
 
@@ -46,10 +46,10 @@ public final class CatalogDiskMetadata
     final CatalogDiskID in_index,
     final BigInteger in_size)
   {
-    this.disk_name = NullCheck.notNull(in_disk_name);
-    this.fs_type = NullCheck.notNull(in_fs_type);
-    this.index = NullCheck.notNull(in_index);
-    this.size = NullCheck.notNull(in_size);
+    this.disk_name = Objects.requireNonNull(in_disk_name, "in_disk_name");
+    this.fs_type = Objects.requireNonNull(in_fs_type, "in_fs_type");
+    this.index = Objects.requireNonNull(in_index, "in_index");
+    this.size = Objects.requireNonNull(in_size, "in_size");
   }
 
   /**

@@ -17,7 +17,7 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jfunctional.ProcedureType;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskName;
 import com.io7m.jwhere.gui.ControllerType;
@@ -49,9 +49,9 @@ final class CatalogAddDiskDialog extends JDialog
     final ControllerType controller,
     final StatusBar status)
   {
-    super(NullCheck.notNull(parent));
-    NullCheck.notNull(status);
-    NullCheck.notNull(controller);
+    super(Objects.requireNonNull(parent, "parent"));
+    Objects.requireNonNull(status, "status");
+    Objects.requireNonNull(controller, "controller");
 
     this.setModalityType(ModalityType.APPLICATION_MODAL);
 

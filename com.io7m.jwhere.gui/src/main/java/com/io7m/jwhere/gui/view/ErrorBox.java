@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
 import net.java.dev.designgridlayout.DesignGridLayout;
@@ -156,7 +156,7 @@ final class ErrorBox
       writer.append("\n");
 
       e.printStackTrace(new PrintWriter(writer));
-      return NullCheck.notNull(writer.toString());
+      return Objects.requireNonNull(writer.toString(), "writer.toString()");
     } catch (final IOException x) {
       throw new UnreachableCodeException(x);
     }

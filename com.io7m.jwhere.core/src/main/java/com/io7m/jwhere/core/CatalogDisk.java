@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import net.jcip.annotations.Immutable;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -57,9 +57,9 @@ import java.util.stream.Stream;
     final CatalogDirectoryNode in_root,
     final CatalogDiskMetadata in_meta)
   {
-    this.graph = NullCheck.notNull(in_g);
-    this.root = NullCheck.notNull(in_root);
-    this.meta = NullCheck.notNull(in_meta);
+    this.graph = Objects.requireNonNull(in_g, "in_g");
+    this.root = Objects.requireNonNull(in_root, "in_root");
+    this.meta = Objects.requireNonNull(in_meta, "in_meta");
 
     Assertive.require(
       this.graph.containsVertex(this.root),
@@ -81,7 +81,7 @@ import java.util.stream.Stream;
 
   public static CatalogDisk fromDisk(final CatalogDisk d)
   {
-    NullCheck.notNull(d);
+    Objects.requireNonNull(d, "d");
 
     final CatalogDirectoryNode d_root = d.getFilesystemRoot();
     final CatalogDirectoryNode in_root = new CatalogDirectoryNode(
@@ -215,7 +215,7 @@ import java.util.stream.Stream;
 
   public List<String> getPathForNode(final CatalogNodeType node)
   {
-    NullCheck.notNull(node);
+    Objects.requireNonNull(node, "node");
 
     if (this.graph.containsVertex(node)) {
       final DijkstraShortestPath<CatalogNodeType, CatalogDirectoryEntry> dsp =
@@ -263,7 +263,7 @@ import java.util.stream.Stream;
   public Optional<CatalogNodeType> getNodeForPath(final List<String> p)
     throws NotDirectoryException
   {
-    NullCheck.notNull(p);
+    Objects.requireNonNull(p, "p");
     final Iterator<String> iter = p.iterator();
     return CatalogDisk.getNodeForPathIterator(this.graph, this.root, iter);
   }
@@ -287,11 +287,11 @@ import java.util.stream.Stream;
       final CatalogDiskID in_index,
       final BigInteger in_size)
     {
-      this.disk_name = NullCheck.notNull(in_name);
-      this.root = NullCheck.notNull(in_root);
-      this.type = NullCheck.notNull(in_filesystem_type);
-      this.index = NullCheck.notNull(in_index);
-      this.size = NullCheck.notNull(in_size);
+      this.disk_name = Objects.requireNonNull(in_name, "in_name");
+      this.root = Objects.requireNonNull(in_root, "in_root");
+      this.type = Objects.requireNonNull(in_filesystem_type, "in_filesystem_type");
+      this.index = Objects.requireNonNull(in_index, "in_index");
+      this.size = Objects.requireNonNull(in_size, "in_size");
 
       this.graph = new DirectedAcyclicGraph<>(CatalogDirectoryEntry.class);
       this.graph.addVertex(in_root);

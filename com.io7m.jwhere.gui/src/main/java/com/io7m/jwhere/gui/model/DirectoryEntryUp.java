@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
 
@@ -47,9 +47,9 @@ public final class DirectoryEntryUp implements DirectoryEntryType
     final CatalogDirectoryNode in_node,
     final boolean in_is_root)
   {
-    this.disk_index = NullCheck.notNull(in_disk_index);
-    this.name = NullCheck.notNull(in_name);
-    this.node = NullCheck.notNull(in_node);
+    this.disk_index = Objects.requireNonNull(in_disk_index, "in_disk_index");
+    this.name = Objects.requireNonNull(in_name, "in_name");
+    this.node = Objects.requireNonNull(in_node, "in_node");
     this.is_root = in_is_root;
   }
 

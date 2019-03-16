@@ -19,7 +19,7 @@ package com.io7m.jwhere.gui;
 import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.ProcedureType;
 import com.io7m.jfunctional.Unit;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -73,7 +73,7 @@ public final class Controller implements ControllerType
 
   private Controller(final Model in_model)
   {
-    this.model = NullCheck.notNull(in_model);
+    this.model = Objects.requireNonNull(in_model, "in_model");
     this.exec = Executors.newSingleThreadExecutor(
       r -> {
         final Thread thread = new Thread(r);

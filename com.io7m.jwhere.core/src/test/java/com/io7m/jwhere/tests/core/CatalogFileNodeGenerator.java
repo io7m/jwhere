@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogFileHash;
 import com.io7m.jwhere.core.CatalogFileNode;
 import net.java.quickcheck.Generator;
@@ -49,13 +49,13 @@ public final class CatalogFileNodeGenerator
     final Generator<Instant> in_time_gen,
     final Generator<Optional<CatalogFileHash>> in_file_hash_gen)
   {
-    this.type_gen = NullCheck.notNull(in_type_gen);
-    this.long_gen = NullCheck.notNull(in_long_gen);
-    this.perm_gen = NullCheck.notNull(in_perm_gen);
-    this.user_gen = NullCheck.notNull(in_user_gen);
-    this.group_gen = NullCheck.notNull(in_group_gen);
-    this.time_gen = NullCheck.notNull(in_time_gen);
-    this.hash_gen = NullCheck.notNull(in_file_hash_gen);
+    this.type_gen = Objects.requireNonNull(in_type_gen, "in_type_gen");
+    this.long_gen = Objects.requireNonNull(in_long_gen, "in_long_gen");
+    this.perm_gen = Objects.requireNonNull(in_perm_gen, "in_perm_gen");
+    this.user_gen = Objects.requireNonNull(in_user_gen, "in_user_gen");
+    this.group_gen = Objects.requireNonNull(in_group_gen, "in_group_gen");
+    this.time_gen = Objects.requireNonNull(in_time_gen, "in_time_gen");
+    this.hash_gen = Objects.requireNonNull(in_file_hash_gen, "in_file_hash_gen");
   }
 
   public static Generator<CatalogFileNode> getDefault()

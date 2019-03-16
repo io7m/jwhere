@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogFileHash;
 import net.java.quickcheck.Generator;
@@ -47,7 +47,7 @@ public class CatalogTestFilesystemGenerator
   public CatalogTestFilesystemGenerator(
     final CatalogFilesystemProfile in_profile)
   {
-    this.profile = NullCheck.notNull(in_profile);
+    this.profile = Objects.requireNonNull(in_profile, "in_profile");
 
     this.depth_gen = new IntegerGenerator(1, 3);
     this.breadth_gen = new IntegerGenerator(0, 20);

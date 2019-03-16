@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.nio.file.Path;
 
@@ -49,8 +49,8 @@ public final class CatalogSaveSpecification
     final Compress in_compression,
     final Path in_path)
   {
-    this.compression = NullCheck.notNull(in_compression);
-    this.path = NullCheck.notNull(in_path);
+    this.compression = Objects.requireNonNull(in_compression, "in_compression");
+    this.path = Objects.requireNonNull(in_path, "in_path");
   }
 
   /**

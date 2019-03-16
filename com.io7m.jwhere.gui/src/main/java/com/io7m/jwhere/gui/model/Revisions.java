@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public final class Revisions<T>
     final T initial,
     final int count)
   {
-    NullCheck.notNull(initial);
+    Objects.requireNonNull(initial, "initial");
     this.history = new MutableBoundedNonEmptyDiscardStack<>(
       new Element<>(BigInteger.ZERO, initial), count);
     this.redo = new MutableBoundedDiscardStack<>(count);
@@ -178,7 +178,7 @@ public final class Revisions<T>
 
   public void newRevision(final T x)
   {
-    NullCheck.notNull(x);
+    Objects.requireNonNull(x, "x");
     final Element<T> current = this.history.peek();
     final BigInteger next_id = current.revision.add(BigInteger.ONE);
     this.history.push(new Element<>(next_id, x));
@@ -255,7 +255,7 @@ public final class Revisions<T>
 
   public void reset(final T x)
   {
-    NullCheck.notNull(x);
+    Objects.requireNonNull(x, "x");
     this.history.clear(new Element<>(BigInteger.ZERO, x));
     this.redo.clear();
     this.saved = BigInteger.ZERO;
@@ -309,8 +309,8 @@ public final class Revisions<T>
       final BigInteger in_revision,
       final T in_value)
     {
-      this.revision = NullCheck.notNull(in_revision);
-      this.value = NullCheck.notNull(in_value);
+      this.revision = Objects.requireNonNull(in_revision, "in_revision");
+      this.value = Objects.requireNonNull(in_value, "in_value");
     }
   }
 }

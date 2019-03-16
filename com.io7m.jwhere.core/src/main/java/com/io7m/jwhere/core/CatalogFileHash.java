@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import net.jcip.annotations.Immutable;
 import org.apache.commons.codec.binary.Hex;
@@ -48,8 +48,8 @@ import java.security.NoSuchAlgorithmException;
     final String in_algorithm,
     final String in_value)
   {
-    this.value = NullCheck.notNull(in_value);
-    this.algorithm = NullCheck.notNull(in_algorithm);
+    this.value = Objects.requireNonNull(in_value, "in_value");
+    this.algorithm = Objects.requireNonNull(in_algorithm, "in_algorithm");
   }
 
   /**

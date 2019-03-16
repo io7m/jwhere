@@ -19,7 +19,7 @@ package com.io7m.jwhere.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnreachableCodeException;
 
@@ -58,7 +58,7 @@ public final class CatalogJSONParserUtilities
     final JsonNode n)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(n);
+    Objects.requireNonNull(n, "n");
 
     switch (n.getNodeType()) {
       case ARRAY:
@@ -86,7 +86,7 @@ public final class CatalogJSONParserUtilities
           sb.append(System.lineSeparator());
         }
 
-        final String m = NullCheck.notNull(sb.toString());
+        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case OBJECT: {
@@ -111,8 +111,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(s);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(s, "s");
+    Objects.requireNonNull(key, "key");
 
     final JsonNode n = CatalogJSONParserUtilities.getNode(
       s, key);
@@ -136,7 +136,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(n.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = NullCheck.notNull(sb.toString());
+        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
     }
@@ -158,8 +158,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(o);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(o, "o");
+    Objects.requireNonNull(key, "key");
 
     final JsonNode v = CatalogJSONParserUtilities.getNode(
       o, key);
@@ -180,7 +180,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = NullCheck.notNull(sb.toString());
+        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case BOOLEAN: {
@@ -205,8 +205,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(n);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(n, "n");
+    Objects.requireNonNull(key, "key");
 
     final JsonNode v = CatalogJSONParserUtilities.getNode(
       n, key);
@@ -227,7 +227,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = NullCheck.notNull(sb.toString());
+        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case NUMBER: {
@@ -252,11 +252,11 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(s);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(s, "s");
+    Objects.requireNonNull(key, "key");
 
     if (s.has(key)) {
-      return NullCheck.notNull(s.get(key));
+      return Objects.requireNonNull(s.get(key), "s.get(key)");
     }
 
     final StringBuilder sb = new StringBuilder(128);
@@ -265,7 +265,7 @@ public final class CatalogJSONParserUtilities
     sb.append("'");
     sb.append(System.lineSeparator());
     sb.append("Got: nothing");
-    final String m = NullCheck.notNull(sb.toString());
+    final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
     throw new CatalogJSONParseException(m);
   }
 
@@ -283,8 +283,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(s);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(s, "s");
+    Objects.requireNonNull(key, "key");
 
     final JsonNode n = CatalogJSONParserUtilities.getNode(
       s, key);
@@ -306,8 +306,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(s);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(s, "s");
+    Objects.requireNonNull(key, "key");
 
     if (s.has(key)) {
       return Optional.of(CatalogJSONParserUtilities.getObject(s, key));
@@ -344,7 +344,7 @@ public final class CatalogJSONParserUtilities
       sb.append(r);
       sb.append("'");
       sb.append(System.lineSeparator());
-      final String m = NullCheck.notNull(sb.toString());
+      final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
       throw new CatalogJSONParseException(m);
     }
     return r;
@@ -364,8 +364,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(s);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(s, "s");
+    Objects.requireNonNull(key, "key");
 
     final JsonNode v = CatalogJSONParserUtilities.getNode(
       s, key);
@@ -386,11 +386,11 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = NullCheck.notNull(sb.toString());
+        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case STRING: {
-        return NullCheck.notNull(v.asText());
+        return Objects.requireNonNull(v.asText(), "v.asText()");
       }
     }
 
@@ -411,8 +411,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(n);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(n, "n");
+    Objects.requireNonNull(key, "key");
 
     if (n.has(key)) {
       return Optional.of(
@@ -435,8 +435,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(n);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(n, "n");
+    Objects.requireNonNull(key, "key");
 
     if (n.has(key)) {
       return Optional.of(CatalogJSONParserUtilities.getString(n, key));
@@ -461,8 +461,8 @@ public final class CatalogJSONParserUtilities
     final boolean v)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(n);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(n, "n");
+    Objects.requireNonNull(key, "key");
 
     if (n.has(key)) {
       return CatalogJSONParserUtilities.getBoolean(n, key);
@@ -484,8 +484,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(n);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(n, "n");
+    Objects.requireNonNull(key, "key");
 
     if (n.has(key)) {
       return Optional.of(CatalogJSONParserUtilities.getBigInteger(n, key));
@@ -507,8 +507,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(n);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(n, "n");
+    Objects.requireNonNull(key, "key");
 
     final JsonNode v = CatalogJSONParserUtilities.getNode(n, key);
     switch (v.getNodeType()) {
@@ -528,7 +528,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = NullCheck.notNull(sb.toString());
+        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case NUMBER: {
@@ -557,8 +557,8 @@ public final class CatalogJSONParserUtilities
     final String key)
     throws CatalogJSONParseException
   {
-    NullCheck.notNull(s);
-    NullCheck.notNull(key);
+    Objects.requireNonNull(s, "s");
+    Objects.requireNonNull(key, "key");
 
     final JsonNode v = CatalogJSONParserUtilities.getNode(s, key);
     switch (v.getNodeType()) {
@@ -578,7 +578,7 @@ public final class CatalogJSONParserUtilities
         sb.append("Got: A value of type ");
         sb.append(v.getNodeType());
         sb.append(System.lineSeparator());
-        final String m = NullCheck.notNull(sb.toString());
+        final String m = Objects.requireNonNull(sb.toString(), "sb.toString()");
         throw new CatalogJSONParseException(m);
       }
       case STRING: {

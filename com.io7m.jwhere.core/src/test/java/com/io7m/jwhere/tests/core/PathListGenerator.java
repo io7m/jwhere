@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.generator.support.IntegerGenerator;
 
@@ -32,8 +32,8 @@ public final class PathListGenerator implements Generator<List<String>>
     final Generator<Integer> in_length_gen,
     final FileNameGenerator in_name_gen)
   {
-    this.length_gen = NullCheck.notNull(in_length_gen);
-    this.name_gen = NullCheck.notNull(in_name_gen);
+    this.length_gen = Objects.requireNonNull(in_length_gen, "in_length_gen");
+    this.name_gen = Objects.requireNonNull(in_name_gen, "in_name_gen");
   }
 
   public static PathListGenerator getDefault()

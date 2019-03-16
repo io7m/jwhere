@@ -18,5 +18,5 @@
  * View.
  */
 
-@com.io7m.jnull.NonNullByDefault package com.io7m.jwhere.gui.view;
+package com.io7m.jwhere.gui.view;
 

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import net.java.quickcheck.Generator;
 
 import java.util.HashSet;
@@ -29,7 +29,7 @@ public final class FileNameCharacterGenerator implements Generator<Character>
 
   public FileNameCharacterGenerator(final Set<Integer> in_disallowed_codepoints)
   {
-    this.disallowed_codepoints = NullCheck.notNull(in_disallowed_codepoints);
+    this.disallowed_codepoints = Objects.requireNonNull(in_disallowed_codepoints, "in_disallowed_codepoints");
   }
 
   public static FileNameCharacterGenerator getDefault()

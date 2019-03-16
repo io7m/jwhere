@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import org.valid4j.Assertive;
 
 import java.util.Deque;
@@ -52,13 +52,13 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
       in_bound > 1, "Bound %d must be > 1", Integer.valueOf(in_bound));
 
     this.stack = new ConcurrentLinkedDeque<>();
-    this.top = NullCheck.notNull(in_top);
+    this.top = Objects.requireNonNull(in_top, "in_top");
     this.bound = in_bound;
   }
 
   @Override public void clear(final T x)
   {
-    this.top = NullCheck.notNull(x);
+    this.top = Objects.requireNonNull(x, "x");
     this.stack.clear();
   }
 
@@ -80,7 +80,7 @@ public final class MutableBoundedNonEmptyDiscardStack<T>
 
   @Override public void push(final T x)
   {
-    NullCheck.notNull(x);
+    Objects.requireNonNull(x, "x");
     if (this.size() == this.bound) {
       this.stack.removeLast();
     }

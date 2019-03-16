@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 
@@ -31,7 +31,7 @@ final class CatalogDiskIcons
 
   static Icon getIconForDisk(final CatalogDiskMetadata disk_meta)
   {
-    NullCheck.notNull(disk_meta);
+    Objects.requireNonNull(disk_meta, "disk_meta");
 
     if ("iso9660".equals(disk_meta.getFilesystemType())) {
       return Icons.getDiskOpticalIcon16();

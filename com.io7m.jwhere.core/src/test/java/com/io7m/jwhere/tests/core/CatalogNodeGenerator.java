@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogFileNode;
 import com.io7m.jwhere.core.CatalogNodeType;
@@ -35,9 +35,9 @@ public final class CatalogNodeGenerator implements Generator<CatalogNodeType>
     final Generator<CatalogFileNode> in_file_gen,
     final Generator<CatalogDirectoryNode> in_dir_gen)
   {
-    this.type_gen = NullCheck.notNull(in_type_gen);
-    this.file_gen = NullCheck.notNull(in_file_gen);
-    this.dir_gen = NullCheck.notNull(in_dir_gen);
+    this.type_gen = Objects.requireNonNull(in_type_gen, "in_type_gen");
+    this.file_gen = Objects.requireNonNull(in_file_gen, "in_file_gen");
+    this.dir_gen = Objects.requireNonNull(in_dir_gen, "in_dir_gen");
   }
 
   public static Generator<CatalogNodeType> getDefault()

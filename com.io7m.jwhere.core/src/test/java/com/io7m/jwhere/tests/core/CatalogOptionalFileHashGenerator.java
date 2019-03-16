@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogFileHash;
 import net.java.quickcheck.Generator;
 
@@ -32,8 +32,8 @@ public final class CatalogOptionalFileHashGenerator
     final Generator<CatalogFileHash> in_hash_gen,
     final Generator<Boolean> in_type_gen)
   {
-    this.hash_gen = NullCheck.notNull(in_hash_gen);
-    this.type_gen = NullCheck.notNull(in_type_gen);
+    this.hash_gen = Objects.requireNonNull(in_hash_gen, "in_hash_gen");
+    this.type_gen = Objects.requireNonNull(in_type_gen, "in_type_gen");
   }
 
   @Override public Optional<CatalogFileHash> next()

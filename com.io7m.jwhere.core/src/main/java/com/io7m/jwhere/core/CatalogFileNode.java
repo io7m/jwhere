@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import net.jcip.annotations.Immutable;
 import org.valid4j.Assertive;
 
@@ -67,15 +67,15 @@ import java.util.Set;
     final Instant in_modify_time,
     final Optional<CatalogFileHash> in_hash)
   {
-    this.access_time = NullCheck.notNull(in_access_time);
-    this.permissions = NullCheck.notNull(in_permissions);
-    this.owner = NullCheck.notNull(in_owner);
-    this.group = NullCheck.notNull(in_group);
-    this.id = NullCheck.notNull(in_inode);
-    this.creation_time = NullCheck.notNull(in_creation_time);
-    this.modify_time = NullCheck.notNull(in_modify_time);
-    this.size = NullCheck.notNull(in_size);
-    this.hash = NullCheck.notNull(in_hash);
+    this.access_time = Objects.requireNonNull(in_access_time, "in_access_time");
+    this.permissions = Objects.requireNonNull(in_permissions, "in_permissions");
+    this.owner = Objects.requireNonNull(in_owner, "in_owner");
+    this.group = Objects.requireNonNull(in_group, "in_group");
+    this.id = Objects.requireNonNull(in_inode, "in_inode");
+    this.creation_time = Objects.requireNonNull(in_creation_time, "in_creation_time");
+    this.modify_time = Objects.requireNonNull(in_modify_time, "in_modify_time");
+    this.size = Objects.requireNonNull(in_size, "in_size");
+    this.hash = Objects.requireNonNull(in_hash, "in_hash");
 
     Assertive.require(!this.owner.isEmpty(), "Owner name cannot be empty");
     Assertive.require(!this.group.isEmpty(), "Group name cannot be empty");

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.Catalog;
 import com.io7m.jwhere.core.CatalogDirectoryNode;
 import com.io7m.jwhere.core.CatalogDisk;
@@ -240,7 +240,7 @@ public final class Model
 
   public void selectDiskAtRoot(final CatalogDiskID index)
   {
-    NullCheck.notNull(index);
+    Objects.requireNonNull(index, "index");
 
     final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
     Assertive.require(c.getDisks().containsKey(index));
@@ -259,8 +259,8 @@ public final class Model
     final CatalogDiskID index,
     final CatalogDirectoryNode dir)
   {
-    NullCheck.notNull(index);
-    NullCheck.notNull(dir);
+    Objects.requireNonNull(index, "index");
+    Objects.requireNonNull(dir, "dir");
 
     final Catalog c = this.catalog_history.getCurrentValue().getCatalog();
     Assertive.require(c.getDisks().containsKey(index));
@@ -372,8 +372,8 @@ public final class Model
     final Path path)
     throws IOException, CatalogException
   {
-    NullCheck.notNull(id);
-    NullCheck.notNull(path);
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(path, "path");
 
     final CatalogVerificationReportSettings settings =
       new CatalogVerificationReportSettings(

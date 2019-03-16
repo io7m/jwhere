@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogFileHash;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.generator.support.StringGenerator;
@@ -28,7 +28,7 @@ public final class CatalogFileHashGenerator
 
   public CatalogFileHashGenerator(final Generator<String> in_string_gen)
   {
-    this.string_gen = NullCheck.notNull(in_string_gen);
+    this.string_gen = Objects.requireNonNull(in_string_gen, "in_string_gen");
   }
 
   public static Generator<CatalogFileHash> getDefault()

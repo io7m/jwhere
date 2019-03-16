@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.model.DirectoryEntryDirectory;
@@ -42,7 +42,7 @@ final class CatalogTable extends JTable
   CatalogTable(final TableModel in_model)
   {
     super(in_model);
-    NullCheck.notNull(in_model);
+    Objects.requireNonNull(in_model, "in_model");
 
     this.getTableHeader().setReorderingAllowed(false);
 

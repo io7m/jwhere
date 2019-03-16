@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.nio.file.Path;
 
@@ -47,10 +47,10 @@ public final class CatalogVerificationChangedMetadata
     final String in_value_then,
     final String in_value_now)
   {
-    this.path = NullCheck.notNull(in_path);
-    this.field = NullCheck.notNull(in_field);
-    this.value_then = NullCheck.notNull(in_value_then);
-    this.value_now = NullCheck.notNull(in_value_now);
+    this.path = Objects.requireNonNull(in_path, "in_path");
+    this.field = Objects.requireNonNull(in_field, "in_field");
+    this.value_then = Objects.requireNonNull(in_value_then, "in_value_then");
+    this.value_now = Objects.requireNonNull(in_value_now, "in_value_now");
   }
 
   @Override public Path getPath()

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.gui.ControllerType;
 
 import javax.swing.JPanel;
@@ -28,6 +28,6 @@ final class SearchTab extends JPanel
   SearchTab(final ControllerType in_controller)
   {
     super();
-    this.controller = NullCheck.notNull(in_controller);
+    this.controller = Objects.requireNonNull(in_controller, "in_controller");
   }
 }

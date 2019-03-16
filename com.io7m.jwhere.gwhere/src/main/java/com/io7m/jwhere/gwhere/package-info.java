@@ -18,5 +18,5 @@
  * GWhere data parsing and importing.
  */
 
-@com.io7m.jnull.NonNullByDefault package com.io7m.jwhere.gwhere;
+package com.io7m.jwhere.gwhere;
 

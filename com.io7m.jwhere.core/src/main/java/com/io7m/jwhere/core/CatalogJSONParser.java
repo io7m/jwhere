@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,7 +172,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     CatalogDiskDuplicateIDException,
     IOException
   {
-    NullCheck.notNull(p);
+    Objects.requireNonNull(p, "p");
 
     final String guess_type = Files.probeContentType(p);
     if ("application/gzip".equals(guess_type)) {
@@ -201,8 +201,8 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     CatalogDiskDuplicateIDException,
     IOException
   {
-    NullCheck.notNull(p);
-    NullCheck.notNull(compression);
+    Objects.requireNonNull(p, "p");
+    Objects.requireNonNull(compression, "compression");
 
     // Checkstyle is unable to determine that these cases do not "fall through"
     // CHECKSTYLE:OFF
@@ -229,7 +229,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     CatalogDiskDuplicateIDException,
     IOException
   {
-    NullCheck.notNull(is);
+    Objects.requireNonNull(is, "is");
 
     final ObjectMapper jom = new ObjectMapper();
     final JsonNode node = jom.readTree(is);
@@ -243,7 +243,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
     CatalogNodeException,
     CatalogDiskDuplicateIDException
   {
-    NullCheck.notNull(c);
+    Objects.requireNonNull(c, "c");
 
     CatalogJSONParserUtilities.getStringWithValue(
       c, "schema", "http://schemas.io7m.com/jwhere");
@@ -279,7 +279,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
   @Override public CatalogDisk parseDisk(final ObjectNode c)
     throws CatalogJSONParseException, CatalogNodeException
   {
-    NullCheck.notNull(c);
+    Objects.requireNonNull(c, "c");
 
     CatalogJSONParserUtilities.getStringWithValue(c, "type", "disk");
 

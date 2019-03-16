@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogDisk;
 import com.io7m.jwhere.core.CatalogDiskID;
@@ -37,7 +37,7 @@ final class CatalogTableModel extends AbstractTableModel
 
   CatalogTableModel(final Supplier<CatalogState> in_state_get)
   {
-    this.state_get = NullCheck.notNull(in_state_get);
+    this.state_get = Objects.requireNonNull(in_state_get, "in_state_get");
   }
 
   /**

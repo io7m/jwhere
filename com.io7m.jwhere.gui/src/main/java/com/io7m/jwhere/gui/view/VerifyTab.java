@@ -17,7 +17,7 @@
 package com.io7m.jwhere.gui.view;
 
 import com.io7m.jfunctional.ProcedureType;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogDiskID;
 import com.io7m.jwhere.core.CatalogDiskMetadata;
 import com.io7m.jwhere.gui.ControllerType;
@@ -53,8 +53,8 @@ final class VerifyTab extends JPanel
     final StatusBar status)
   {
     super();
-    this.controller = NullCheck.notNull(in_controller);
-    NullCheck.notNull(status);
+    this.controller = Objects.requireNonNull(in_controller, "in_controller");
+    Objects.requireNonNull(status, "status");
 
     final JTextField mount = new JTextField(32);
     final CatalogVerificationTable table = new CatalogVerificationTable(
@@ -104,8 +104,7 @@ final class VerifyTab extends JPanel
 
     verify.addActionListener(
       e -> {
-        final CatalogDiskMetadata selected = NullCheck.notNull(
-          (CatalogDiskMetadata) disk_menu.getSelectedItem());
+        final CatalogDiskMetadata selected = Objects.requireNonNull((CatalogDiskMetadata) disk_menu.getSelectedItem(), "(CatalogDiskMetadata) disk_menu.getSelectedItem()");
 
         final CatalogDiskID id = selected.getDiskID();
         final Path path = Paths.get(mount.getText());

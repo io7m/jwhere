@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 /**
  * A directory entry in a given disk that corresponds to a file.
@@ -35,7 +35,7 @@ public final class DirectoryEntryFile implements DirectoryEntryType
   public DirectoryEntryFile(
     final String in_name)
   {
-    this.name = NullCheck.notNull(in_name);
+    this.name = Objects.requireNonNull(in_name, "in_name");
   }
 
   @Override public <A, E extends Exception> A matchEntry(

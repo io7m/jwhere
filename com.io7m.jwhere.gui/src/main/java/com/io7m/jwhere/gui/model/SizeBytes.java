@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -46,7 +46,7 @@ public final class SizeBytes
 
   public SizeBytes(final BigInteger in_value)
   {
-    this.value = NullCheck.notNull(in_value);
+    this.value = Objects.requireNonNull(in_value, "in_value");
   }
 
   private static String showAsMegabytes(final BigInteger x)

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.view;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.gui.CatalogTask;
 import com.io7m.jwhere.gui.ControllerType;
 import net.java.dev.designgridlayout.DesignGridLayout;
@@ -44,7 +44,7 @@ final class TasksTab extends JPanel
   TasksTab(final ControllerType in_controller)
   {
     super();
-    NullCheck.notNull(in_controller);
+    Objects.requireNonNull(in_controller, "in_controller");
 
     /**
      * Task list.

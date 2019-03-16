@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.jgrapht.graph.UnmodifiableGraph;
 
@@ -181,8 +181,8 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
     final OutputStream os)
     throws IOException
   {
-    NullCheck.notNull(c);
-    NullCheck.notNull(os);
+    Objects.requireNonNull(c, "c");
+    Objects.requireNonNull(os, "os");
 
     final ObjectMapper jom = new ObjectMapper();
     final ObjectWriter jw = jom.writerWithDefaultPrettyPrinter();
@@ -191,7 +191,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
 
   @Override public ObjectNode serializeCatalog(final Catalog c)
   {
-    NullCheck.notNull(c);
+    Objects.requireNonNull(c, "c");
 
     final ObjectMapper jom = new ObjectMapper();
 
@@ -216,7 +216,7 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
 
   @Override public ObjectNode serializeDisk(final CatalogDisk d)
   {
-    NullCheck.notNull(d);
+    Objects.requireNonNull(d, "d");
 
     final ObjectMapper jom = new ObjectMapper();
     final ObjectNode jd = jom.createObjectNode();

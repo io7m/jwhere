@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 /**
  * Report settings.
@@ -35,7 +35,7 @@ public final class CatalogVerificationReportSettings
   public CatalogVerificationReportSettings(
     final CatalogIgnoreAccessTime in_atime)
   {
-    this.atime = NullCheck.notNull(in_atime);
+    this.atime = Objects.requireNonNull(in_atime, "in_atime");
   }
 
   /**

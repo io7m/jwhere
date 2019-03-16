@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gui.model;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +43,7 @@ public final class ObservableValue<T>
 
   public ObservableValue(final Supplier<T> s)
   {
-    this.supplier = NullCheck.notNull(s);
+    this.supplier = Objects.requireNonNull(s, "s");
     this.observers = new LinkedList<>();
   }
 
@@ -72,7 +72,7 @@ public final class ObservableValue<T>
   public void addObserver(final Consumer<T> c)
   {
     synchronized (this.observers) {
-      this.observers.add(NullCheck.notNull(c));
+      this.observers.add(Objects.requireNonNull(c, "c"));
     }
 
     c.accept(this.supplier.get());
@@ -88,7 +88,7 @@ public final class ObservableValue<T>
   public void removeObserver(final Consumer<T> c)
   {
     synchronized (this.observers) {
-      this.observers.remove(NullCheck.notNull(c));
+      this.observers.remove(Objects.requireNonNull(c, "c"));
     }
   }
 }

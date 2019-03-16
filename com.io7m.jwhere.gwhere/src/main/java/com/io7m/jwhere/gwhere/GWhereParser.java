@@ -17,7 +17,7 @@
 package com.io7m.jwhere.gwhere;
 
 import com.io7m.jfunctional.Pair;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jnull.Nullable;
 import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
@@ -67,7 +67,7 @@ public final class GWhereParser implements GWhereParserType
 
   private GWhereParser(final BufferedReader r)
   {
-    this.reader = NullCheck.notNull(r);
+    this.reader = Objects.requireNonNull(r, "r");
     this.pos_line = BigInteger.ZERO;
     this.pos_column = BigInteger.ZERO;
   }
@@ -82,7 +82,7 @@ public final class GWhereParser implements GWhereParserType
 
   public static GWhereParserType newParser(final InputStream is)
   {
-    NullCheck.notNull(is);
+    Objects.requireNonNull(is, "is");
 
     final BufferedReader r = new BufferedReader(new InputStreamReader(is));
     return new GWhereParser(r);
@@ -96,12 +96,12 @@ public final class GWhereParser implements GWhereParserType
     final String header_line = this.getLineNotEOF();
     final String[] header_segments = header_line.split(":");
 
-    final String disk_name = NullCheck.notNull(header_segments[0]);
+    final String disk_name = Objects.requireNonNull(header_segments[0], "header_segments[0]");
     final CatalogDiskID disk_index =
-      new CatalogDiskID(new BigInteger(NullCheck.notNull(header_segments[1])));
-    final String disk_type = NullCheck.notNull(header_segments[4]);
+      new CatalogDiskID(new BigInteger(Objects.requireNonNull(header_segments[1], "header_segments[1]")));
+    final String disk_type = Objects.requireNonNull(header_segments[4], "header_segments[4]");
     final BigInteger disk_size =
-      new BigInteger(NullCheck.notNull(header_segments[6]));
+      new BigInteger(Objects.requireNonNull(header_segments[6], "header_segments[6]"));
 
     final Pair<String, CatalogDirectoryNode> root = this.parseDiskDirectory();
     final CatalogDirectoryNode root_node = root.getRight();
@@ -274,23 +274,23 @@ public final class GWhereParser implements GWhereParserType
   {
     final String[] segments = line.split(":");
 
-    final String name = NullCheck.notNull(segments[0]);
+    final String name = Objects.requireNonNull(segments[0], "segments[0]");
 
     final EnumSet<PosixFilePermission> p =
       EnumSet.noneOf(PosixFilePermission.class);
     final FileType type = this.parsePermissions(
-      NullCheck.notNull(segments[1]), p);
-    final String owner = NullCheck.notNull(segments[2]);
-    final String group = NullCheck.notNull(segments[3]);
-    final BigInteger inode = new BigInteger(NullCheck.notNull(segments[4]));
-    final BigInteger size = new BigInteger(NullCheck.notNull(segments[5]));
+      Objects.requireNonNull(segments[1], "segments[1]"), p);
+    final String owner = Objects.requireNonNull(segments[2], "segments[2]");
+    final String group = Objects.requireNonNull(segments[3], "segments[3]");
+    final BigInteger inode = new BigInteger(Objects.requireNonNull(segments[4], "segments[4]"));
+    final BigInteger size = new BigInteger(Objects.requireNonNull(segments[5], "segments[5]"));
 
     final Instant creation = Instant.ofEpochSecond(
-      Long.valueOf(NullCheck.notNull(segments[6])).longValue());
+      Long.valueOf(Objects.requireNonNull(segments[6], "segments[6]")).longValue());
     final Instant access = Instant.ofEpochSecond(
-      Long.valueOf(NullCheck.notNull(segments[7])).longValue());
+      Long.valueOf(Objects.requireNonNull(segments[7], "segments[7]")).longValue());
     final Instant modification = Instant.ofEpochSecond(
-      Long.valueOf(NullCheck.notNull(segments[8])).longValue());
+      Long.valueOf(Objects.requireNonNull(segments[8], "segments[8]")).longValue());
 
     switch (type) {
       case DIRECTORY:

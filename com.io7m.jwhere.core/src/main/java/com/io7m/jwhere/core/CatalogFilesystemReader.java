@@ -17,7 +17,7 @@
 package com.io7m.jwhere.core;
 
 import com.io7m.jfunctional.Unit;
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.jgrapht.graph.UnmodifiableGraph;
 import org.slf4j.Logger;
@@ -89,9 +89,9 @@ public final class CatalogFilesystemReader
     final Path root)
     throws IOException, CatalogException
   {
-    NullCheck.notNull(disk_name);
-    NullCheck.notNull(index);
-    NullCheck.notNull(root);
+    Objects.requireNonNull(disk_name, "disk_name");
+    Objects.requireNonNull(index, "index");
+    Objects.requireNonNull(root, "root");
 
     CatalogFilesystemReader.LOG.debug(
       "creating new disk \"{}\" index {} for root {}", disk_name, index, root);
@@ -222,10 +222,10 @@ public final class CatalogFilesystemReader
     final CatalogVerificationListenerType listener)
     throws IOException
   {
-    NullCheck.notNull(d);
-    NullCheck.notNull(settings);
-    NullCheck.notNull(root);
-    NullCheck.notNull(listener);
+    Objects.requireNonNull(d, "d");
+    Objects.requireNonNull(settings, "settings");
+    Objects.requireNonNull(root, "root");
+    Objects.requireNonNull(listener, "listener");
 
     final CatalogDiskMetadata meta = d.getMeta();
     CatalogFilesystemReader.LOG.debug(
@@ -620,8 +620,8 @@ public final class CatalogFilesystemReader
       final CatalogDisk in_disk,
       final CatalogVerificationListenerType in_delegate)
     {
-      NullCheck.notNull(in_disk);
-      this.delegate = NullCheck.notNull(in_delegate);
+      Objects.requireNonNull(in_disk, "in_disk");
+      this.delegate = Objects.requireNonNull(in_delegate, "in_delegate");
       this.reported_paths =
         new HashSet<>(in_disk.getFilesystemGraph().vertexSet().size());
     }
@@ -647,7 +647,7 @@ public final class CatalogFilesystemReader
 
     boolean pathIsReferenced(final Path p)
     {
-      return this.reported_paths.contains(NullCheck.notNull(p));
+      return this.reported_paths.contains(Objects.requireNonNull(p, "p"));
     }
   }
 }

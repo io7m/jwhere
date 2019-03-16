@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jnull.Nullable;
 
 import java.math.BigInteger;
@@ -37,7 +37,7 @@ public final class CatalogDiskID implements Comparable<CatalogDiskID>
 
   public CatalogDiskID(final BigInteger in_value)
   {
-    this.value = NullCheck.notNull(in_value);
+    this.value = Objects.requireNonNull(in_value, "in_value");
   }
 
   /**
@@ -74,6 +74,6 @@ public final class CatalogDiskID implements Comparable<CatalogDiskID>
 
   @Override public int compareTo(final @Nullable CatalogDiskID o)
   {
-    return this.getValue().compareTo(NullCheck.notNull(o).getValue());
+    return this.getValue().compareTo(Objects.requireNonNull(o, "o").getValue());
   }
 }

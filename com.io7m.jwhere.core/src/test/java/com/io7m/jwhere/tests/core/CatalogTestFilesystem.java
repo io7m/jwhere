@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.tests.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogFileHash;
 
 import java.io.Closeable;
@@ -37,9 +37,9 @@ public final class CatalogTestFilesystem implements Closeable
     final SortedMap<Path, CatalogFileHash> in_hashes,
     final SortedSet<Path> in_directories)
   {
-    this.filesystem = NullCheck.notNull(in_filesystem);
-    this.hashes = NullCheck.notNull(in_hashes);
-    this.directories = NullCheck.notNull(in_directories);
+    this.filesystem = Objects.requireNonNull(in_filesystem, "in_filesystem");
+    this.hashes = Objects.requireNonNull(in_hashes, "in_hashes");
+    this.directories = Objects.requireNonNull(in_directories, "in_directories");
   }
 
   public SortedSet<Path> getDirectories()

@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jnull.Nullable;
 
 import java.nio.file.Path;
@@ -43,6 +43,6 @@ public interface CatalogVerificationReportItemType
   @Override
   default int compareTo(final @Nullable CatalogVerificationReportItemType o)
   {
-    return this.getPath().compareTo(NullCheck.notNull(o).getPath());
+    return this.getPath().compareTo(Objects.requireNonNull(o, "o").getPath());
   }
 }

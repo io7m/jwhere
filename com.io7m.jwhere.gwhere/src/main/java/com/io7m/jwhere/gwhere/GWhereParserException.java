@@ -16,7 +16,7 @@
 
 package com.io7m.jwhere.gwhere;
 
-import com.io7m.jnull.NullCheck;
+import java.util.Objects;
 import com.io7m.jwhere.core.CatalogException;
 
 import java.math.BigInteger;
@@ -44,8 +44,8 @@ public abstract class GWhereParserException extends CatalogException
     final String m)
   {
     super(m);
-    this.line = NullCheck.notNull(in_line);
-    this.column = NullCheck.notNull(in_column);
+    this.line = Objects.requireNonNull(in_line, "in_line");
+    this.column = Objects.requireNonNull(in_column, "in_column");
   }
 
   /**
@@ -62,8 +62,8 @@ public abstract class GWhereParserException extends CatalogException
     final Throwable e)
   {
     super(e);
-    this.line = NullCheck.notNull(in_line);
-    this.column = NullCheck.notNull(in_column);
+    this.line = Objects.requireNonNull(in_line, "in_line");
+    this.column = Objects.requireNonNull(in_column, "in_column");
   }
 
   /**
