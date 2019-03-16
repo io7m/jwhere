@@ -277,12 +277,12 @@ public abstract class CatalogFilesystemReaderContract
         Assert.assertTrue(ho.isPresent());
         final CatalogFileHash h = ho.get();
 
-        Assert.assertEquals("SHA-256", h.getAlgorithm());
+        Assert.assertEquals("SHA-256", h.algorithm());
 
         if ("file0.txt".equals(e.getName())) {
           file0 = t;
           Assert.assertEquals(
-            h.getValue(),
+            h.value(),
             ("c3f64406d73acc591c90b5f4616175ce26c96f1f15cba9ef57de05b2e77526f0"
              + "").toUpperCase());
         }
@@ -290,7 +290,7 @@ public abstract class CatalogFilesystemReaderContract
         if ("file1.txt".equals(e.getName())) {
           file1 = t;
           Assert.assertEquals(
-            h.getValue(),
+            h.value(),
             ("610c2c8120e3c8c6ed71714853d4d1b1add2ec1e1e8b85477049324f9d0d855e"
              + "").toUpperCase());
         }
@@ -298,7 +298,7 @@ public abstract class CatalogFilesystemReaderContract
         if ("file2.txt".equals(e.getName())) {
           file2 = t;
           Assert.assertEquals(
-            h.getValue(),
+            h.value(),
             ("e0fe5b86a8eafeab4ead9f8ca5c7aae07e6ad10cffbdd63228df4d4beb2db15d"
              + "").toUpperCase());
         }

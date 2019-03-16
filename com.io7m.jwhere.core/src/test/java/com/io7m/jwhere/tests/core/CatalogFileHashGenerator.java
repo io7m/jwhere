@@ -38,6 +38,9 @@ public final class CatalogFileHashGenerator
 
   @Override public CatalogFileHash next()
   {
-    return new CatalogFileHash(this.string_gen.next(), this.string_gen.next());
+    return CatalogFileHash.builder()
+      .setAlgorithm(this.string_gen.next())
+      .setValue(this.string_gen.next())
+      .build();
   }
 }

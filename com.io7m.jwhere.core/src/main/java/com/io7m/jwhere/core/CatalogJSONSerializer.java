@@ -87,8 +87,8 @@ public final class CatalogJSONSerializer implements CatalogJSONSerializerType
   {
     final ObjectNode jout = jom.createObjectNode();
     jout.put("type", "hash");
-    jout.put("algorithm", hash.getAlgorithm());
-    jout.put("value", hash.getValue());
+    jout.put("algorithm", hash.algorithm());
+    jout.put("value", hash.value());
     return jout;
   }
 

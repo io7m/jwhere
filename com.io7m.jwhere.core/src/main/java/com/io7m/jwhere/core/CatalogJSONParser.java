@@ -112,7 +112,7 @@ public final class CatalogJSONParser implements CatalogJSONParserType
       final ObjectNode ho = opt_hash_raw.get();
       final String algo = CatalogJSONParserUtilities.getString(ho, "algorithm");
       final String value = CatalogJSONParserUtilities.getString(ho, "value");
-      opt_hash = Optional.of(new CatalogFileHash(algo, value));
+      opt_hash = Optional.of(CatalogFileHash.builder().setAlgorithm(algo).setValue(value).build());
     } else {
       opt_hash = Optional.empty();
     }

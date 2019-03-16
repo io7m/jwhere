@@ -17,6 +17,7 @@
 package com.io7m.jwhere.tests.core;
 
 import com.io7m.jwhere.core.CatalogFileHash;
+import com.io7m.jwhere.core.CatalogFileHashes;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
@@ -49,7 +50,7 @@ public abstract class CatalogFileHashContract
 
       this.expected.expect(FileSystemException.class);
       this.expected.expectMessage(new StringContains("is a directory"));
-      CatalogFileHash.fromFile(p);
+      CatalogFileHashes.fromFile(p);
     }
   }
 
@@ -60,7 +61,7 @@ public abstract class CatalogFileHashContract
       final Path p = fs.getPath("nonexistent");
       this.expected.expect(NoSuchFileException.class);
       this.expected.expectMessage(new StringContains("nonexistent"));
-      CatalogFileHash.fromFile(p);
+      CatalogFileHashes.fromFile(p);
     }
   }
 
@@ -72,12 +73,12 @@ public abstract class CatalogFileHashContract
       Files.write(
         p, "Hello".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
-      final CatalogFileHash h = CatalogFileHash.fromFile(p);
+      final CatalogFileHash h = CatalogFileHashes.fromFile(p);
       Assert.assertEquals(
         "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"
           .toUpperCase(),
-        h.getValue());
-      Assert.assertEquals("SHA-256", h.getAlgorithm());
+        h.value());
+      Assert.assertEquals("SHA-256", h.algorithm());
     }
   }
 
@@ -94,9 +95,9 @@ public abstract class CatalogFileHashContract
         {
           final CatalogFileHash ce = gen.next();
           final CatalogFileHash cf =
-            new CatalogFileHash(cd.getAlgorithm(), cd.getValue());
+            CatalogFileHash.copyOf(cd);
           final CatalogFileHash cg =
-            new CatalogFileHash(cd.getAlgorithm(), cd.getValue());
+            CatalogFileHash.copyOf(cd);
 
           // Reflexivity
           Assert.assertEquals(cd, cd);

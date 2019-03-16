@@ -547,7 +547,7 @@ public final class CatalogFilesystemReader
     }
 
     CatalogFilesystemReader.LOG.debug("hashing {}", file);
-    final CatalogFileHash hash = CatalogFileHash.fromFile(file);
+    final CatalogFileHash hash = CatalogFileHashes.fromFile(file);
     return new CatalogFileNode(
       size,
       perms,

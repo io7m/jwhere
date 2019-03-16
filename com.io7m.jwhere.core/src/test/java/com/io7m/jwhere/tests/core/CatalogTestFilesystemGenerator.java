@@ -19,6 +19,7 @@ package com.io7m.jwhere.tests.core;
 import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.jwhere.core.CatalogFileHash;
+import com.io7m.jwhere.core.CatalogFileHashes;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.generator.support.ByteArrayGenerator;
 import net.java.quickcheck.generator.support.IntegerGenerator;
@@ -100,7 +101,7 @@ public class CatalogTestFilesystemGenerator
 
       if (file) {
         Files.write(p, this.data_gen.next());
-        final CatalogFileHash hash = CatalogFileHash.fromFile(p);
+        final CatalogFileHash hash = CatalogFileHashes.fromFile(p);
         hashes.put(p, hash);
       } else {
         Files.createDirectories(p);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 <code@io7m.com> http://io7m.com
+ * Copyright © 2019 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,9 +16,7 @@
 
 package com.io7m.jwhere.core;
 
-import java.util.Objects;
 import com.io7m.junreachable.UnreachableCodeException;
-import net.jcip.annotations.Immutable;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
@@ -29,27 +27,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * A hash value.
+ * Functions to construct file hashes.
  */
 
-@Immutable public final class CatalogFileHash
+public final class CatalogFileHashes
 {
-  private final String algorithm;
-  private final String value;
-
-  /**
-   * Construct a hash value.
-   *
-   * @param in_algorithm The algorithm used (eg 'SHA2-512')
-   * @param in_value     The hash value
-   */
-
-  public CatalogFileHash(
-    final String in_algorithm,
-    final String in_value)
+  private CatalogFileHashes()
   {
-    this.value = Objects.requireNonNull(in_value, "in_value");
-    this.algorithm = Objects.requireNonNull(in_algorithm, "in_algorithm");
+
   }
 
   /**
@@ -66,9 +51,7 @@ import java.security.NoSuchAlgorithmException;
     throws IOException
   {
     try {
-      return CatalogFileHash.fromFileWithDigest(
-        MessageDigest.getInstance(
-          "SHA-256"), file);
+      return fromFileWithDigest(MessageDigest.getInstance("SHA-256"), file);
     } catch (final NoSuchAlgorithmException e) {
       throw new UnreachableCodeException(e);
     }
@@ -103,50 +86,9 @@ import java.security.NoSuchAlgorithmException;
     }
 
     final String hex = Hex.encodeHexString(md.digest());
-    return new CatalogFileHash(md.getAlgorithm(), hex);
-  }
-
-  @Override public String toString()
-  {
-    return String.format("%s:%s", this.algorithm, this.value);
-  }
-
-  @Override public boolean equals(final Object o)
-  {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || this.getClass() != o.getClass()) {
-      return false;
-    }
-
-    final CatalogFileHash that = (CatalogFileHash) o;
-    return this.getAlgorithm().equals(that.getAlgorithm()) && this.getValue()
-      .equals(that.getValue());
-  }
-
-  @Override public int hashCode()
-  {
-    int result = this.getAlgorithm().hashCode();
-    result = 31 * result + this.getValue().hashCode();
-    return result;
-  }
-
-  /**
-   * @return The hash algorithm
-   */
-
-  public String getAlgorithm()
-  {
-    return this.algorithm;
-  }
-
-  /**
-   * @return The hash value
-   */
-
-  public String getValue()
-  {
-    return this.value;
+    return CatalogFileHash.builder()
+      .setAlgorithm (md.getAlgorithm())
+      .setValue(hex)
+      .build();
   }
 }

@@ -37,42 +37,49 @@ public interface CatalogDirectoryNodeType extends CatalogNodeType
    * @return The last access time of the directory
    */
 
+  @Override
   Instant accessTime();
 
   /**
    * @return The creation time of the directory
    */
 
+  @Override
   Instant creationTime();
 
   /**
    * @return The group
    */
 
+  @Override
   String group();
 
   /**
    * @return The filesystem ID value
    */
 
+  @Override
   BigInteger id();
 
   /**
    * @return The last modification time of the directory
    */
 
+  @Override
   Instant modificationTime();
 
   /**
    * @return The owner
    */
 
+  @Override
   String owner();
 
   /**
    * @return The directory POSIX permissions
    */
 
+  @Override
   Set<PosixFilePermission> permissions();
 
   @Override
