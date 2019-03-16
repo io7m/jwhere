@@ -13,7 +13,7 @@
 
   <groupId>com.io7m.jwhere</groupId>
   <artifactId>com.io7m.jwhere</artifactId>
-  <version>0.5.1</version>
+  <version>0.6.0</version>
 
   <packaging>pom</packaging>
   <name>com.io7m.jwhere</name>
