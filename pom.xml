@@ -78,8 +78,8 @@
   </distributionManagement>
 
   <ciManagement>
-    <system>Travis CI</system>
-    <url>https://travis-ci.org/io7m/jwhere</url>
+    <system>GitHub Actions</system>
+    <url>https://github.com/jwhere/actions</url>
   </ciManagement>
 
   <prerequisites>
